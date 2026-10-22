@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Operacional - Gestão de Entradas e Saídas | ER Segurança</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: { brand: { blue: '#3b82f6', red: '#ef4444', cyan: '#06b6d4', emerald: '#10b981', darkBg: '#030712' } }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #030712; color: #f3f4f6; min-height: 100vh; }
+    .bg-soc-dashboard {
+      background-image: linear-gradient(to bottom, rgba(3, 7, 18, 0.88), rgba(3, 7, 18, 0.96)),
+                        url('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=2000&auto=format&fit=crop');
+      background-size: cover; background-position: center; background-attachment: fixed;
+    }
+    .tech-grid {
+      background-size: 32px 32px;
+      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.60); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    }
+    .btn-neon-primary {
+      background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.35); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .btn-neon-primary:hover { box-shadow: 0 0 25px rgba(6, 182, 212, 0.6); transform: translateY(-1px); }
+  </style>
+</head>
+<body class="bg-soc-dashboard tech-grid flex flex-col min-h-screen text-slate-100 antialiased pb-12">
+
+  <!-- HEADER -->
+  <header class="sticky top-0 z-40 glass-card border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <svg class="w-10 h-10" viewBox="0 0 300 200" fill="none">
+          <defs>
+            <linearGradient id="headerBlue" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#60a5fa" /><stop offset="100%" stop-color="#1d4ed8" /></linearGradient>
+            <linearGradient id="headerRed" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f87171" /><stop offset="100%" stop-color="#dc2626" /></linearGradient>
+          </defs>
+          <path d="M 130 45 L 75 45 C 55 45 40 60 40 80 C 40 90 50 100 70 100 L 120 100 L 70 100 C 50 100 40 110 40 120 C 40 140 55 155 75 155 L 130 155" stroke="url(#headerBlue)" stroke-width="22" stroke-linecap="round" fill="none" />
+          <path d="M 155 45 L 210 45 C 245 45 260 65 260 85 C 260 105 245 118 210 118 L 155 118 M 200 118 L 255 155" stroke="url(#headerRed)" stroke-width="22" stroke-linecap="round" fill="none" />
+        </svg>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="font-extrabold text-lg sm:text-xl tracking-wider text-white">ER SEGURANÇA</span>
+            <span class="hidden sm:inline-block px-2 py-0.5 text-[10px] font-semibold uppercase bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-md">
+              Portal Operacional
+            </span>
+          </div>
+          <p class="text-[11px] font-medium text-slate-400 tracking-widest uppercase">E VIGILÂNCIA LTDA</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3 sm:space-x-4">
+        <div id="api-status-badge" class="flex items-center space-x-2 bg-slate-900/80 border border-slate-800 px-3 py-1.5 rounded-full text-xs font-mono">
+          <span class="relative flex h-2 w-2">
+            <span id="api-status-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span id="api-status-dot" class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <span id="api-status-text" class="text-emerald-400">FIREBASE CONECTADO</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-8 flex-grow w-full">
+    
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-6">
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
+          <i data-lucide="arrow-left-right" class="w-8 h-8 text-cyan-400"></i>
+          Gestão de Fluxo Financeiro (Firebase Cloud DB)
+        </h1>
+        <p class="text-sm text-slate-400 mt-1">Lançamento e gerenciamento em tempo real de receitas, despesas operacionais e notas fiscais.</p>
+      </div>
+
+      <button onclick="scrollToSection('new-nfe-form')" class="btn-neon-primary px-5 py-2.5 rounded-xl font-semibold text-sm text-white flex items-center space-x-2">
+        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+        <span>Nova Transação</span>
+      </button>
+    </div>
+
+    <!-- KPIS -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div class="glass-card rounded-2xl p-5 relative overflow-hidden">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Entradas (Receitas)</span>
+          <div class="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"><i data-lucide="arrow-down-left" class="w-5 h-5"></i></div>
+        </div>
+        <div class="mt-4"><span id="stat-total-entradas" class="text-2xl sm:text-3xl font-black text-emerald-400 font-mono">R$ 0,00</span></div>
+        <p class="text-[11px] text-slate-400 mt-2"><span id="count-entradas" class="text-emerald-400 font-bold">0</span> recebimentos</p>
+      </div>
+
+      <div class="glass-card rounded-2xl p-5 relative overflow-hidden">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Saídas (Despesas)</span>
+          <div class="p-2.5 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20"><i data-lucide="arrow-up-right" class="w-5 h-5"></i></div>
+        </div>
+        <div class="mt-4"><span id="stat-total-saidas" class="text-2xl sm:text-3xl font-black text-rose-400 font-mono">R$ 0,00</span></div>
+        <p class="text-[11px] text-slate-400 mt-2"><span id="count-saidas" class="text-rose-400 font-bold">0</span> pagamentos</p>
+      </div>
+
+      <div class="glass-card rounded-2xl p-5 relative overflow-hidden">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Balanço Líquido</span>
+          <div class="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"><i data-lucide="scale" class="w-5 h-5"></i></div>
+        </div>
+        <div class="mt-4"><span id="stat-balanco-liquido" class="text-2xl sm:text-3xl font-black text-cyan-300 font-mono">R$ 0,00</span></div>
+        <p id="stat-balanco-subtext" class="text-[11px] text-slate-400 mt-2">Diferença Entradas vs. Saídas</p>
+      </div>
+
+      <div class="glass-card rounded-2xl p-5 relative overflow-hidden">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Registros</span>
+          <div class="p-2.5 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20"><i data-lucide="files" class="w-5 h-5"></i></div>
+        </div>
+        <div class="mt-4 flex items-baseline justify-between">
+          <span id="stat-total-count" class="text-3xl font-black text-white font-mono">0</span>
+          <span id="stat-pending-count" class="text-xs text-amber-400 font-bold">0 pendentes</span>
+        </div>
+        <p class="text-[11px] text-slate-400 mt-2">Gravadas no Firestore</p>
+      </div>
+    </section>
+
+    <!-- FORMULÁRIO -->
+    <section id="new-nfe-form" class="glass-card rounded-2xl p-6 sm:p-8 relative">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
+        <div class="flex items-center space-x-3">
+          <div class="p-2 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"><i data-lucide="file-plus-2" class="w-5 h-5"></i></div>
+          <div>
+            <h2 class="text-lg font-bold text-white">Cadastrar Nova Transação</h2>
+            <p class="text-xs text-slate-400">Os dados serão gravados em tempo real na nuvem do Firebase</p>
+          </div>
+        </div>
+        <span class="text-xs font-mono text-cyan-400 bg-cyan-950/60 border border-cyan-800/50 px-3 py-1 rounded-md">Firebase Firestore</span>
+      </div>
+
+      <form id="nfe-form" class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          
+          <div class="lg:col-span-3 bg-slate-900/60 p-4 rounded-xl border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <label class="block text-xs font-bold text-white uppercase tracking-wider mb-1">Tipo de Transação <span class="text-red-400">*</span></label>
+              <p class="text-xs text-slate-400">Escolha se este lançamento representa um recebimento (entrada) ou pagamento (saída).</p>
+            </div>
+            <div class="flex items-center space-x-3 w-full sm:w-auto">
+              <label class="flex-1 sm:flex-none flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl border cursor-pointer font-bold text-xs transition-all bg-emerald-500/10 border-emerald-500/40 text-emerald-300">
+                <input type="radio" name="tipo_transacao" value="ENTRADA" onchange="toggleTipoUI(this.value)" class="text-emerald-500">
+                <i data-lucide="arrow-down-left" class="w-4 h-4"></i>
+                <span>ENTRADA (Receita)</span>
+              </label>
+              <label class="flex-1 sm:flex-none flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl border cursor-pointer font-bold text-xs transition-all bg-rose-500/10 border-rose-500/40 text-rose-300">
+                <input type="radio" name="tipo_transacao" value="SAIDA" checked onchange="toggleTipoUI(this.value)" class="text-rose-500">
+                <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                <span>SAÍDA (Gasto / NF-e)</span>
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Número da Nota / Doc <span class="text-red-400">*</span></label>
+            <input type="text" id="input-numero" required placeholder="Ex: NF-00124892" class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+          </div>
+
+          <div>
+            <label id="label-cnpj" class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">CNPJ do Emissor / Cliente <span class="text-red-400">*</span></label>
+            <input type="text" id="input-cnpj" required placeholder="00.000.000/0001-00" maxlength="18" oninput="maskCNPJ(this)" class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-blue-500">
+          </div>
+
+          <div>
+            <label id="label-fornecedor" class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Fornecedor / Razão Social <span class="text-red-400">*</span></label>
+            <input type="text" id="input-fornecedor" required placeholder="Ex: Fornecedor ou Cliente S/A" class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+          </div>
+
+          <div class="lg:col-span-2">
+            <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Chave de Acesso ou Código da Transação (44 Dígitos/ID) <span class="text-red-400">*</span></label>
+            <input type="text" id="input-chave" required placeholder="35231012345678000199550010001234561001234567" class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-cyan-300 font-mono tracking-wider focus:outline-none focus:border-blue-500">
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Valor Total (R$) <span class="text-red-400">*</span></label>
+            <div class="relative">
+              <span class="absolute left-4 top-2.5 text-slate-400 text-sm font-mono">R$</span>
+              <input type="number" step="0.01" min="0.01" id="input-valor" required placeholder="0,00" class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl pl-12 pr-4 py-2.5 text-sm text-emerald-400 font-mono font-bold focus:outline-none focus:border-blue-500">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Data de Emissão / Evento <span class="text-red-400">*</span></label>
+            <input type="date" id="input-data-emissao" required class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Data de Vencimento</label>
+            <input type="date" id="input-data-vencimento" class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Categoria <span class="text-red-400">*</span></label>
+            <select id="input-categoria" required class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+              <option value="">Selecione uma categoria...</option>
+              <optgroup label="Saídas (Despesas Operacionais)">
+                <option value="Equipamentos de Monitoramento">Equipamentos de Monitoramento</option>
+                <option value="Vigilância Presencial">Vigilância Presencial</option>
+                <option value="Manutenção de CFTV">Manutenção de CFTV</option>
+                <option value="Licenças de Software">Licenças de Software</option>
+                <option value="Uniformes e EPIs">Uniformes e EPIs</option>
+                <option value="Despesas Operacionais / Serviços">Despesas Operacionais / Serviços</option>
+              </optgroup>
+              <optgroup label="Entradas (Receitas / Faturamento)">
+                <option value="Faturamento Contratos de Vigilância">Faturamento Contratos de Vigilância</option>
+                <option value="Serviços de Segurança Eventual">Serviços de Segurança Eventual</option>
+                <option value="Instalações & CFTV Clientes">Instalações & CFTV Clientes</option>
+                <option value="Outras Receitas">Outras Receitas</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Status Inicial <span class="text-red-400">*</span></label>
+            <select id="input-status" required class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+              <option value="Pendente" selected>Pendente</option>
+              <option value="Aprovada">Aprovada / Confirmada</option>
+              <option value="Paga">Paga / Liquidada</option>
+              <option value="Cancelada">Cancelada</option>
+            </select>
+          </div>
+
+          <div class="lg:col-span-2">
+            <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Comprovante / Anexo XML ou PDF</label>
+            <div class="relative border-2 border-dashed border-slate-700 hover:border-blue-500 rounded-xl p-4 text-center cursor-pointer bg-slate-900/40" onclick="document.getElementById('file-input').click()">
+              <input type="file" id="file-input" class="hidden" accept=".xml,.pdf,.png,.jpg" onchange="handleFileSelect(event)">
+              <div id="upload-placeholder" class="flex flex-col items-center justify-center space-y-1">
+                <i data-lucide="upload-cloud" class="w-6 h-6 text-cyan-400"></i>
+                <span class="text-xs text-slate-300">Anexar comprovante, fatura ou NF-e (.xml, .pdf)</span>
+              </div>
+              <div id="upload-preview" class="hidden flex items-center justify-between bg-slate-800/80 p-2 rounded-lg text-xs">
+                <span id="file-name" class="font-mono text-cyan-300 truncate max-w-xs"></span>
+                <button type="button" onclick="removeFile(event)" class="text-red-400 hover:text-red-300 p-1"><i data-lucide="x" class="w-4 h-4"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Observações Internas</label>
+          <textarea id="input-observacoes" rows="2" placeholder="Observações e detalhes do lançamento..." class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500"></textarea>
+        </div>
+
+        <div class="flex items-center justify-end space-x-4 pt-2">
+          <button type="button" onclick="resetForm()" class="px-5 py-2.5 rounded-xl border border-slate-700 hover:bg-slate-800 text-slate-300 text-sm font-medium">Limpar</button>
+          <button type="submit" id="btn-submit" class="btn-neon-primary px-8 py-2.5 rounded-xl font-bold text-sm text-white flex items-center space-x-2">
+            <i data-lucide="send" class="w-4 h-4"></i>
+            <span>Salvar no Firebase</span>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- TABELA -->
+    <section class="glass-card rounded-2xl p-6 sm:p-8 space-y-6">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+        <div class="flex items-center space-x-3">
+          <div class="p-2 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20"><i data-lucide="search" class="w-5 h-5"></i></div>
+          <div>
+            <h2 class="text-lg font-bold text-white">Transações Registradas</h2>
+            <p class="text-xs text-slate-400">Consulta direta no banco de dados corporativo</p>
+          </div>
+        </div>
+        <div id="filter-summary-pill" class="text-xs font-mono bg-slate-900 border border-slate-800 text-cyan-400 px-4 py-2 rounded-xl">Nenhum registro</div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 bg-slate-900/50 p-4 rounded-xl border border-slate-800/80">
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Tipo de Fluxo</label>
+          <select id="filter-tipo" onchange="renderTable()" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+            <option value="ALL">Todas</option>
+            <option value="ENTRADA">Entradas</option>
+            <option value="SAIDA">Saídas</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Busca Rápida</label>
+          <input type="text" id="filter-search" oninput="renderTable()" placeholder="Nº, Fornecedor, CNPJ..." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Categoria</label>
+          <select id="filter-categoria" onchange="renderTable()" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+            <option value="ALL">Todas as Categorias</option>
+            <option value="Equipamentos de Monitoramento">Equipamentos de Monitoramento</option>
+            <option value="Vigilância Presencial">Vigilância Presencial</option>
+            <option value="Faturamento Contratos de Vigilância">Faturamento Contratos</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Status</label>
+          <select id="filter-status" onchange="renderTable()" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+            <option value="ALL">Todos os Status</option>
+            <option value="Pendente">Pendente</option>
+            <option value="Aprovada">Aprovada</option>
+            <option value="Paga">Paga</option>
+            <option value="Cancelada">Cancelada</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Ação</label>
+          <button onclick="clearFilters()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg py-2 text-xs font-semibold flex items-center justify-center space-x-2">
+            <i data-lucide="filter-x" class="w-3.5 h-3.5"></i>
+            <span>Limpar Filtros</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto rounded-xl border border-slate-800">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-950 text-slate-400 font-semibold uppercase tracking-wider border-b border-slate-800">
+            <tr>
+              <th class="py-3.5 px-4">Tipo</th>
+              <th class="py-3.5 px-4">ID Doc</th>
+              <th class="py-3.5 px-4">Emissor / Fornecedor</th>
+              <th class="py-3.5 px-4">Categoria</th>
+              <th class="py-3.5 px-4">Emissão</th>
+              <th class="py-3.5 px-4">Valor Total</th>
+              <th class="py-3.5 px-4 text-center">Status</th>
+              <th class="py-3.5 px-4 text-right">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="nfe-table-body" class="divide-y divide-slate-800/60 bg-slate-900/30 font-medium"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- TOAST -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 hidden max-w-md bg-slate-900 border border-cyan-500/50 text-slate-100 text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 backdrop-blur-md">
+    <i data-lucide="info" id="toast-icon" class="w-5 h-5 text-cyan-400"></i>
+    <span id="toast-message">Notificação</span>
+  </div>
+
+  <!-- FIREBASE V10 INTEGRATED -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBkIE0buv-9l-MTlh6m4H_uBd_l4UJChfI",
+      authDomain: "er-seguranca.firebaseapp.com",
+      projectId: "er-seguranca",
+      storageBucket: "er-seguranca.firebasestorage.app",
+      messagingSenderId: "815498700835",
+      appId: "1:815498700835:web:babba252080a4c192de996"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let nfeList = [];
+    let currentSelectedFile = null;
+
+    window.onload = function() {
+      lucide.createIcons();
+      document.getElementById('input-data-emissao').valueAsDate = new Date();
+      listenFirestore();
+    };
+
+    function listenFirestore() {
+      onSnapshot(collection(db, "transacoes"), (snapshot) => {
+        nfeList = [];
+        snapshot.forEach(docSnap => {
+          nfeList.push({ id: docSnap.id, ...docSnap.data() });
+        });
+
+        // Ordenação local por data de envio
+        nfeList.sort((a, b) => (b.criadoEm?.seconds || 0) - (a.criadoEm?.seconds || 0));
+
+        renderDashboard();
+        renderTable();
+      });
+    }
+
+    document.getElementById('nfe-form').onsubmit = async function(event) {
+      event.preventDefault();
+
+      const radios = document.getElementsByName('tipo_transacao');
+      let tipoSelecionado = 'SAIDA';
+      for (const r of radios) { if (r.checked) tipoSelecionado = r.value; }
+
+      const newNFe = {
+        tipo: tipoSelecionado,
+        numero: document.getElementById('input-numero').value.trim(),
+        cnpj: document.getElementById('input-cnpj').value.trim(),
+        fornecedor: document.getElementById('input-fornecedor').value.trim(),
+        chave: document.getElementById('input-chave').value.trim(),
+        valor: parseFloat(document.getElementById('input-valor').value),
+        emissao: document.getElementById('input-data-emissao').value,
+        vencimento: document.getElementById('input-data-vencimento').value || null,
+        categoria: document.getElementById('input-categoria').value,
+        status: document.getElementById('input-status').value,
+        fileName: currentSelectedFile || `DOC_${document.getElementById('input-numero').value.replace(/\D/g, '')}.xml`,
+        observacoes: document.getElementById('input-observacoes').value.trim(),
+        criadoEm: serverTimestamp()
+      };
+
+      const btnSubmit = document.getElementById('btn-submit');
+      btnSubmit.disabled = true;
+
+      try {
+        await addDoc(collection(db, "transacoes"), newNFe);
+        showToast('Transação gravada com sucesso no Firebase!', 'success');
+        resetForm();
+      } catch (err) {
+        showToast('Erro ao salvar no Firebase: ' + err.message, 'warning');
+      } finally {
+        btnSubmit.disabled = false;
+      }
+    };
+
+    window.deleteNFe = async function(id) {
+      if (!confirm('Deseja realmente remover esta transação do Banco de Dados?')) return;
+      try {
+        await deleteDoc(doc(db, "transacoes", id));
+        showToast('Registro excluído do Firebase.', 'warning');
+      } catch (e) {
+        showToast('Erro ao excluir no Firebase.', 'warning');
+      }
+    };
+
+    window.renderDashboard = function() {
+      let totalEntradas = 0, countEntradas = 0;
+      let totalSaidas = 0, countSaidas = 0;
+      let pendingCount = 0;
+
+      nfeList.forEach(item => {
+        const val = parseFloat(item.valor || 0);
+        if (item.tipo === 'ENTRADA') { totalEntradas += val; countEntradas++; }
+        else { totalSaidas += val; countSaidas++; }
+
+        if (item.status === 'Pendente') pendingCount++;
+      });
+
+      const balanco = totalEntradas - totalSaidas;
+
+      document.getElementById('stat-total-entradas').textContent = formatCurrency(totalEntradas);
+      document.getElementById('count-entradas').textContent = countEntradas;
+
+      document.getElementById('stat-total-saidas').textContent = formatCurrency(totalSaidas);
+      document.getElementById('count-saidas').textContent = countSaidas;
+
+      const balancoElem = document.getElementById('stat-balanco-liquido');
+      balancoElem.textContent = formatCurrency(balanco);
+
+      if (balanco >= 0) {
+        balancoElem.className = "text-2xl sm:text-3xl font-black text-emerald-400 font-mono";
+        document.getElementById('stat-balanco-subtext').textContent = "Superávit / Balanço Positivo";
+      } else {
+        balancoElem.className = "text-2xl sm:text-3xl font-black text-rose-400 font-mono";
+        document.getElementById('stat-balanco-subtext').textContent = "Déficit / Balanço Negativo";
+      }
+
+      document.getElementById('stat-total-count').textContent = nfeList.length;
+      document.getElementById('stat-pending-count').textContent = `${pendingCount} pendentes`;
+    };
+
+    window.renderTable = function() {
+      const search = document.getElementById('filter-search').value.toLowerCase();
+      const categoria = document.getElementById('filter-categoria').value;
+      const status = document.getElementById('filter-status').value;
+      const tipo = document.getElementById('filter-tipo').value;
+
+      const filtrados = nfeList.filter(item => {
+        const matchesSearch = item.numero.toLowerCase().includes(search) || item.fornecedor.toLowerCase().includes(search) || item.cnpj.includes(search);
+        const matchesCat = (categoria === 'ALL' || item.categoria === categoria);
+        const matchesStatus = (status === 'ALL' || item.status === status);
+        const matchesTipo = (tipo === 'ALL' || item.tipo === tipo);
+        return matchesSearch && matchesCat && matchesStatus && matchesTipo;
+      });
+
+      const tbody = document.getElementById('nfe-table-body');
+      tbody.innerHTML = '';
+
+      document.getElementById('filter-summary-pill').textContent = `Exibindo ${filtrados.length} registros no Firebase`;
+
+      if (filtrados.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="py-12 text-center text-slate-500">Nenhum registro encontrado.</td></tr>`;
+        lucide.createIcons();
+        return;
+      }
+
+      filtrados.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-800/40 transition-colors';
+
+        const isEntrada = (item.tipo === 'ENTRADA');
+        const tipoTag = isEntrada 
+          ? `<span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">ENTRADA</span>`
+          : `<span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-rose-500/10 text-rose-400 border border-rose-500/30">SAÍDA</span>`;
+
+        const valorFormatted = isEntrada
+          ? `<span class="text-emerald-400 font-bold font-mono">+${formatCurrency(item.valor)}</span>`
+          : `<span class="text-rose-400 font-bold font-mono">-${formatCurrency(item.valor)}</span>`;
+
+        tr.innerHTML = `
+          <td class="py-3.5 px-4">${tipoTag}</td>
+          <td class="py-3.5 px-4 font-mono">
+            <div class="font-bold text-white">${item.numero}</div>
+            <div class="text-[10px] text-slate-500 truncate max-w-[120px]">${item.chave}</div>
+          </td>
+          <td class="py-3.5 px-4">
+            <div class="font-semibold text-slate-200">${item.fornecedor}</div>
+            <div class="text-[10px] text-slate-400 font-mono">${item.cnpj}</div>
+          </td>
+          <td class="py-3.5 px-4 text-slate-300"><span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700/60 text-[11px]">${item.categoria}</span></td>
+          <td class="py-3.5 px-4 font-mono text-slate-400">${formatDate(item.emissao)}</td>
+          <td class="py-3.5 px-4">${valorFormatted}</td>
+          <td class="py-3.5 px-4 text-center"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">${item.status}</span></td>
+          <td class="py-3.5 px-4 text-right">
+            <button onclick="deleteNFe('${item.id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-red-950 text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    };
+
+    window.toggleTipoUI = function(tipo) {
+      const lblCnpj = document.getElementById('label-cnpj');
+      const lblForn = document.getElementById('label-fornecedor');
+      if (tipo === 'ENTRADA') {
+        lblCnpj.innerHTML = `CNPJ / CPF do Cliente <span class="text-red-400">*</span>`;
+        lblForn.innerHTML = `Nome do Cliente / Origem <span class="text-red-400">*</span>`;
+      } else {
+        lblCnpj.innerHTML = `CNPJ do Emissor / Fornecedor <span class="text-red-400">*</span>`;
+        lblForn.innerHTML = `Razão Social / Fornecedor <span class="text-red-400">*</span>`;
+      }
+    };
+
+    window.clearFilters = function() {
+      document.getElementById('filter-search').value = '';
+      document.getElementById('filter-categoria').value = 'ALL';
+      document.getElementById('filter-status').value = 'ALL';
+      document.getElementById('filter-tipo').value = 'ALL';
+      renderTable();
+    };
+
+    window.handleFileSelect = function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        currentSelectedFile = file.name;
+        document.getElementById('upload-placeholder').classList.add('hidden');
+        document.getElementById('upload-preview').classList.remove('hidden');
+        document.getElementById('file-name').textContent = file.name;
+      }
+    };
+
+    window.removeFile = function(e) {
+      e.stopPropagation();
+      currentSelectedFile = null;
+      document.getElementById('file-input').value = '';
+      document.getElementById('upload-placeholder').classList.remove('hidden');
+      document.getElementById('upload-preview').classList.add('hidden');
+    };
+
+    window.resetForm = function() {
+      document.getElementById('nfe-form').reset();
+      currentSelectedFile = null;
+      document.getElementById('upload-placeholder').classList.remove('hidden');
+      document.getElementById('upload-preview').classList.add('hidden');
+      document.getElementById('input-data-emissao').valueAsDate = new Date();
+    };
+
+    function formatCurrency(val) {
+      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0);
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return 'N/A';
+      const parts = dateStr.split('-');
+      if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      return dateStr;
+    }
+
+    window.maskCNPJ = function(input) {
+      let value = input.value.replace(/\D/g, "");
+      if (value.length > 14) value = value.slice(0, 14);
+      value = value.replace(/^(\d{2})(\d)/, "$1.$2");
+      value = value.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+      value = value.replace(/\.(\d{3})(\d)/, ".$1/$2");
+      value = value.replace(/(\d{4})(\d)/, "$1-$2");
+      input.value = value;
+    };
+
+    function showToast(msg, type = 'info') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-message').textContent = msg;
+      toast.className = `fixed bottom-6 right-6 z-50 max-w-md bg-slate-900 border ${type === 'success' ? 'border-emerald-500 text-emerald-200' : 'border-amber-500 text-amber-200'} text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 backdrop-blur-md`;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 4000);
+    }
+  </script>
+</body>
+</html>
