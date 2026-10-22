@@ -222,8 +222,9 @@
           showToast("Login autorizado! Redirecionando...");
         }
 
+        // Redirecionamento baseado nos cargos solicitados (Chefia vs Gestão)
         setTimeout(() => {
-          const executiveKeywords = ['admin', 'chefe', 'proprietario', 'diretor', 'ceo', 'eduardo'];
+          const executiveKeywords = ['admin', 'chefe', 'dono', 'patrao', 'patrão', 'proprietario', 'diretor', 'ceo'];
           const isExecutive = executiveKeywords.some(keyword => email.includes(keyword));
 
           if (isExecutive) {
