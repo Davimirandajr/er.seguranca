@@ -76,6 +76,10 @@
           </span>
           <span id="api-status-text" class="text-emerald-400">FIREBASE CONECTADO</span>
         </div>
+        <button onclick="logoutSystem()" class="flex items-center space-x-1.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/30 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+          <span>Sair</span>
+        </button>
       </div>
     </div>
   </header>
@@ -360,9 +364,10 @@
     <span id="toast-message">Notificação</span>
   </div>
 
-  <!-- FIREBASE V10 INTEGRATED -->
+  <!-- FIREBASE V10 INTEGRATED & AUTH GUARD -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -375,15 +380,30 @@
     };
 
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getFirestore(app);
 
     let nfeList = [];
     let currentSelectedFile = null;
 
+    // --- PROTEÇÃO DE SEGURANÇA (AUTH GUARD) ---
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "index.html";
+      } else {
+        listenFirestore();
+      }
+    });
+
     window.onload = function() {
       lucide.createIcons();
       document.getElementById('input-data-emissao').valueAsDate = new Date();
-      listenFirestore();
+    };
+
+    window.logoutSystem = function() {
+      signOut(auth).then(() => {
+        window.location.href = "index.html";
+      });
     };
 
     function listenFirestore() {
@@ -393,11 +413,12 @@
           nfeList.push({ id: docSnap.id, ...docSnap.data() });
         });
 
-        // Ordenação local por data de envio
         nfeList.sort((a, b) => (b.criadoEm?.seconds || 0) - (a.criadoEm?.seconds || 0));
 
         renderDashboard();
         renderTable();
+      }, (error) => {
+        showToast('Erro ao sincronizar com o Firebase.', 'warning');
       });
     }
 
@@ -611,6 +632,10 @@
       value = value.replace(/\.(\d{3})(\d)/, ".$1/$2");
       value = value.replace(/(\d{4})(\d)/, "$1-$2");
       input.value = value;
+    };
+
+    window.scrollToSection = function(id) {
+      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
     };
 
     function showToast(msg, type = 'info') {
