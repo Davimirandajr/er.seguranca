@@ -49,36 +49,40 @@
 </head>
 <body class="bg-soc-dashboard tech-grid flex flex-col min-h-screen text-slate-100 antialiased pb-12">
 
-  <!-- HEADER -->
-  <header class="sticky top-0 z-40 glass-card border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl">
+  <!-- HEADER EXECUTIVE -->
+  <header class="sticky top-0 z-40 glass-card border-b border-slate-800/80 bg-slate-950/85 backdrop-blur-2xl">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
+      <div class="flex items-center space-x-3.5">
         <svg class="w-10 h-10" viewBox="0 0 300 200" fill="none">
           <defs>
-            <linearGradient id="headerBlue" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#60a5fa" /><stop offset="100%" stop-color="#1d4ed8" /></linearGradient>
-            <linearGradient id="headerRed" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f87171" /><stop offset="100%" stop-color="#dc2626" /></linearGradient>
+            <linearGradient id="ownerBlue" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#38bdf8" /><stop offset="100%" stop-color="#2563eb" /></linearGradient>
+            <linearGradient id="ownerRed" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f87171" /><stop offset="100%" stop-color="#dc2626" /></linearGradient>
           </defs>
-          <path d="M 130 45 L 75 45 C 55 45 40 60 40 80 C 40 90 50 100 70 100 L 120 100 L 70 100 C 50 100 40 110 40 120 C 40 140 55 155 75 155 L 130 155" stroke="url(#headerBlue)" stroke-width="22" stroke-linecap="round" fill="none" />
-          <path d="M 155 45 L 210 45 C 245 45 260 65 260 85 C 260 105 245 118 210 118 L 155 118 M 200 118 L 255 155" stroke="url(#headerRed)" stroke-width="22" stroke-linecap="round" fill="none" />
+          <path d="M 130 45 L 75 45 C 55 45 40 60 40 80 C 40 90 50 100 70 100 L 120 100 L 70 100 C 50 100 40 110 40 120 C 40 140 55 155 75 155 L 130 155" stroke="url(#ownerBlue)" stroke-width="22" stroke-linecap="round" fill="none" />
+          <path d="M 155 45 L 210 45 C 245 45 260 65 260 85 C 260 105 245 118 210 118 L 155 118 M 200 118 L 255 155" stroke="url(#ownerRed)" stroke-width="22" stroke-linecap="round" fill="none" />
         </svg>
         <div>
           <div class="flex items-center space-x-2">
-            <span class="font-extrabold text-lg sm:text-xl tracking-wider text-white">ER SEGURANÇA</span>
-            <span class="hidden sm:inline-block px-2 py-0.5 text-[10px] font-semibold uppercase bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-md">
-              Portal Operacional
-            </span>
+            <span class="font-black text-lg sm:text-xl tracking-wider text-white">ER SEGURANÇA</span>
+            <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 rounded-md">Portal Diretoria</span>
           </div>
-          <p class="text-[11px] font-medium text-slate-400 tracking-widest uppercase">E VIGILÂNCIA LTDA</p>
+          <p class="text-[10px] font-medium text-slate-400 tracking-widest uppercase">DRE Executivo & Controle do Proprietário</p>
         </div>
       </div>
 
-      <div class="flex items-center space-x-3 sm:space-x-4">
-        <div id="api-status-badge" class="flex items-center space-x-2 bg-slate-900/80 border border-slate-800 px-3 py-1.5 rounded-full text-xs font-mono">
-          <span class="relative flex h-2 w-2">
-            <span id="api-status-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span id="api-status-dot" class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-          </span>
-          <span id="api-status-text" class="text-emerald-400">FIREBASE CONECTADO</span>
+      <div class="flex items-center space-x-3 sm:space-x-5">
+        <button onclick="exportToCSV()" class="hidden sm:flex items-center space-x-2 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-200 transition-colors">
+          <i data-lucide="download" class="w-4 h-4 text-cyan-400"></i>
+          <span>Exportar Relatório CSV</span>
+        </button>
+
+        <div class="flex items-center space-x-3 pl-3 border-l border-slate-800">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-red-500 p-0.5 shadow-lg flex items-center justify-center font-black text-white text-xs">CEO</div>
+          
+          <!-- BOTÃO DE LOGOUT -->
+          <button onclick="logout()" class="p-2 rounded-xl bg-slate-900 hover:bg-red-950/60 border border-slate-700/80 hover:border-red-500/40 text-slate-300 hover:text-red-400 transition-colors" title="Encerrar Sessão">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+          </button>
         </div>
       </div>
     </div>
