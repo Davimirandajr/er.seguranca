@@ -100,18 +100,13 @@
       </div>
     </div>
 
-    <!-- RIGHT SECTION: Login / Cadastro Card -->
+    <!-- RIGHT SECTION: Login Card (Sem abas de cadastro) -->
     <div class="lg:col-span-5 flex justify-center">
       <div class="glass-panel w-full max-w-md rounded-2xl p-8 sm:p-10 relative overflow-hidden">
         
-        <div class="mb-6 flex items-center justify-between">
-          <div>
-            <h3 id="form-title" class="text-2xl font-bold text-white tracking-tight">Acesso ao Portal</h3>
-            <p id="form-subtitle" class="text-xs text-cyan-300/80">Entre com sua conta corporativa</p>
-          </div>
-          <button type="button" onclick="toggleAuthMode()" class="text-xs text-blue-400 hover:text-blue-300 underline font-semibold">
-            <span id="toggle-mode-text">Criar Conta</span>
-          </button>
+        <div class="mb-6">
+          <h3 class="text-2xl font-bold text-white tracking-tight">Acesso ao Portal</h3>
+          <p class="text-xs text-cyan-300/80">Entre com sua conta corporativa</p>
         </div>
 
         <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
@@ -132,17 +127,9 @@
             </div>
           </div>
 
-          <div id="access-key-container" class="space-y-1 hidden">
-            <label class="block text-[11px] font-medium text-amber-400 uppercase tracking-wider">Chave de Acesso / Master Key</label>
-            <div class="input-field rounded-xl flex items-center px-4 py-3 border-amber-500/50">
-              <i class="fa-solid fa-key text-amber-400 mr-3 text-sm"></i>
-              <input type="password" id="access-key" placeholder="Insira a chave de segurança" class="w-full bg-transparent text-sm text-white placeholder-gray-500 focus:outline-none"/>
-            </div>
-          </div>
-
           <button type="submit" id="submit-btn" class="btn-neon w-full py-3.5 px-6 rounded-xl font-semibold text-white flex items-center justify-center space-x-3 mt-4">
             <i class="fa-solid fa-right-to-bracket"></i>
-            <span id="submit-btn-text" class="text-base">Entrar no Sistema</span>
+            <span class="text-base">Entrar no Sistema</span>
           </button>
 
         </form>
@@ -161,7 +148,7 @@
   <!-- Firebase v10 SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBkIE0buv-9l-MTlh6m4H_uBd_l4UJChfI",
@@ -175,54 +162,22 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    let isRegisterMode = false;
-
-    window.toggleAuthMode = function() {
-      isRegisterMode = !isRegisterMode;
-      const title = document.getElementById('form-title');
-      const subtitle = document.getElementById('form-subtitle');
-      const btnText = document.getElementById('submit-btn-text');
-      const toggleText = document.getElementById('toggle-mode-text');
-      const keyContainer = document.getElementById('access-key-container');
-
-      if (isRegisterMode) {
-        title.textContent = "Cadastro de Credencial";
-        subtitle.textContent = "Insira sua chave de acesso para registrar";
-        btnText.textContent = "Cadastrar Conta";
-        toggleText.textContent = "Já tenho uma conta";
-        keyContainer.classList.remove('hidden');
-      } else {
-        title.textContent = "Acesso ao Portal";
-        subtitle.textContent = "Entre com sua conta corporativa";
-        btnText.textContent = "Entrar no Sistema";
-        toggleText.textContent = "Criar Conta";
-        keyContainer.classList.add('hidden');
-      }
-    };
-
     window.handleAuthSubmit = async function(event) {
       event.preventDefault();
       const email = document.getElementById('email').value.trim().toLowerCase();
       const password = document.getElementById('password').value;
-      const accessKey = document.getElementById('access-key').value.trim();
 
-      showToast(isRegisterMode ? "Cadastrando credenciais..." : "Autenticando via Firebase...");
+      showToast("Autenticando via Firebase...");
 
       try {
-        if (isRegisterMode) {
-          const MASTER_SECRET_KEY = "ERSEG2026@SEC";
-          if (accessKey !== MASTER_SECRET_KEY) {
-            throw new Error("Chave de Acesso inválida ou incorreta!");
-          }
+        await signInWithEmailAndPassword(auth, email, password);
+        
+        // Salva na sessão para liberar os portais protegidos
+        sessionStorage.setItem("er_logged_user", email);
 
-          await createUserWithEmailAndPassword(auth, email, password);
-          showToast("Conta criada com sucesso! Redirecionando...");
-        } else {
-          await signInWithEmailAndPassword(auth, email, password);
-          showToast("Login autorizado! Redirecionando...");
-        }
+        showToast("Login autorizado! Redirecionando...");
 
-        // Redirecionamento baseado nos cargos solicitados (Chefia vs Gestão)
+        // Redirecionamento baseado nos cargos (Chefia vs Gestão)
         setTimeout(() => {
           const executiveKeywords = ['admin', 'chefe', 'dono', 'patrao', 'patrão', 'proprietario', 'diretor', 'ceo'];
           const isExecutive = executiveKeywords.some(keyword => email.includes(keyword));
@@ -236,8 +191,9 @@
 
       } catch (error) {
         let msg = error.message;
-        if (error.code === 'auth/invalid-credential') msg = "E-mail ou senha incorretos.";
-        if (error.code === 'auth/email-already-in-use') msg = "Este e-mail já está cadastrado.";
+        if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+          msg = "E-mail ou senha incorretos.";
+        }
         showToast("Erro: " + msg);
       }
     };
