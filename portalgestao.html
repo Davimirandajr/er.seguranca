@@ -41,6 +41,10 @@
       box-shadow: 0 0 15px rgba(6, 182, 212, 0.35); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .btn-neon-primary:hover { box-shadow: 0 0 25px rgba(6, 182, 212, 0.6); transform: translateY(-1px); }
+    .drop-active {
+      border-color: #06b6d4 !important;
+      background-color: rgba(6, 182, 212, 0.1) !important;
+    }
   </style>
 </head>
 <body class="bg-soc-dashboard tech-grid flex flex-col min-h-screen text-slate-100 antialiased pb-12">
@@ -74,7 +78,7 @@
             <span id="api-status-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span id="api-status-dot" class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
-          <span id="api-status-text" class="text-emerald-400">CONECTADO</span>
+          <span id="api-status-text" class="text-emerald-400">FIREBASE CONECTADO</span>
         </div>
       </div>
     </div>
@@ -87,7 +91,8 @@
       <div>
         <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
           <i data-lucide="arrow-left-right" class="w-8 h-8 text-cyan-400"></i>
-          Gestão de Fluxo Financeiro         </h1>
+          Gestão de Fluxo Financeiro (Firebase Cloud DB)
+        </h1>
         <p class="text-sm text-slate-400 mt-1">Lançamento e gerenciamento em tempo real de receitas, despesas operacionais e notas fiscais.</p>
       </div>
     </div>
@@ -134,7 +139,7 @@
       </div>
     </section>
 
-    <!-- SESSÃO 1: CARDS DE ESCOLHA INICIAL (Fácil e Direto) -->
+    <!-- SESSÃO 1: CARDS DE ESCOLHA INICIAL -->
     <section id="selection-cards-section" class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
       
       <!-- Card Anexar NF-e / Saída -->
@@ -177,7 +182,7 @@
 
     </section>
 
-    <!-- SESSÃO 2: FORMULÁRIO DINÂMICO (Oculto até clicar em um dos cards) -->
+    <!-- SESSÃO 2: FORMULÁRIO DINÂMICO -->
     <section id="new-nfe-form" class="glass-card rounded-2xl p-6 sm:p-8 relative hidden">
       <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
         <div class="flex items-center space-x-3">
@@ -229,10 +234,7 @@
 
           <div>
             <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Valor Total (R$) <span class="text-red-400">*</span></label>
-            <div class="relative">
-              <span class="absolute left-4 top-2.5 text-slate-400 text-sm font-mono">R$</span>
-              <input type="number" step="0.01" min="0.01" id="input-valor" required placeholder="0,00" class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl pl-12 pr-4 py-2.5 text-sm text-emerald-400 font-mono font-bold focus:outline-none focus:border-blue-500">
-            </div>
+            <input type="text" id="input-valor" required placeholder="R$ 0,00" oninput="maskCurrencyInput(this)" class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-emerald-400 font-mono font-bold focus:outline-none focus:border-blue-500">
           </div>
 
           <div>
@@ -276,16 +278,23 @@
             </select>
           </div>
 
+          <!-- DOCK DE UPLOAD COM DRAG AND DROP (ARRASTAR E SOLTAR ATIVO) -->
           <div class="lg:col-span-2">
             <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Comprovante / Anexo XML ou PDF</label>
-            <div class="relative border-2 border-dashed border-slate-700 hover:border-blue-500 rounded-xl p-4 text-center cursor-pointer bg-slate-900/40" onclick="document.getElementById('file-input').click()">
+            <div id="drop-zone" class="relative border-2 border-dashed border-slate-700 hover:border-cyan-500 rounded-xl p-4 text-center cursor-pointer bg-slate-900/40 transition-all" onclick="document.getElementById('file-input').click()">
               <input type="file" id="file-input" class="hidden" accept=".xml,.pdf,.png,.jpg" onchange="handleFileSelect(event)">
+              
               <div id="upload-placeholder" class="flex flex-col items-center justify-center space-y-1">
                 <i data-lucide="upload-cloud" class="w-6 h-6 text-cyan-400"></i>
-                <span class="text-xs text-slate-300">Anexar comprovante, fatura ou NF-e (.xml, .pdf)</span>
+                <span class="text-xs text-slate-300 font-semibold">Arraste e solte o arquivo da NF-e (.xml, .pdf) aqui</span>
+                <span class="text-[10px] text-slate-500">ou clique para selecionar no computador</span>
               </div>
+              
               <div id="upload-preview" class="hidden flex items-center justify-between bg-slate-800/80 p-2 rounded-lg text-xs">
-                <span id="file-name" class="font-mono text-cyan-300 truncate max-w-xs"></span>
+                <div class="flex items-center space-x-2 truncate">
+                  <i data-lucide="file-check-2" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+                  <span id="file-name" class="font-mono text-cyan-300 truncate max-w-xs"></span>
+                </div>
                 <button type="button" onclick="removeFile(event)" class="text-red-400 hover:text-red-300 p-1"><i data-lucide="x" class="w-4 h-4"></i></button>
               </div>
             </div>
@@ -307,7 +316,7 @@
       </form>
     </section>
 
-    <!-- TABELA -->
+    <!-- TABELA COM BOTÃO DE DOWNLOAD -->
     <section class="glass-card rounded-2xl p-6 sm:p-8 space-y-6">
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-5">
         <div class="flex items-center space-x-3">
@@ -411,10 +420,12 @@
 
     let nfeList = [];
     let currentSelectedFile = null;
+    let currentSelectedFileData = null;
 
     window.onload = function() {
       lucide.createIcons();
       document.getElementById('input-data-emissao').valueAsDate = new Date();
+      setupDragAndDrop();
       listenFirestore();
     };
 
@@ -432,7 +443,56 @@
       });
     }
 
-    // ABRIR O FORMULÁRIO ESPECÍFICO APÓS CLICAR NO CARD
+    // CONFIGURAÇÃO DE DRAG AND DROP (ARRASTAR E SOLTAR)
+    function setupDragAndDrop() {
+      const dropZone = document.getElementById('drop-zone');
+
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+      });
+
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.add('drop-active'), false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.remove('drop-active'), false);
+      });
+
+      dropZone.addEventListener('drop', handleDrop, false);
+
+      function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files && files.length > 0) {
+          processFile(files[0]);
+        }
+      }
+    }
+
+    function processFile(file) {
+      if (!file) return;
+      currentSelectedFile = file.name;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        currentSelectedFileData = evt.target.result;
+        document.getElementById('upload-placeholder').classList.add('hidden');
+        document.getElementById('upload-preview').classList.remove('hidden');
+        document.getElementById('file-name').textContent = file.name;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    window.handleFileSelect = function(e) {
+      const file = e.target.files[0];
+      processFile(file);
+    };
+
     window.openForm = function(tipo) {
       document.getElementById('selection-cards-section').classList.add('hidden');
       document.getElementById('new-nfe-form').classList.remove('hidden');
@@ -440,14 +500,12 @@
       document.getElementById('new-nfe-form').scrollIntoView({ behavior: 'smooth' });
     };
 
-    // VOLTAR AOS CARDS INICIAIS
     window.backToCards = function() {
       document.getElementById('new-nfe-form').classList.add('hidden');
       document.getElementById('selection-cards-section').classList.remove('hidden');
       resetForm();
     };
 
-    // ALTERNAR TIPO DENTRO DO FORMULÁRIO
     window.toggleActiveType = function() {
       const atual = document.getElementById('input-tipo-transacao-hidden').value;
       const novo = atual === 'SAIDA' ? 'ENTRADA' : 'SAIDA';
@@ -474,10 +532,58 @@
       }
     }
 
+    window.maskCurrencyInput = function(input) {
+      let value = input.value.replace(/\D/g, "");
+      if (!value) {
+        input.value = "";
+        return;
+      }
+      let numeric = (parseFloat(value) / 100).toFixed(2);
+      input.value = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(numeric);
+    };
+
+    function parseCurrencyToNumber(valStr) {
+      if (!valStr) return 0;
+      let clean = valStr.replace(/[^\d,-]/g, '').replace(',', '.');
+      return parseFloat(clean) || 0;
+    }
+
+    window.removeFile = function(e) {
+      e.stopPropagation();
+      currentSelectedFile = null;
+      currentSelectedFileData = null;
+      document.getElementById('file-input').value = '';
+      document.getElementById('upload-placeholder').classList.remove('hidden');
+      document.getElementById('upload-preview').classList.add('hidden');
+    };
+
+    window.downloadFile = function(id) {
+      const item = nfeList.find(x => x.id === id);
+      if (!item || !item.fileData) {
+        showToast('Nenhum arquivo físico encontrado para esta nota.', 'warning');
+        return;
+      }
+
+      const a = document.createElement('a');
+      a.href = item.fileData;
+      a.download = item.fileName || `NF_${item.numero}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast('Download do comprovante iniciado!', 'success');
+    };
+
     document.getElementById('nfe-form').onsubmit = async function(event) {
       event.preventDefault();
 
       const tipoSelecionado = document.getElementById('input-tipo-transacao-hidden').value;
+      const valorFormatado = document.getElementById('input-valor').value;
+      const valorNumerico = parseCurrencyToNumber(valorFormatado);
+
+      if (valorNumerico <= 0) {
+        showToast('Por favor, informe um valor válido.', 'warning');
+        return;
+      }
 
       const newNFe = {
         tipo: tipoSelecionado,
@@ -485,12 +591,13 @@
         cnpj: document.getElementById('input-cnpj').value.trim(),
         fornecedor: document.getElementById('input-fornecedor').value.trim(),
         chave: document.getElementById('input-chave').value.trim(),
-        valor: parseFloat(document.getElementById('input-valor').value),
+        valor: valorNumerico,
         emissao: document.getElementById('input-data-emissao').value,
         vencimento: document.getElementById('input-data-vencimento').value || null,
         categoria: document.getElementById('input-categoria').value,
         status: document.getElementById('input-status').value,
         fileName: currentSelectedFile || `DOC_${document.getElementById('input-numero').value.replace(/\D/g, '')}.xml`,
+        fileData: currentSelectedFileData || null,
         observacoes: document.getElementById('input-observacoes').value.trim(),
         criadoEm: serverTimestamp()
       };
@@ -500,9 +607,9 @@
 
       try {
         await addDoc(collection(db, "transacoes"), newNFe);
-        showToast('Transação gravada com sucesso no Firebase!', 'success');
+        showToast('Transação e documento salvos com sucesso no Firebase!', 'success');
         resetForm();
-        backToCards(); // Retorna para a tela de cards após salvar com sucesso
+        backToCards();
       } catch (err) {
         showToast('Erro ao salvar no Firebase: ' + err.message, 'warning');
       } finally {
@@ -594,6 +701,10 @@
           ? `<span class="text-emerald-400 font-bold font-mono">+${formatCurrency(item.valor)}</span>`
           : `<span class="text-rose-400 font-bold font-mono">-${formatCurrency(item.valor)}</span>`;
 
+        const hasFileBtn = item.fileData 
+          ? `<button onclick="downloadFile('${item.id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-cyan-950 text-cyan-400 mr-1" title="Baixar Documento Original"><i data-lucide="download" class="w-4 h-4"></i></button>`
+          : `<span class="text-[10px] text-slate-600 mr-1">Sem Anexo</span>`;
+
         tr.innerHTML = `
           <td class="py-3.5 px-4">${tipoTag}</td>
           <td class="py-3.5 px-4 font-mono">
@@ -609,7 +720,8 @@
           <td class="py-3.5 px-4">${valorFormatted}</td>
           <td class="py-3.5 px-4 text-center"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">${item.status}</span></td>
           <td class="py-3.5 px-4 text-right">
-            <button onclick="deleteNFe('${item.id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-red-950 text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+            ${hasFileBtn}
+            <button onclick="deleteNFe('${item.id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-red-950 text-red-400" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -626,27 +738,10 @@
       renderTable();
     };
 
-    window.handleFileSelect = function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        currentSelectedFile = file.name;
-        document.getElementById('upload-placeholder').classList.add('hidden');
-        document.getElementById('upload-preview').classList.remove('hidden');
-        document.getElementById('file-name').textContent = file.name;
-      }
-    };
-
-    window.removeFile = function(e) {
-      e.stopPropagation();
-      currentSelectedFile = null;
-      document.getElementById('file-input').value = '';
-      document.getElementById('upload-placeholder').classList.remove('hidden');
-      document.getElementById('upload-preview').classList.add('hidden');
-    };
-
     window.resetForm = function() {
       document.getElementById('nfe-form').reset();
       currentSelectedFile = null;
+      currentSelectedFileData = null;
       document.getElementById('upload-placeholder').classList.remove('hidden');
       document.getElementById('upload-preview').classList.add('hidden');
       document.getElementById('input-data-emissao').valueAsDate = new Date();
