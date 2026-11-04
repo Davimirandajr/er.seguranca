@@ -71,7 +71,7 @@
         <div class="flex items-center space-x-3 pl-3 border-l border-slate-800">
           <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-red-500 p-0.5 shadow-lg flex items-center justify-center font-black text-white text-xs">CEO</div>
           
-          <!-- BOTÃO DE LOGOUT -->
+          <!-- BOTÃO DE LOGOUT ADICIONADO -->
           <button onclick="logout()" class="p-2 rounded-xl bg-slate-900 hover:bg-red-950/60 border border-slate-700/80 hover:border-red-500/40 text-slate-300 hover:text-red-400 transition-colors" title="Encerrar Sessão">
             <i data-lucide="log-out" class="w-4 h-4"></i>
           </button>
@@ -79,6 +79,7 @@
       </div>
     </div>
   </header>
+
   <!-- MAIN WRAPPER -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-8 flex-grow w-full">
 
@@ -89,7 +90,7 @@
           <i data-lucide="shield-check" class="w-8 h-8 text-cyan-400"></i>
           Painel Executivo de Resultado Financeiro (DRE)
         </h1>
-        <p class="text-xs sm:text-sm text-slate-400 mt-1">Acompanhamento consolidado em tempo real .</p>
+        <p class="text-xs sm:text-sm text-slate-400 mt-1">Acompanhamento consolidado em tempo real via Firebase Firestore.</p>
       </div>
 
       <div class="flex items-center space-x-3">
@@ -286,8 +287,24 @@
     let chartCategoriesInstance = null;
 
     window.onload = function() {
+      // PROTEÇÃO DE ACESSO: Verifica se o usuário passou pelo login
+      const sessionUser = sessionStorage.getItem("er_logged_user");
+      if (!sessionUser) {
+        alert("Acesso negado! Faça login no sistema primeiro.");
+        window.location.href = "index.html";
+        return;
+      }
+
       lucide.createIcons();
       listenFirestore();
+    };
+
+    // FUNÇÃO DE LOGOUT SEGURA
+    window.logout = function() {
+      if (confirm('Deseja realmente encerrar a sessão?')) {
+        sessionStorage.removeItem("er_logged_user");
+        window.location.href = 'index.html';
+      }
     };
 
     function listenFirestore() {
@@ -408,11 +425,11 @@
       });
     }
 
-    // FUNÇÃO DE DOWNLOAD BLINDADA (CORRIGIDA COM BLOB)
+    // FUNÇÃO DE DOWNLOAD BLINDADA (BLOB)
     window.downloadFile = function(id) {
       const item = nfeData.find(x => x.id === id);
       if (!item || !item.fileData) {
-        showToast('Nenhum arquivo anexado nesta transação.', 'warning');
+        showToast('Nenhum arquivo físico encontrado para esta nota.', 'warning');
         return;
       }
 
@@ -599,14 +616,9 @@
       const toast = document.getElementById('toast');
       document.getElementById('toast-message').textContent = msg;
       toast.className = `fixed bottom-6 right-6 z-50 max-w-md bg-slate-900 border ${type === 'success' ? 'border-emerald-500 text-emerald-200' : 'border-amber-500 text-amber-200'} text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 backdrop-blur-md`;
-      toast.classList.add('hidden');
+      toast.classList.remove('hidden');
       setTimeout(() => toast.classList.add('hidden'), 4000);
     }
-    window.logout = function() {
-  if (confirm('Deseja realmente encerrar a sessão?')) {
-    window.location.href = 'index.html';
-  }
-};
   </script>
 </body>
 </html>
