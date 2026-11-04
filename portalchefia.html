@@ -67,13 +67,18 @@
           <i data-lucide="download" class="w-4 h-4 text-cyan-400"></i>
           <span>Exportar Relatório CSV</span>
         </button>
+
         <div class="flex items-center space-x-3 pl-3 border-l border-slate-800">
           <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-red-500 p-0.5 shadow-lg flex items-center justify-center font-black text-white text-xs">CEO</div>
+          
+          <!-- BOTÃO DE LOGOUT -->
+          <button onclick="logout()" class="p-2 rounded-xl bg-slate-900 hover:bg-red-950/60 border border-slate-700/80 hover:border-red-500/40 text-slate-300 hover:text-red-400 transition-colors" title="Encerrar Sessão">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+          </button>
         </div>
       </div>
     </div>
   </header>
-
   <!-- MAIN WRAPPER -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-8 flex-grow w-full">
 
@@ -84,7 +89,7 @@
           <i data-lucide="shield-check" class="w-8 h-8 text-cyan-400"></i>
           Painel Executivo de Resultado Financeiro (DRE)
         </h1>
-        <p class="text-xs sm:text-sm text-slate-400 mt-1">Acompanhamento consolidado em tempo real via Firebase Firestore.</p>
+        <p class="text-xs sm:text-sm text-slate-400 mt-1">Acompanhamento consolidado em tempo real .</p>
       </div>
 
       <div class="flex items-center space-x-3">
