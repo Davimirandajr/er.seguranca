@@ -49,41 +49,42 @@
 </head>
 <body class="bg-soc-dashboard tech-grid flex flex-col min-h-screen text-slate-100 antialiased pb-12">
 
-  <!-- HEADER EXECUTIVE -->
-  <header class="sticky top-0 z-40 glass-card border-b border-slate-800/80 bg-slate-950/85 backdrop-blur-2xl">
+  <!-- HEADER -->
+  <header class="sticky top-0 z-40 glass-card border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-      <div class="flex items-center space-x-3.5">
+      <div class="flex items-center space-x-3">
         <svg class="w-10 h-10" viewBox="0 0 300 200" fill="none">
           <defs>
-            <linearGradient id="ownerBlue" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#38bdf8" /><stop offset="100%" stop-color="#2563eb" /></linearGradient>
-            <linearGradient id="ownerRed" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f87171" /><stop offset="100%" stop-color="#dc2626" /></linearGradient>
+            <linearGradient id="headerBlue" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#60a5fa" /><stop offset="100%" stop-color="#1d4ed8" /></linearGradient>
+            <linearGradient id="headerRed" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f87171" /><stop offset="100%" stop-color="#dc2626" /></linearGradient>
           </defs>
-          <path d="M 130 45 L 75 45 C 55 45 40 60 40 80 C 40 90 50 100 70 100 L 120 100 L 70 100 C 50 100 40 110 40 120 C 40 140 55 155 75 155 L 130 155" stroke="url(#ownerBlue)" stroke-width="22" stroke-linecap="round" fill="none" />
-          <path d="M 155 45 L 210 45 C 245 45 260 65 260 85 C 260 105 245 118 210 118 L 155 118 M 200 118 L 255 155" stroke="url(#ownerRed)" stroke-width="22" stroke-linecap="round" fill="none" />
+          <path d="M 130 45 L 75 45 C 55 45 40 60 40 80 C 40 90 50 100 70 100 L 120 100 L 70 100 C 50 100 40 110 40 120 C 40 140 55 155 75 155 L 130 155" stroke="url(#headerBlue)" stroke-width="22" stroke-linecap="round" fill="none" />
+          <path d="M 155 45 L 210 45 C 245 45 260 65 260 85 C 260 105 245 118 210 118 L 155 118 M 200 118 L 255 155" stroke="url(#headerRed)" stroke-width="22" stroke-linecap="round" fill="none" />
         </svg>
         <div>
           <div class="flex items-center space-x-2">
-            <span class="font-black text-lg sm:text-xl tracking-wider text-white">ER SEGURANÇA</span>
-            <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 rounded-md">Portal Diretoria</span>
+            <span class="font-extrabold text-lg sm:text-xl tracking-wider text-white">ER SEGURANÇA</span>
+            <span class="hidden sm:inline-block px-2 py-0.5 text-[10px] font-semibold uppercase bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-md">
+              Portal Operacional
+            </span>
           </div>
-          <p class="text-[10px] font-medium text-slate-400 tracking-widest uppercase">DRE Executivo & Controle do Proprietário</p>
+          <p class="text-[11px] font-medium text-slate-400 tracking-widest uppercase">E VIGILÂNCIA LTDA</p>
         </div>
       </div>
 
-      <div class="flex items-center space-x-3 sm:space-x-5">
-        <button onclick="exportToCSV()" class="hidden sm:flex items-center space-x-2 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-200 transition-colors">
-          <i data-lucide="download" class="w-4 h-4 text-cyan-400"></i>
-          <span>Exportar Relatório CSV</span>
-        </button>
-
-        <div class="flex items-center space-x-3 pl-3 border-l border-slate-800">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-red-500 p-0.5 shadow-lg flex items-center justify-center font-black text-white text-xs">CEO</div>
-          
-          <!-- BOTÃO DE LOGOUT -->
-          <button onclick="logout()" class="p-2 rounded-xl bg-slate-900 hover:bg-red-950/60 border border-slate-700/80 hover:border-red-500/40 text-slate-300 hover:text-red-400 transition-colors" title="Encerrar Sessão">
-            <i data-lucide="log-out" class="w-4 h-4"></i>
-          </button>
+      <div class="flex items-center space-x-3 sm:space-x-4">
+        <div id="api-status-badge" class="flex items-center space-x-2 bg-slate-900/80 border border-slate-800 px-3 py-1.5 rounded-full text-xs font-mono">
+          <span class="relative flex h-2 w-2">
+            <span id="api-status-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span id="api-status-dot" class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <span id="api-status-text" class="text-emerald-400">FIREBASE CONECTADO</span>
         </div>
+
+        <!-- BOTÃO DE LOGOUT OPERACIONAL -->
+        <button onclick="logout()" class="p-2 rounded-xl bg-slate-900 hover:bg-red-950/60 border border-slate-700/80 hover:border-red-500/40 text-slate-300 hover:text-red-400 transition-colors" title="Encerrar Sessão">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+        </button>
       </div>
     </div>
   </header>
@@ -95,7 +96,7 @@
       <div>
         <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
           <i data-lucide="arrow-left-right" class="w-8 h-8 text-cyan-400"></i>
-          Gestão de Fluxo Financeiro ER Segurança
+          Gestão de Fluxo Financeiro (Firebase Cloud DB)
         </h1>
         <p class="text-sm text-slate-400 mt-1">Lançamento e gerenciamento em tempo real de receitas, despesas operacionais e notas fiscais.</p>
       </div>
@@ -193,7 +194,7 @@
           <div id="form-icon-box" class="p-2 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"><i data-lucide="file-plus-2" class="w-5 h-5"></i></div>
           <div>
             <h2 id="form-main-title" class="text-lg font-bold text-white">Cadastrar Nova Transação</h2>
-            <p class="text-xs text-slate-400">Preencha os dados abaixo e salve instantaneamente</p>
+            <p class="text-xs text-slate-400">Preencha os dados abaixo e salve instantaneamente no Firebase</p>
           </div>
         </div>
         
@@ -291,7 +292,7 @@
               <div id="upload-placeholder" class="flex flex-col items-center justify-center space-y-1">
                 <i data-lucide="upload-cloud" class="w-6 h-6 text-cyan-400"></i>
                 <span class="text-xs text-slate-300 font-semibold">Arraste e solte o arquivo da NF-e (.xml, .pdf) aqui</span>
-                <span class="text-[10px] text-slate-500">ou clique para selecionar no computador (máx 800KB)</span>
+                <span class="text-[10px] text-slate-500">ou clique para selecionar no computador</span>
               </div>
               
               <div id="upload-preview" class="hidden flex items-center justify-between bg-slate-800/80 p-2 rounded-lg text-xs">
@@ -314,7 +315,7 @@
           <button type="button" onclick="backToCards()" class="px-5 py-2.5 rounded-xl border border-slate-700 hover:bg-slate-800 text-slate-300 text-sm font-medium">Cancelar</button>
           <button type="submit" id="btn-submit" class="btn-neon-primary px-8 py-2.5 rounded-xl font-bold text-sm text-white flex items-center space-x-2">
             <i data-lucide="send" class="w-4 h-4"></i>
-            <span>Salvar</span>
+            <span>Salvar no Firebase</span>
           </button>
         </div>
       </form>
@@ -427,10 +428,26 @@
     let currentSelectedFileData = null;
 
     window.onload = function() {
+      // PROTEÇÃO DE ACESSO: Verifica se o usuário passou pelo login
+      const sessionUser = sessionStorage.getItem("er_logged_user");
+      if (!sessionUser) {
+        alert("Acesso negado! Faça login no sistema primeiro.");
+        window.location.href = "index.html";
+        return;
+      }
+
       lucide.createIcons();
       document.getElementById('input-data-emissao').valueAsDate = new Date();
       setupDragAndDrop();
       listenFirestore();
+    };
+
+    // FUNÇÃO DE LOGOUT OPERACIONAL
+    window.logout = function() {
+      if (confirm('Deseja realmente encerrar a sessão?')) {
+        sessionStorage.removeItem("er_logged_user");
+        window.location.href = 'index.html';
+      }
     };
 
     function listenFirestore() {
@@ -440,11 +457,7 @@
           nfeList.push({ id: docSnap.id, ...docSnap.data() });
         });
 
-        nfeList.sort((a, b) => {
-          const tA = a.criadoEm?.seconds || Math.floor(Date.now() / 1000);
-          const tB = b.criadoEm?.seconds || Math.floor(Date.now() / 1000);
-          return tB - tA;
-        });
+        nfeList.sort((a, b) => (b.criadoEm?.seconds || 0) - (a.criadoEm?.seconds || 0));
 
         renderDashboard();
         renderTable();
@@ -485,10 +498,6 @@
 
     function processFile(file) {
       if (!file) return;
-      if (file.size > 800 * 1024) {
-        showToast('O arquivo excede o limite máximo de 800KB para anexos.', 'warning');
-        return;
-      }
       currentSelectedFile = file.name;
       const reader = new FileReader();
       reader.onload = function(evt) {
@@ -569,42 +578,20 @@
       document.getElementById('upload-preview').classList.add('hidden');
     };
 
-    // FUNÇÃO DE DOWNLOAD BLINDADA (CONVERSÃO SEGURA DE BASE64 PARA BLOB)
     window.downloadFile = function(id) {
       const item = nfeList.find(x => x.id === id);
       if (!item || !item.fileData) {
-        showToast('Nenhum arquivo anexado nesta transação.', 'warning');
+        showToast('Nenhum arquivo físico encontrado para esta nota.', 'warning');
         return;
       }
 
-      try {
-        const parts = item.fileData.split(',');
-        const contentTypeMatch = parts[0].match(/:(.*?);/);
-        const contentType = contentTypeMatch ? contentTypeMatch[1] : 'application/pdf';
-        
-        const raw = window.atob(parts[1]);
-        const rawLength = raw.length;
-        const uInt8Array = new Uint8Array(rawLength);
-
-        for (let i = 0; i < rawLength; ++i) {
-          uInt8Array[i] = raw.charCodeAt(i);
-        }
-
-        const blob = new Blob([uInt8Array], { type: contentType });
-        const blobUrl = URL.createObjectURL(blob);
-
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        a.download = item.fileName || `Comprovante_${item.numero}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-
-        setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
-        showToast('Download do documento original concluído!', 'success');
-      } catch (e) {
-        showToast('Erro ao processar o arquivo para download.', 'warning');
-      }
+      const a = document.createElement('a');
+      a.href = item.fileData;
+      a.download = item.fileName || `NF_${item.numero}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast('Download do comprovante iniciado!', 'success');
     };
 
     document.getElementById('nfe-form').onsubmit = async function(event) {
@@ -811,11 +798,6 @@
       toast.classList.remove('hidden');
       setTimeout(() => toast.classList.add('hidden'), 4000);
     }
-    window.logout = function() {
-  if (confirm('Deseja realmente encerrar a sessão?')) {
-    window.location.href = 'index.html';
-  }
-};
   </script>
 </body>
 </html>
