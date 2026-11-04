@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portal Executivo & Diretoria | ER Segurança e Vigilância LTDA</title>
   
-  <!-- Tailwind CSS & Icons & Charts -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -17,48 +16,27 @@
       theme: {
         extend: {
           fontFamily: { sans: ['Inter', 'sans-serif'] },
-          colors: {
-            brand: { blue: '#3b82f6', red: '#ef4444', cyan: '#06b6d4', darkBg: '#020617' }
-          }
+          colors: { brand: { blue: '#3b82f6', red: '#ef4444', cyan: '#06b6d4', emerald: '#10b981', darkBg: '#020617' } }
         }
       }
     }
   </script>
 
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #020617;
-      color: #f8fafc;
-      min-height: 100vh;
-    }
+    body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fafc; min-height: 100vh; }
     .bg-executive-dashboard {
       background-image: linear-gradient(to bottom, rgba(2, 6, 23, 0.90), rgba(2, 6, 23, 0.97)),
                         url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2000&auto=format&fit=crop');
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
+      background-size: cover; background-position: center; background-attachment: fixed;
     }
     .cyber-grid {
       background-size: 40px 40px;
-      background-image: 
-        linear-gradient(to right, rgba(59, 130, 246, 0.03) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+      background-image: linear-gradient(to right, rgba(59, 130, 246, 0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
     }
     .glass-card {
-      background: rgba(15, 23, 42, 0.70);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6);
+      background: rgba(15, 23, 42, 0.70); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6);
     }
-    .btn-neon-executive {
-      background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #ef4444 100%);
-      box-shadow: 0 0 18px rgba(6, 182, 212, 0.35);
-    }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #090d16; }
-    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 9999px; }
   </style>
 </head>
 <body class="bg-executive-dashboard cyber-grid flex flex-col min-h-screen text-slate-100 antialiased pb-12">
@@ -66,9 +44,8 @@
   <!-- HEADER EXECUTIVE -->
   <header class="sticky top-0 z-40 glass-card border-b border-slate-800/80 bg-slate-950/85 backdrop-blur-2xl">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-      
       <div class="flex items-center space-x-3.5">
-        <svg class="w-10 h-10" viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg class="w-10 h-10" viewBox="0 0 300 200" fill="none">
           <defs>
             <linearGradient id="ownerBlue" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#38bdf8" /><stop offset="100%" stop-color="#2563eb" /></linearGradient>
             <linearGradient id="ownerRed" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f87171" /><stop offset="100%" stop-color="#dc2626" /></linearGradient>
@@ -86,42 +63,19 @@
       </div>
 
       <div class="flex items-center space-x-3 sm:space-x-5">
-        <button onclick="exportToCSV()" class="hidden sm:flex items-center space-x-2 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-200">
+        <button onclick="exportToCSV()" class="hidden sm:flex items-center space-x-2 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-200 transition-colors">
           <i data-lucide="download" class="w-4 h-4 text-cyan-400"></i>
-          <span>Relatório CSV</span>
-        </button>
-        <button onclick="logoutSystem()" class="flex items-center space-x-1.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/30 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors">
-          <i data-lucide="log-out" class="w-4 h-4"></i>
-          <span>Sair</span>
+          <span>Exportar Relatório CSV</span>
         </button>
         <div class="flex items-center space-x-3 pl-3 border-l border-slate-800">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-red-500 p-0.5 shadow-lg">
-            <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center font-black text-white text-xs">CEO</div>
-          </div>
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-red-500 p-0.5 shadow-lg flex items-center justify-center font-black text-white text-xs">CEO</div>
         </div>
       </div>
-
     </div>
   </header>
 
   <!-- MAIN WRAPPER -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-8 flex-grow w-full">
-
-    <!-- DATABASE STATUS BAR -->
-    <div class="glass-card rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 border border-cyan-500/20">
-      <div class="flex items-center space-x-3">
-        <i data-lucide="database" class="w-5 h-5 text-cyan-400"></i>
-        <div>
-          <span class="text-xs font-bold text-white uppercase tracking-wider block">Sincronização em Tempo Real</span>
-          <span class="text-[11px] text-slate-400">Conectado diretamente ao Firebase Cloud Firestore (Coleção: transacoes)</span>
-        </div>
-      </div>
-      <div class="flex items-center space-x-2">
-        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-          <span class="w-2 h-2 mr-1.5 bg-emerald-500 rounded-full animate-pulse"></span> Firebase Ativo
-        </span>
-      </div>
-    </div>
 
     <!-- PAGE HEADER -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-6">
@@ -130,11 +84,11 @@
           <i data-lucide="shield-check" class="w-8 h-8 text-cyan-400"></i>
           Painel Executivo de Resultado Financeiro (DRE)
         </h1>
-        <p class="text-xs sm:text-sm text-slate-400 mt-1">Acompanhamento consolidado de entradas (faturamento), saídas (despesas) e balanço líquido.</p>
+        <p class="text-xs sm:text-sm text-slate-400 mt-1">Acompanhamento consolidado em tempo real via Firebase Firestore.</p>
       </div>
 
       <div class="flex items-center space-x-3">
-        <button onclick="bulkApprove()" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-2">
+        <button onclick="bulkApprove()" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 transition-all">
           <i data-lucide="check-check" class="w-4 h-4"></i>
           <span>Aprovar Selecionadas</span>
         </button>
@@ -143,52 +97,37 @@
 
     <!-- 1. KPIS BALANÇO EXECUTIVO -->
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-      
       <div class="glass-card rounded-2xl p-4 sm:p-5 relative overflow-hidden">
         <div class="flex items-center justify-between">
           <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Entradas (Receitas)</span>
-          <div class="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            <i data-lucide="arrow-down-left" class="w-5 h-5"></i>
-          </div>
+          <div class="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"><i data-lucide="arrow-down-left" class="w-5 h-5"></i></div>
         </div>
-        <div class="mt-3">
-          <span id="kpi-entradas-val" class="text-xl sm:text-2xl font-black text-emerald-400 font-mono">R$ 0,00</span>
-        </div>
+        <div class="mt-3"><span id="kpi-entradas-val" class="text-xl sm:text-2xl font-black text-emerald-400 font-mono">R$ 0,00</span></div>
         <div class="mt-2 text-[10px] text-slate-400">Total Faturamento</div>
       </div>
 
       <div class="glass-card rounded-2xl p-4 sm:p-5 relative overflow-hidden">
         <div class="flex items-center justify-between">
           <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Saídas (Despesas)</span>
-          <div class="p-2 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20">
-            <i data-lucide="arrow-up-right" class="w-5 h-5"></i>
-          </div>
+          <div class="p-2 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20"><i data-lucide="arrow-up-right" class="w-5 h-5"></i></div>
         </div>
-        <div class="mt-3">
-          <span id="kpi-saidas-val" class="text-xl sm:text-2xl font-black text-rose-400 font-mono">R$ 0,00</span>
-        </div>
+        <div class="mt-3"><span id="kpi-saidas-val" class="text-xl sm:text-2xl font-black text-rose-400 font-mono">R$ 0,00</span></div>
         <div class="mt-2 text-[10px] text-slate-400">Total Custos/NF-e</div>
       </div>
 
       <div class="glass-card rounded-2xl p-4 sm:p-5 relative overflow-hidden">
         <div class="flex items-center justify-between">
           <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Resultado Líquido</span>
-          <div class="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-            <i data-lucide="scale" class="w-5 h-5"></i>
-          </div>
+          <div class="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"><i data-lucide="scale" class="w-5 h-5"></i></div>
         </div>
-        <div class="mt-3">
-          <span id="kpi-balanco-val" class="text-xl sm:text-2xl font-black text-cyan-300 font-mono">R$ 0,00</span>
-        </div>
+        <div class="mt-3"><span id="kpi-balanco-val" class="text-xl sm:text-2xl font-black text-cyan-300 font-mono">R$ 0,00</span></div>
         <div id="kpi-balanco-sub" class="mt-2 text-[10px] text-slate-400">Saldo Operacional</div>
       </div>
 
       <div class="glass-card rounded-2xl p-4 sm:p-5 relative overflow-hidden">
         <div class="flex items-center justify-between">
           <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Pendentes Diretoria</span>
-          <div class="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
-            <i data-lucide="clock" class="w-5 h-5"></i>
-          </div>
+          <div class="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20"><i data-lucide="clock" class="w-5 h-5"></i></div>
         </div>
         <div class="mt-3 flex items-baseline justify-between">
           <span id="kpi-pending-count" class="text-2xl font-black text-amber-400 font-mono">0</span>
@@ -200,16 +139,11 @@
       <div class="glass-card rounded-2xl p-4 sm:p-5 relative overflow-hidden">
         <div class="flex items-center justify-between">
           <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Volume de Docs</span>
-          <div class="p-2 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
-            <i data-lucide="files" class="w-5 h-5"></i>
-          </div>
+          <div class="p-2 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20"><i data-lucide="files" class="w-5 h-5"></i></div>
         </div>
-        <div class="mt-3">
-          <span id="kpi-total-count" class="text-xl sm:text-2xl font-black text-white font-mono">0</span>
-        </div>
+        <div class="mt-3"><span id="kpi-total-count" class="text-xl sm:text-2xl font-black text-white font-mono">0</span></div>
         <div class="mt-2 text-[10px] text-slate-400">Transações no Banco</div>
       </div>
-
     </section>
 
     <!-- 2. CHARTS -->
@@ -218,12 +152,10 @@
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center space-x-2">
             <i data-lucide="trending-up" class="w-5 h-5 text-cyan-400"></i>
-            <h3 class="text-sm font-bold text-white">Evolução Mensal: Entradas vs. Saídas</h3>
+            <h3 class="text-sm font-bold text-white">Evolução Consolidada: Entradas vs. Saídas</h3>
           </div>
         </div>
-        <div class="relative w-full h-64">
-          <canvas id="chart-evolution"></canvas>
-        </div>
+        <div class="relative w-full h-64"><canvas id="chart-evolution"></canvas></div>
       </div>
 
       <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
@@ -233,9 +165,7 @@
             <h3 class="text-sm font-bold text-white">Distribuição por Categoria</h3>
           </div>
         </div>
-        <div class="relative w-full h-64 flex items-center justify-center">
-          <canvas id="chart-categories"></canvas>
-        </div>
+        <div class="relative w-full h-64 flex items-center justify-center"><canvas id="chart-categories"></canvas></div>
       </div>
     </section>
 
@@ -243,24 +173,19 @@
     <section class="glass-card rounded-2xl p-6 sm:p-8 space-y-6">
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-5">
         <div class="flex items-center space-x-3">
-          <div class="p-2 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-            <i data-lucide="database" class="w-5 h-5"></i>
-          </div>
+          <div class="p-2 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"><i data-lucide="database" class="w-5 h-5"></i></div>
           <div>
             <h2 class="text-lg font-bold text-white">Auditoria & Controle do Banco de Dados</h2>
             <p class="text-xs text-slate-400">Visualização completa de receitas e pagamentos operacionais</p>
           </div>
         </div>
-
-        <div id="table-summary-pill" class="text-xs font-mono bg-slate-900 border border-slate-800 text-cyan-400 px-4 py-2 rounded-xl">
-          Aguardando dados...
-        </div>
+        <div id="table-summary-pill" class="text-xs font-mono bg-slate-900 border border-slate-800 text-cyan-400 px-4 py-2 rounded-xl">Aguardando dados...</div>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 bg-slate-950/70 p-4 rounded-xl border border-slate-800">
         <div>
           <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Tipo de Fluxo</label>
-          <select id="filter-tipo" onchange="renderTable()" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+          <select id="filter-tipo" onchange="renderTable()" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
             <option value="ALL">Todas as Transações</option>
             <option value="ENTRADA">Apenas Entradas</option>
             <option value="SAIDA">Apenas Saídas</option>
@@ -269,12 +194,12 @@
 
         <div>
           <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Busca Ampla</label>
-          <input type="text" id="filter-search" oninput="renderTable()" placeholder="Nº, Chave, Fornecedor/Cliente..." class="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+          <input type="text" id="filter-search" oninput="renderTable()" placeholder="Nº, Chave, Fornecedor/Cliente..." class="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
         </div>
 
         <div>
           <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Categoria</label>
-          <select id="filter-categoria" onchange="renderTable()" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+          <select id="filter-categoria" onchange="renderTable()" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
             <option value="ALL">Todas as Categorias</option>
             <option value="Equipamentos de Monitoramento">Equipamentos de Monitoramento</option>
             <option value="Vigilância Presencial">Vigilância Presencial</option>
@@ -284,7 +209,7 @@
 
         <div>
           <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Status</label>
-          <select id="filter-status" onchange="renderTable()" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+          <select id="filter-status" onchange="renderTable()" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
             <option value="ALL">Todos os Status</option>
             <option value="Pendente">Pendente</option>
             <option value="Aprovada">Aprovada</option>
@@ -326,35 +251,16 @@
 
   </main>
 
-  <!-- MODAL -->
-  <div id="modal-details" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center hidden p-4">
-    <div class="glass-card w-full max-w-3xl rounded-2xl p-6 border border-slate-700 space-y-6">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-        <h3 class="text-lg font-bold text-white">Prontuário de Auditoria Fiscal & Financeira</h3>
-        <button onclick="closeModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
-      </div>
-      <div id="modal-body" class="space-y-4 text-xs"></div>
-      <div class="flex items-center justify-between border-t border-slate-800 pt-4">
-        <button id="modal-btn-approve" onclick="approveFromModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center space-x-2">
-          <i data-lucide="check-circle" class="w-4 h-4"></i>
-          <span>Aprovar Lançamento</span>
-        </button>
-        <button onclick="closeModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-4 py-2 rounded-xl text-xs">Fechar</button>
-      </div>
-    </div>
-  </div>
-
   <!-- TOAST -->
   <div id="toast" class="fixed bottom-6 right-6 z-50 hidden max-w-md bg-slate-900 border border-cyan-500/50 text-slate-100 text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 backdrop-blur-md">
     <i data-lucide="info" id="toast-icon" class="w-5 h-5 text-cyan-400"></i>
     <span id="toast-message">Notificação</span>
   </div>
 
-  <!-- FIREBASE INTEGRATION & AUTH GUARD -->
+  <!-- FIREBASE & CHARTS SCRIPT -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, updateDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, doc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBkIE0buv-9l-MTlh6m4H_uBd_l4UJChfI",
@@ -366,41 +272,16 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
     const db = getFirestore(app);
 
     let nfeData = [];
     let selectedIds = new Set();
-    let currentModalItem = null;
     let chartEvolutionInstance = null;
     let chartCategoriesInstance = null;
 
-    // --- SEGURANÇA DE ROTA (AUTH GUARD) ---
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "index.html";
-      } else {
-        const email = user.email.toLowerCase();
-        const executiveKeywords = ['admin', 'chefe', 'dono', 'patrao', 'patrão', 'proprietario', 'diretor', 'ceo'];
-        const isExecutive = executiveKeywords.some(keyword => email.includes(keyword));
-
-        if (!isExecutive) {
-          alert("Acesso negado: Esta área é exclusiva para diretores e chefia.");
-          window.location.href = "portalgestao_2.html";
-        } else {
-          listenFirestore();
-        }
-      }
-    });
-
     window.onload = function() {
       lucide.createIcons();
-    };
-
-    window.logoutSystem = function() {
-      signOut(auth).then(() => {
-        window.location.href = "index.html";
-      });
+      listenFirestore();
     };
 
     function listenFirestore() {
@@ -415,8 +296,7 @@
         renderDashboardKPIs();
         renderCharts();
         renderTable();
-      }, (error) => {
-        showToast('Erro ao sincronizar com o Firebase.', 'warning');
+        showToast('Dados do Firebase sincronizados em tempo real!', 'success');
       });
     }
 
@@ -521,14 +401,14 @@
       });
     }
 
-    function renderTable() {
+    window.renderTable = function() {
       const search = document.getElementById('filter-search').value.toLowerCase();
       const categoria = document.getElementById('filter-categoria').value;
       const status = document.getElementById('filter-status').value;
       const tipo = document.getElementById('filter-tipo').value;
 
       const filtrados = nfeData.filter(item => {
-        const matchesSearch = item.numero.toLowerCase().includes(search) || item.fornecedor.toLowerCase().includes(search) || item.cnpj.includes(search);
+        const matchesSearch = (item.numero || '').toLowerCase().includes(search) || (item.fornecedor || '').toLowerCase().includes(search) || (item.cnpj || '').includes(search);
         const matchesCat = (categoria === 'ALL' || item.categoria === categoria);
         const matchesStatus = (status === 'ALL' || item.status === status);
         const matchesTipo = (tipo === 'ALL' || item.tipo === tipo);
@@ -538,7 +418,7 @@
       const tbody = document.getElementById('owner-table-body');
       tbody.innerHTML = '';
 
-      document.getElementById('table-summary-pill').textContent = `Exibindo ${filtrados.length} registros no Firebase`;
+      document.getElementById('table-summary-pill').textContent = `Exibindo ${filtrados.length} registros no banco`;
 
       if (filtrados.length === 0) {
         tbody.innerHTML = `<tr><td colspan="9" class="py-12 text-center text-slate-500">Nenhum registro encontrado no Banco de Dados.</td></tr>`;
@@ -584,100 +464,75 @@
           <td class="py-3.5 px-4">${valorFormatted}</td>
           <td class="py-3.5 px-4 text-center">${statusBadge}</td>
           <td class="py-3.5 px-4 text-right space-x-1">
-            <button onclick="openModal('${item.id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-cyan-950 text-cyan-400"><i data-lucide="eye" class="w-4 h-4"></i></button>
-            <button onclick="toggleApproveStatus('${item.id}', '${item.status}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-emerald-950 text-emerald-400"><i data-lucide="check-circle-2" class="w-4 h-4"></i></button>
+            <button onclick="toggleApproveStatus('${item.id}', '${item.status}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-emerald-950 text-emerald-400" title="Aprovar / Alternar Status"><i data-lucide="check-circle-2" class="w-4 h-4"></i></button>
           </td>
         `;
         tbody.appendChild(tr);
       });
 
       lucide.createIcons();
-    }
+    };
 
-    function resetFilters() {
+    window.resetFilters = function() {
       document.getElementById('filter-search').value = '';
       document.getElementById('filter-categoria').value = 'ALL';
       document.getElementById('filter-status').value = 'ALL';
       document.getElementById('filter-tipo').value = 'ALL';
       renderTable();
-    }
+    };
 
-    function toggleSelectAll(master) {
+    window.toggleSelectAll = function(master) {
       if (master.checked) nfeData.forEach(item => selectedIds.add(item.id));
       else selectedIds.clear();
       renderTable();
-    }
+    };
 
-    function toggleSelectRow(id, checkbox) {
+    window.toggleSelectRow = function(id, checkbox) {
       if (checkbox.checked) selectedIds.add(id);
       else selectedIds.delete(id);
-    }
+    };
 
-    async function bulkApprove() {
-      if (selectedIds.size === 0) return showToast('Selecione ao menos um item.', 'warning');
+    window.bulkApprove = async function() {
+      if (selectedIds.size === 0) return showToast('Selecione ao menos um item na tabela.', 'warning');
       try {
         for (let id of selectedIds) {
-          await updateDoc(doc(db, "transacoes", id), { status: 'Aprovada' });
+          const docRef = doc(db, "transacoes", id);
+          await updateDoc(docRef, { status: 'Aprovada' });
         }
-        showToast('Itens selecionados aprovados!', 'success');
+        showToast('Itens selecionados aprovados com sucesso!', 'success');
         selectedIds.clear();
-      } catch (e) {
-        showToast('Erro ao aprovar em lote.', 'warning');
+      } catch (err) {
+        showToast('Erro ao aprovar em lote: ' + err.message, 'warning');
       }
-    }
+    };
 
-    async function toggleApproveStatus(id, currentStatus) {
+    window.toggleApproveStatus = async function(id, currentStatus) {
       const nextStatus = (currentStatus === 'Aprovada' || currentStatus === 'Paga') ? 'Pendente' : 'Aprovada';
       try {
-        await updateDoc(doc(db, "transacoes", id), { status: nextStatus });
+        const docRef = doc(db, "transacoes", id);
+        await updateDoc(docRef, { status: nextStatus });
         showToast(`Status alterado para ${nextStatus}`, 'success');
-      } catch (e) {
-        showToast('Erro ao alterar status.', 'warning');
+      } catch (err) {
+        showToast('Erro ao atualizar status: ' + err.message, 'warning');
       }
-    }
+    };
 
-    function openModal(id) {
-      const item = nfeData.find(x => x.id === id);
-      if (!item) return;
-      currentModalItem = item;
-
-      document.getElementById('modal-body').innerHTML = `
-        <div class="grid grid-cols-2 gap-3 bg-slate-950 p-4 rounded-xl border border-slate-800 font-mono">
-          <div><span class="text-slate-500 block text-[10px]">TIPO</span><span class="text-cyan-400 font-bold">${item.tipo || 'SAIDA'}</span></div>
-          <div><span class="text-slate-500 block text-[10px]">NOME/EMISSOR</span><span class="text-white font-bold">${item.fornecedor}</span></div>
-          <div><span class="text-slate-500 block text-[10px]">CNPJ</span><span class="text-slate-300 font-bold">${item.cnpj}</span></div>
-          <div><span class="text-slate-500 block text-[10px]">VALOR</span><span class="text-emerald-400 font-bold">${formatCurrency(item.valor)}</span></div>
-        </div>
-      `;
-      document.getElementById('modal-details').classList.remove('hidden');
-      lucide.createIcons();
-    }
-
-    function closeModal() {
-      document.getElementById('modal-details').classList.add('hidden');
-    }
-
-    async function approveFromModal() {
-      if (!currentModalItem) return;
-      await toggleApproveStatus(currentModalItem.id, 'Pendente');
-      closeModal();
-    }
-
-    function exportToCSV() {
-      let csv = 'ID;Tipo;Numero;Fornecedor;CNPJ;Valor;Emissao;Status\n';
-      nfeData.forEach(i => { csv += `${i.id};"${i.tipo || 'SAIDA'}";"${i.numero}";"${i.fornecedor}";"${i.cnpj}";${i.valor};"${i.emissao}";"${i.status}"\n`; });
+    window.exportToCSV = function() {
+      let csv = 'Tipo;Numero;Fornecedor;CNPJ;Valor;Emissao;Status\n';
+      nfeData.forEach(i => { csv += `"${i.tipo || 'SAIDA'}";"${i.numero}";"${i.fornecedor}";"${i.cnpj}";${i.valor};"${i.emissao}";"${i.status}"\n`; });
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Relatorio_DRE_${Date.now()}.csv`;
+      a.download = `DRE_Executivo_${Date.now()}.csv`;
       a.click();
       URL.revokeObjectURL(url);
-    }
+    };
 
     function showToast(msg, type = 'info') {
       const toast = document.getElementById('toast');
       document.getElementById('toast-message').textContent = msg;
+      toast.className = `fixed bottom-6 right-6 z-50 max-w-md bg-slate-900 border ${type === 'success' ? 'border-emerald-500 text-emerald-200' : 'border-amber-500 text-amber-200'} text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 backdrop-blur-md`;
       toast.classList.remove('hidden');
       setTimeout(() => toast.classList.add('hidden'), 4000);
     }
