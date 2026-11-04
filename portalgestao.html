@@ -74,12 +74,8 @@
             <span id="api-status-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span id="api-status-dot" class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
-          <span id="api-status-text" class="text-emerald-400">FIREBASE CONECTADO</span>
+          <span id="api-status-text" class="text-emerald-400">CONECTADO</span>
         </div>
-        <button onclick="logoutSystem()" class="flex items-center space-x-1.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/30 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors">
-          <i data-lucide="log-out" class="w-4 h-4"></i>
-          <span>Sair</span>
-        </button>
       </div>
     </div>
   </header>
@@ -91,15 +87,9 @@
       <div>
         <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
           <i data-lucide="arrow-left-right" class="w-8 h-8 text-cyan-400"></i>
-          Gestão de Fluxo Financeiro (Firebase Cloud DB)
-        </h1>
+          Gestão de Fluxo Financeiro         </h1>
         <p class="text-sm text-slate-400 mt-1">Lançamento e gerenciamento em tempo real de receitas, despesas operacionais e notas fiscais.</p>
       </div>
-
-      <button onclick="scrollToSection('new-nfe-form')" class="btn-neon-primary px-5 py-2.5 rounded-xl font-semibold text-sm text-white flex items-center space-x-2">
-        <i data-lucide="plus-circle" class="w-4 h-4"></i>
-        <span>Nova Transação</span>
-      </button>
     </div>
 
     <!-- KPIS -->
@@ -144,39 +134,77 @@
       </div>
     </section>
 
-    <!-- FORMULÁRIO -->
-    <section id="new-nfe-form" class="glass-card rounded-2xl p-6 sm:p-8 relative">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
-        <div class="flex items-center space-x-3">
-          <div class="p-2 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"><i data-lucide="file-plus-2" class="w-5 h-5"></i></div>
+    <!-- SESSÃO 1: CARDS DE ESCOLHA INICIAL (Fácil e Direto) -->
+    <section id="selection-cards-section" class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
+      
+      <!-- Card Anexar NF-e / Saída -->
+      <div onclick="openForm('SAIDA')" class="glass-card rounded-2xl p-8 cursor-pointer hover:border-rose-500/50 transition-all group relative overflow-hidden border border-slate-800">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-rose-500/10 rounded-full blur-2xl group-hover:bg-rose-500/20 transition-all"></div>
+        <div class="flex items-center space-x-4">
+          <div class="p-4 rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/20 group-hover:scale-110 transition-transform">
+            <i data-lucide="file-text" class="w-8 h-8"></i>
+          </div>
           <div>
-            <h2 class="text-lg font-bold text-white">Cadastrar Nova Transação</h2>
-            <p class="text-xs text-slate-400">Os dados serão gravados em tempo real na nuvem do Firebase</p>
+            <span class="text-[10px] uppercase font-bold tracking-widest text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">Saída Operacional</span>
+            <h3 class="text-xl font-extrabold text-white mt-1">Anexar NF-e / Despesa</h3>
+            <p class="text-xs text-slate-400 mt-1">Clique para registrar pagamentos, notas fiscais e custos corporativos.</p>
           </div>
         </div>
-        <span class="text-xs font-mono text-cyan-400 bg-cyan-950/60 border border-cyan-800/50 px-3 py-1 rounded-md">Firebase Firestore</span>
+        <div class="mt-6 flex items-center text-xs font-bold text-rose-400 group-hover:translate-x-1 transition-transform">
+          <span>Iniciar Lançamento de Saída</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
+        </div>
+      </div>
+
+      <!-- Card Registrar Entrada -->
+      <div onclick="openForm('ENTRADA')" class="glass-card rounded-2xl p-8 cursor-pointer hover:border-emerald-500/50 transition-all group relative overflow-hidden border border-slate-800">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all"></div>
+        <div class="flex items-center space-x-4">
+          <div class="p-4 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 group-hover:scale-110 transition-transform">
+            <i data-lucide="badge-dollar-sign" class="w-8 h-8"></i>
+          </div>
+          <div>
+            <span class="text-[10px] uppercase font-bold tracking-widest text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">Receita Corporativa</span>
+            <h3 class="text-xl font-extrabold text-white mt-1">Registrar Entrada</h3>
+            <p class="text-xs text-slate-400 mt-1">Clique para registrar recebimentos, contratos e faturamentos de clientes.</p>
+          </div>
+        </div>
+        <div class="mt-6 flex items-center text-xs font-bold text-emerald-400 group-hover:translate-x-1 transition-transform">
+          <span>Iniciar Lançamento de Entrada</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- SESSÃO 2: FORMULÁRIO DINÂMICO (Oculto até clicar em um dos cards) -->
+    <section id="new-nfe-form" class="glass-card rounded-2xl p-6 sm:p-8 relative hidden">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
+        <div class="flex items-center space-x-3">
+          <div id="form-icon-box" class="p-2 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"><i data-lucide="file-plus-2" class="w-5 h-5"></i></div>
+          <div>
+            <h2 id="form-main-title" class="text-lg font-bold text-white">Cadastrar Nova Transação</h2>
+            <p class="text-xs text-slate-400">Preencha os dados abaixo e salve instantaneamente no Firebase</p>
+          </div>
+        </div>
+        
+        <button type="button" onclick="backToCards()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center space-x-2 border border-slate-700">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          <span>Voltar aos Cards</span>
+        </button>
       </div>
 
       <form id="nfe-form" class="space-y-6">
+        <input type="hidden" id="input-tipo-transacao-hidden" value="SAIDA">
+
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           
-          <div class="lg:col-span-3 bg-slate-900/60 p-4 rounded-xl border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div>
-              <label class="block text-xs font-bold text-white uppercase tracking-wider mb-1">Tipo de Transação <span class="text-red-400">*</span></label>
-              <p class="text-xs text-slate-400">Escolha se este lançamento representa um recebimento (entrada) ou pagamento (saída).</p>
+          <div class="lg:col-span-3 bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <span class="text-xs uppercase font-bold text-slate-400">Sessão Ativa:</span>
+              <span id="badge-tipo-ativo" class="px-3 py-1 rounded-lg text-xs font-black bg-rose-500/20 text-rose-300 border border-rose-500/40">SAÍDA (Gasto / NF-e)</span>
             </div>
-            <div class="flex items-center space-x-3 w-full sm:w-auto">
-              <label class="flex-1 sm:flex-none flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl border cursor-pointer font-bold text-xs transition-all bg-emerald-500/10 border-emerald-500/40 text-emerald-300">
-                <input type="radio" name="tipo_transacao" value="ENTRADA" onchange="toggleTipoUI(this.value)" class="text-emerald-500">
-                <i data-lucide="arrow-down-left" class="w-4 h-4"></i>
-                <span>ENTRADA (Receita)</span>
-              </label>
-              <label class="flex-1 sm:flex-none flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl border cursor-pointer font-bold text-xs transition-all bg-rose-500/10 border-rose-500/40 text-rose-300">
-                <input type="radio" name="tipo_transacao" value="SAIDA" checked onchange="toggleTipoUI(this.value)" class="text-rose-500">
-                <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
-                <span>SAÍDA (Gasto / NF-e)</span>
-              </label>
-            </div>
+            <button type="button" onclick="toggleActiveType()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700">Alternar Tipo</button>
           </div>
 
           <div>
@@ -185,7 +213,7 @@
           </div>
 
           <div>
-            <label id="label-cnpj" class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">CNPJ do Emissor / Cliente <span class="text-red-400">*</span></label>
+            <label id="label-cnpj" class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">CNPJ do Emissor / Fornecedor <span class="text-red-400">*</span></label>
             <input type="text" id="input-cnpj" required placeholder="00.000.000/0001-00" maxlength="18" oninput="maskCNPJ(this)" class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-blue-500">
           </div>
 
@@ -270,7 +298,7 @@
         </div>
 
         <div class="flex items-center justify-end space-x-4 pt-2">
-          <button type="button" onclick="resetForm()" class="px-5 py-2.5 rounded-xl border border-slate-700 hover:bg-slate-800 text-slate-300 text-sm font-medium">Limpar</button>
+          <button type="button" onclick="backToCards()" class="px-5 py-2.5 rounded-xl border border-slate-700 hover:bg-slate-800 text-slate-300 text-sm font-medium">Cancelar</button>
           <button type="submit" id="btn-submit" class="btn-neon-primary px-8 py-2.5 rounded-xl font-bold text-sm text-white flex items-center space-x-2">
             <i data-lucide="send" class="w-4 h-4"></i>
             <span>Salvar no Firebase</span>
@@ -364,10 +392,9 @@
     <span id="toast-message">Notificação</span>
   </div>
 
-  <!-- FIREBASE V10 INTEGRATED & AUTH GUARD -->
+  <!-- FIREBASE V10 INTEGRATED -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -380,30 +407,15 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
     const db = getFirestore(app);
 
     let nfeList = [];
     let currentSelectedFile = null;
 
-    // --- PROTEÇÃO DE SEGURANÇA (AUTH GUARD) ---
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "index.html";
-      } else {
-        listenFirestore();
-      }
-    });
-
     window.onload = function() {
       lucide.createIcons();
       document.getElementById('input-data-emissao').valueAsDate = new Date();
-    };
-
-    window.logoutSystem = function() {
-      signOut(auth).then(() => {
-        window.location.href = "index.html";
-      });
+      listenFirestore();
     };
 
     function listenFirestore() {
@@ -417,17 +429,55 @@
 
         renderDashboard();
         renderTable();
-      }, (error) => {
-        showToast('Erro ao sincronizar com o Firebase.', 'warning');
       });
+    }
+
+    // ABRIR O FORMULÁRIO ESPECÍFICO APÓS CLICAR NO CARD
+    window.openForm = function(tipo) {
+      document.getElementById('selection-cards-section').classList.add('hidden');
+      document.getElementById('new-nfe-form').classList.remove('hidden');
+      setFormType(tipo);
+      document.getElementById('new-nfe-form').scrollIntoView({ behavior: 'smooth' });
+    };
+
+    // VOLTAR AOS CARDS INICIAIS
+    window.backToCards = function() {
+      document.getElementById('new-nfe-form').classList.add('hidden');
+      document.getElementById('selection-cards-section').classList.remove('hidden');
+      resetForm();
+    };
+
+    // ALTERNAR TIPO DENTRO DO FORMULÁRIO
+    window.toggleActiveType = function() {
+      const atual = document.getElementById('input-tipo-transacao-hidden').value;
+      const novo = atual === 'SAIDA' ? 'ENTRADA' : 'SAIDA';
+      setFormType(novo);
+    };
+
+    function setFormType(tipo) {
+      document.getElementById('input-tipo-transacao-hidden').value = tipo;
+      const badge = document.getElementById('badge-tipo-ativo');
+      const title = document.getElementById('form-main-title');
+
+      if (tipo === 'ENTRADA') {
+        badge.className = "px-3 py-1 rounded-lg text-xs font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+        badge.textContent = "ENTRADA (Receita / Faturamento)";
+        title.textContent = "Registrar Nova Entrada (Receita)";
+        document.getElementById('label-cnpj').innerHTML = `CNPJ / CPF do Cliente <span class="text-red-400">*</span>`;
+        document.getElementById('label-fornecedor').innerHTML = `Nome do Cliente / Origem <span class="text-red-400">*</span>`;
+      } else {
+        badge.className = "px-3 py-1 rounded-lg text-xs font-black bg-rose-500/20 text-rose-300 border border-rose-500/40";
+        badge.textContent = "SAÍDA (Gasto / NF-e)";
+        title.textContent = "Anexar Nova NF-e / Saída";
+        document.getElementById('label-cnpj').innerHTML = `CNPJ do Emissor / Fornecedor <span class="text-red-400">*</span>`;
+        document.getElementById('label-fornecedor').innerHTML = `Razão Social / Fornecedor <span class="text-red-400">*</span>`;
+      }
     }
 
     document.getElementById('nfe-form').onsubmit = async function(event) {
       event.preventDefault();
 
-      const radios = document.getElementsByName('tipo_transacao');
-      let tipoSelecionado = 'SAIDA';
-      for (const r of radios) { if (r.checked) tipoSelecionado = r.value; }
+      const tipoSelecionado = document.getElementById('input-tipo-transacao-hidden').value;
 
       const newNFe = {
         tipo: tipoSelecionado,
@@ -452,6 +502,7 @@
         await addDoc(collection(db, "transacoes"), newNFe);
         showToast('Transação gravada com sucesso no Firebase!', 'success');
         resetForm();
+        backToCards(); // Retorna para a tela de cards após salvar com sucesso
       } catch (err) {
         showToast('Erro ao salvar no Firebase: ' + err.message, 'warning');
       } finally {
@@ -567,18 +618,6 @@
       lucide.createIcons();
     };
 
-    window.toggleTipoUI = function(tipo) {
-      const lblCnpj = document.getElementById('label-cnpj');
-      const lblForn = document.getElementById('label-fornecedor');
-      if (tipo === 'ENTRADA') {
-        lblCnpj.innerHTML = `CNPJ / CPF do Cliente <span class="text-red-400">*</span>`;
-        lblForn.innerHTML = `Nome do Cliente / Origem <span class="text-red-400">*</span>`;
-      } else {
-        lblCnpj.innerHTML = `CNPJ do Emissor / Fornecedor <span class="text-red-400">*</span>`;
-        lblForn.innerHTML = `Razão Social / Fornecedor <span class="text-red-400">*</span>`;
-      }
-    };
-
     window.clearFilters = function() {
       document.getElementById('filter-search').value = '';
       document.getElementById('filter-categoria').value = 'ALL';
@@ -614,7 +653,9 @@
     };
 
     function formatCurrency(val) {
-      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0);
+      let numericVal = parseFloat(val);
+      if (isNaN(numericVal)) numericVal = 0;
+      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(numericVal);
     }
 
     function formatDate(dateStr) {
@@ -632,10 +673,6 @@
       value = value.replace(/\.(\d{3})(\d)/, ".$1/$2");
       value = value.replace(/(\d{4})(\d)/, "$1-$2");
       input.value = value;
-    };
-
-    window.scrollToSection = function(id) {
-      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
     };
 
     function showToast(msg, type = 'info') {
