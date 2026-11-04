@@ -287,7 +287,7 @@
               <div id="upload-placeholder" class="flex flex-col items-center justify-center space-y-1">
                 <i data-lucide="upload-cloud" class="w-6 h-6 text-cyan-400"></i>
                 <span class="text-xs text-slate-300 font-semibold">Arraste e solte o arquivo da NF-e (.xml, .pdf) aqui</span>
-                <span class="text-[10px] text-slate-500">ou clique para selecionar no computador</span>
+                <span class="text-[10px] text-slate-500">ou clique para selecionar no computador (máx 800KB)</span>
               </div>
               
               <div id="upload-preview" class="hidden flex items-center justify-between bg-slate-800/80 p-2 rounded-lg text-xs">
@@ -436,7 +436,11 @@
           nfeList.push({ id: docSnap.id, ...docSnap.data() });
         });
 
-        nfeList.sort((a, b) => (b.criadoEm?.seconds || 0) - (a.criadoEm?.seconds || 0));
+        nfeList.sort((a, b) => {
+          const tA = a.criadoEm?.seconds || Math.floor(Date.now() / 1000);
+          const tB = b.criadoEm?.seconds || Math.floor(Date.now() / 1000);
+          return tB - tA;
+        });
 
         renderDashboard();
         renderTable();
@@ -477,6 +481,10 @@
 
     function processFile(file) {
       if (!file) return;
+      if (file.size > 800 * 1024) {
+        showToast('O arquivo excede o limite máximo de 800KB para anexos.', 'warning');
+        return;
+      }
       currentSelectedFile = file.name;
       const reader = new FileReader();
       reader.onload = function(evt) {
@@ -557,20 +565,42 @@
       document.getElementById('upload-preview').classList.add('hidden');
     };
 
+    // FUNÇÃO DE DOWNLOAD BLINDADA (CONVERSÃO SEGURA DE BASE64 PARA BLOB)
     window.downloadFile = function(id) {
       const item = nfeList.find(x => x.id === id);
       if (!item || !item.fileData) {
-        showToast('Nenhum arquivo físico encontrado para esta nota.', 'warning');
+        showToast('Nenhum arquivo anexado nesta transação.', 'warning');
         return;
       }
 
-      const a = document.createElement('a');
-      a.href = item.fileData;
-      a.download = item.fileName || `NF_${item.numero}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      showToast('Download do comprovante iniciado!', 'success');
+      try {
+        const parts = item.fileData.split(',');
+        const contentTypeMatch = parts[0].match(/:(.*?);/);
+        const contentType = contentTypeMatch ? contentTypeMatch[1] : 'application/pdf';
+        
+        const raw = window.atob(parts[1]);
+        const rawLength = raw.length;
+        const uInt8Array = new Uint8Array(rawLength);
+
+        for (let i = 0; i < rawLength; ++i) {
+          uInt8Array[i] = raw.charCodeAt(i);
+        }
+
+        const blob = new Blob([uInt8Array], { type: contentType });
+        const blobUrl = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = item.fileName || `Comprovante_${item.numero}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+        showToast('Download do documento original concluído!', 'success');
+      } catch (e) {
+        showToast('Erro ao processar o arquivo para download.', 'warning');
+      }
     };
 
     document.getElementById('nfe-form').onsubmit = async function(event) {
