@@ -95,7 +95,7 @@
       </div>
     </div>
 
-    <!-- 1. KPIS BALANÇO EXECUTIVO -->
+    <!-- KPIS -->
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
       <div class="glass-card rounded-2xl p-4 sm:p-5 relative overflow-hidden">
         <div class="flex items-center justify-between">
@@ -146,7 +146,7 @@
       </div>
     </section>
 
-    <!-- 2. CHARTS -->
+    <!-- CHARTS -->
     <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div class="glass-card rounded-2xl p-5 lg:col-span-2 flex flex-col justify-between">
         <div class="flex items-center justify-between mb-4">
@@ -169,23 +169,24 @@
       </div>
     </section>
 
-    <!-- 3. ADVANCED SEARCH & EXECUTIVE TABLE -->
+    <!-- TABELA DE AUDITORIA COM BUSCA E DOWNLOAD -->
     <section class="glass-card rounded-2xl p-6 sm:p-8 space-y-6">
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-5">
         <div class="flex items-center space-x-3">
           <div class="p-2 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"><i data-lucide="database" class="w-5 h-5"></i></div>
           <div>
-            <h2 class="text-lg font-bold text-white">Auditoria & Controle do Banco de Dados</h2>
-            <p class="text-xs text-slate-400">Visualização completa de receitas e pagamentos operacionais</p>
+            <h2 class="text-lg font-bold text-white">Auditoria & Download de Documentos</h2>
+            <p class="text-xs text-slate-400">Busca dinâmica e download direto das notas fiscais armazenadas</p>
           </div>
         </div>
         <div id="table-summary-pill" class="text-xs font-mono bg-slate-900 border border-slate-800 text-cyan-400 px-4 py-2 rounded-xl">Aguardando dados...</div>
       </div>
 
+      <!-- FILTROS E CAMPO DE BUSCA AMBA -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 bg-slate-950/70 p-4 rounded-xl border border-slate-800">
         <div>
           <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Tipo de Fluxo</label>
-          <select id="filter-tipo" onchange="renderTable()" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+          <select id="filter-tipo" onchange="renderTable()" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
             <option value="ALL">Todas as Transações</option>
             <option value="ENTRADA">Apenas Entradas</option>
             <option value="SAIDA">Apenas Saídas</option>
@@ -193,13 +194,13 @@
         </div>
 
         <div>
-          <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Busca Ampla</label>
-          <input type="text" id="filter-search" oninput="renderTable()" placeholder="Nº, Chave, Fornecedor/Cliente..." class="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+          <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Busca Rápida</label>
+          <input type="text" id="filter-search" oninput="renderTable()" placeholder="Nº, Chave, Fornecedor/Cliente..." class="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
         </div>
 
         <div>
           <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Categoria</label>
-          <select id="filter-categoria" onchange="renderTable()" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+          <select id="filter-categoria" onchange="renderTable()" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
             <option value="ALL">Todas as Categorias</option>
             <option value="Equipamentos de Monitoramento">Equipamentos de Monitoramento</option>
             <option value="Vigilância Presencial">Vigilância Presencial</option>
@@ -209,7 +210,7 @@
 
         <div>
           <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Status</label>
-          <select id="filter-status" onchange="renderTable()" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+          <select id="filter-status" onchange="renderTable()" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
             <option value="ALL">Todos os Status</option>
             <option value="Pendente">Pendente</option>
             <option value="Aprovada">Aprovada</option>
@@ -220,9 +221,9 @@
 
         <div>
           <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Ações</label>
-          <button onclick="resetFilters()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg py-2 text-xs font-bold flex items-center justify-center space-x-1">
+          <button onclick="resetFilters()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg py-2 text-xs font-bold flex items-center justify-center space-x-1 border border-slate-700">
             <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-            <span>Limpar</span>
+            <span>Limpar Filtros</span>
           </button>
         </div>
       </div>
@@ -260,7 +261,7 @@
   <!-- FIREBASE & CHARTS SCRIPT -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, doc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBkIE0buv-9l-MTlh6m4H_uBd_l4UJChfI",
@@ -296,12 +297,13 @@
         renderDashboardKPIs();
         renderCharts();
         renderTable();
-        showToast('Dados do Firebase sincronizados em tempo real!', 'success');
       });
     }
 
     function formatCurrency(val) {
-      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0);
+      let numericVal = parseFloat(val);
+      if (isNaN(numericVal)) numericVal = 0;
+      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(numericVal);
     }
 
     function formatDate(dateStr) {
@@ -401,6 +403,45 @@
       });
     }
 
+    // FUNÇÃO DE DOWNLOAD BLINDADA (CORRIGIDA COM BLOB)
+    window.downloadFile = function(id) {
+      const item = nfeData.find(x => x.id === id);
+      if (!item || !item.fileData) {
+        showToast('Nenhum arquivo anexado nesta transação.', 'warning');
+        return;
+      }
+
+      try {
+        const parts = item.fileData.split(',');
+        const contentTypeMatch = parts[0].match(/:(.*?);/);
+        const contentType = contentTypeMatch ? contentTypeMatch[1] : 'application/pdf';
+        
+        const raw = window.atob(parts[1]);
+        const rawLength = raw.length;
+        const uInt8Array = new Uint8Array(rawLength);
+
+        for (let i = 0; i < rawLength; ++i) {
+          uInt8Array[i] = raw.charCodeAt(i);
+        }
+
+        const blob = new Blob([uInt8Array], { type: contentType });
+        const blobUrl = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = item.fileName || `Comprovante_${item.numero}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+        showToast('Download do documento original concluído!', 'success');
+      } catch (e) {
+        showToast('Erro ao processar o arquivo para download.', 'warning');
+      }
+    };
+
+    // RENDERIZAÇÃO DA TABELA COM FILTROS E BOTÃO DE DOWNLOAD
     window.renderTable = function() {
       const search = document.getElementById('filter-search').value.toLowerCase();
       const categoria = document.getElementById('filter-categoria').value;
@@ -408,7 +449,10 @@
       const tipo = document.getElementById('filter-tipo').value;
 
       const filtrados = nfeData.filter(item => {
-        const matchesSearch = (item.numero || '').toLowerCase().includes(search) || (item.fornecedor || '').toLowerCase().includes(search) || (item.cnpj || '').includes(search);
+        const matchesSearch = (item.numero || '').toLowerCase().includes(search) || 
+                              (item.fornecedor || '').toLowerCase().includes(search) || 
+                              (item.cnpj || '').includes(search) ||
+                              (item.chave || '').toLowerCase().includes(search);
         const matchesCat = (categoria === 'ALL' || item.categoria === categoria);
         const matchesStatus = (status === 'ALL' || item.status === status);
         const matchesTipo = (tipo === 'ALL' || item.tipo === tipo);
@@ -422,6 +466,7 @@
 
       if (filtrados.length === 0) {
         tbody.innerHTML = `<tr><td colspan="9" class="py-12 text-center text-slate-500">Nenhum registro encontrado no Banco de Dados.</td></tr>`;
+        lucide.createIcons();
         return;
       }
 
@@ -444,6 +489,10 @@
           statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">${item.status}</span>`;
         }
 
+        const hasFileBtn = item.fileData 
+          ? `<button onclick="downloadFile('${item.id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-cyan-950 text-cyan-400 transition-colors" title="Baixar Documento Original"><i data-lucide="download" class="w-4 h-4"></i></button>`
+          : `<span class="text-[10px] text-slate-600">Sem Anexo</span>`;
+
         tr.innerHTML = `
           <td class="py-3.5 px-4 text-center">
             <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleSelectRow('${item.id}', this)" class="rounded bg-slate-900 border-slate-700 text-cyan-500">
@@ -464,7 +513,9 @@
           <td class="py-3.5 px-4">${valorFormatted}</td>
           <td class="py-3.5 px-4 text-center">${statusBadge}</td>
           <td class="py-3.5 px-4 text-right space-x-1">
-            <button onclick="toggleApproveStatus('${item.id}', '${item.status}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-emerald-950 text-emerald-400" title="Aprovar / Alternar Status"><i data-lucide="check-circle-2" class="w-4 h-4"></i></button>
+            ${hasFileBtn}
+            <button onclick="toggleApproveStatus('${item.id}', '${item.status}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-emerald-950 text-emerald-400 transition-colors" title="Aprovar / Alternar Status"><i data-lucide="check-circle-2" class="w-4 h-4"></i></button>
+            <button onclick="deleteNFe('${item.id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-red-950 text-red-400 transition-colors" title="Excluir Transação"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -517,6 +568,16 @@
       }
     };
 
+    window.deleteNFe = async function(id) {
+      if (!confirm('Deseja realmente remover esta transação do Banco de Dados?')) return;
+      try {
+        await deleteDoc(doc(db, "transacoes", id));
+        showToast('Registro excluído do Firebase.', 'warning');
+      } catch (e) {
+        showToast('Erro ao excluir no Firebase.', 'warning');
+      }
+    };
+
     window.exportToCSV = function() {
       let csv = 'Tipo;Numero;Fornecedor;CNPJ;Valor;Emissao;Status\n';
       nfeData.forEach(i => { csv += `"${i.tipo || 'SAIDA'}";"${i.numero}";"${i.fornecedor}";"${i.cnpj}";${i.valor};"${i.emissao}";"${i.status}"\n`; });
@@ -533,7 +594,7 @@
       const toast = document.getElementById('toast');
       document.getElementById('toast-message').textContent = msg;
       toast.className = `fixed bottom-6 right-6 z-50 max-w-md bg-slate-900 border ${type === 'success' ? 'border-emerald-500 text-emerald-200' : 'border-amber-500 text-amber-200'} text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 backdrop-blur-md`;
-      toast.classList.remove('hidden');
+      toast.classList.add('hidden');
       setTimeout(() => toast.classList.add('hidden'), 4000);
     }
   </script>
