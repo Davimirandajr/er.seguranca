@@ -428,14 +428,6 @@
     let currentSelectedFileData = null;
 
     window.onload = function() {
-      // PROTEÇÃO DE ACESSO: Verifica se o usuário passou pelo login
-      const sessionUser = sessionStorage.getItem("er_logged_user");
-      if (!sessionUser) {
-        alert("Acesso negado! Faça login no sistema primeiro.");
-        window.location.href = "index.html";
-        return;
-      }
-
       lucide.createIcons();
       document.getElementById('input-data-emissao').valueAsDate = new Date();
       setupDragAndDrop();
@@ -445,7 +437,6 @@
     // FUNÇÃO DE LOGOUT OPERACIONAL
     window.logout = function() {
       if (confirm('Deseja realmente encerrar a sessão?')) {
-        sessionStorage.removeItem("er_logged_user");
         window.location.href = 'index.html';
       }
     };
