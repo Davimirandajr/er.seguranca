@@ -811,6 +811,11 @@
       toast.classList.remove('hidden');
       setTimeout(() => toast.classList.add('hidden'), 4000);
     }
+    window.logout = function() {
+  if (confirm('Deseja realmente encerrar a sessão?')) {
+    window.location.href = 'index.html';
+  }
+};
   </script>
 </body>
 </html>
