@@ -205,7 +205,7 @@
 
     </section>
 
-    <!-- SESSÃO 2: FORMULÁRIO DINÂMICO -->
+    <!-- SESSÃO 2: FORMULÁRIO DINÂMICO DE CADASTRO -->
     <section id="new-nfe-form" class="glass-card rounded-2xl p-6 sm:p-8 relative hidden">
       <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
         <div class="flex items-center space-x-3">
@@ -303,7 +303,7 @@
             <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Status do Pagamento <span class="text-red-400">*</span></label>
             <select id="input-status" required class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
               <option value="Pendente" selected>Pendente</option>
-              <option value="Paga">Pago / Liquidado</option>
+              <option value="Pago">Pago / Liquidado</option>
               <option value="Recusado">Recusado</option>
               <option value="Cancelada">Cancelada</option>
             </select>
@@ -341,7 +341,7 @@
           <button type="button" onclick="backToCards()" class="px-5 py-2.5 rounded-xl border border-slate-700 hover:bg-slate-800 text-slate-300 text-sm font-medium">Cancelar</button>
           <button type="submit" id="btn-submit" class="btn-neon-primary px-8 py-2.5 rounded-xl font-bold text-sm text-white flex items-center space-x-2">
             <i data-lucide="send" class="w-4 h-4"></i>
-            <span id="btn-submit-text">Salvar Registro</span>
+            <span>Salvar Registro</span>
           </button>
         </div>
       </form>
@@ -391,7 +391,7 @@
           <select id="filter-status" onchange="renderTable()" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
             <option value="ALL">Todos os Status</option>
             <option value="Pendente">Pendente</option>
-            <option value="Paga">Pago</option>
+            <option value="Pago">Pago</option>
             <option value="Recusado">Recusado</option>
             <option value="Cancelada">Cancelada</option>
           </select>
@@ -427,16 +427,118 @@
 
   </main>
 
+  <!-- MODAL DE EDIÇÃO COMPLETA -->
+  <div id="edit-modal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="glass-card rounded-2xl p-6 sm:p-8 max-w-2xl w-full border border-slate-700/80 shadow-2xl relative my-8">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
+        <div class="flex items-center space-x-3">
+          <div class="p-2 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"><i data-lucide="edit-3" class="w-5 h-5"></i></div>
+          <div>
+            <h3 class="text-lg font-bold text-white">Editar Transação</h3>
+            <p class="text-xs text-slate-400">Atualize os dados e anexe o comprovante de pagamento</p>
+          </div>
+        </div>
+        <button onclick="closeEditModal()" class="text-slate-400 hover:text-white p-1.5 rounded-lg bg-slate-800/60 hover:bg-slate-700"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <form id="edit-form" onsubmit="saveEdit(event)" class="space-y-4">
+        <input type="hidden" id="edit-id">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Tipo de Fluxo</label>
+            <select id="edit-tipo" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+              <option value="SAIDA">Saída / Despesa / Salário</option>
+              <option value="ENTRADA">Entrada / Receita</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Status do Pagamento</label>
+            <select id="edit-status" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+              <option value="Pendente">Pendente</option>
+              <option value="Pago">Pago</option>
+              <option value="Recusado">Recusado</option>
+              <option value="Cancelada">Cancelada</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Referência / Nº Doc</label>
+            <input type="text" id="edit-numero" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-300 uppercase mb-1">CNPJ / CPF</label>
+            <input type="text" id="edit-cnpj" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Colaborador / Fornecedor</label>
+            <input type="text" id="edit-fornecedor" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Valor Total (R$)</label>
+            <input type="text" id="edit-valor" required oninput="maskCurrencyInput(this)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-emerald-400 font-mono font-bold focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Data de Emissão</label>
+            <input type="date" id="edit-emissao" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Categoria</label>
+            <select id="edit-categoria" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+              <option value="Salários e Encargos">Salários e Encargos</option>
+              <option value="Equipamentos de Monitoramento">Equipamentos de Monitoramento</option>
+              <option value="Vigilância Presencial">Vigilância Presencial</option>
+              <option value="Manutenção de CFTV">Manutenção de CFTV</option>
+              <option value="Licenças de Software">Licenças de Software</option>
+              <option value="Uniformes e EPIs">Uniformes e EPIs</option>
+              <option value="Despesas Operacionais / Serviços">Despesas Operacionais / Serviços</option>
+              <option value="Faturamento Contratos de Vigilância">Faturamento Contratos de Vigilância</option>
+              <option value="Serviços de Segurança Eventual">Serviços de Segurança Eventual</option>
+              <option value="Instalações & CFTV Clientes">Instalações & CFTV Clientes</option>
+              <option value="Outras Receitas">Outras Receitas</option>
+            </select>
+          </div>
+
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Atuação / Cargo (Opcional)</label>
+            <input type="text" id="edit-atuacao" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+          </div>
+
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Atualizar Comprovante / Holerite / Anexo</label>
+            <input type="file" id="edit-file-input" accept=".xml,.pdf,.png,.jpg" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-300 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-cyan-500/20 file:text-cyan-300 hover:file:bg-cyan-500/30">
+          </div>
+
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Observações</label>
+            <textarea id="edit-observacoes" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"></textarea>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end space-x-3 pt-4 border-t border-slate-800">
+          <button type="button" onclick="closeEditModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold">Cancelar</button>
+          <button type="submit" id="btn-save-edit" class="btn-neon-primary px-6 py-2 rounded-xl text-xs font-bold text-white">Salvar Alterações</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- TOAST -->
   <div id="toast" class="fixed bottom-6 right-6 z-50 hidden max-w-md bg-slate-900 border border-cyan-500/50 text-slate-100 text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 backdrop-blur-md">
     <i data-lucide="info" id="toast-icon" class="w-5 h-5 text-cyan-400"></i>
     <span id="toast-message">Notificação</span>
   </div>
 
-  <!-- FIREBASE INTEGRATION -->
+  <!-- FIREBASE V10 INTEGRATED -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, deleteDoc, updateDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBkIE0buv-9l-MTlh6m4H_uBd_l4UJChfI",
@@ -453,6 +555,7 @@
     let nfeList = [];
     let currentSelectedFile = null;
     let currentSelectedFileData = null;
+    let editSelectedFileData = null;
 
     window.onload = function() {
       lucide.createIcons();
@@ -525,7 +628,7 @@
     window.toggleActiveType = function() {
       const atual = document.getElementById('input-tipo-transacao-hidden').value;
       const novo = atual === 'SAIDA' ? 'ENTRADA' : 'SAIDA';
-      setFormType(novo === 'SAIDA' ? 'SAIDA' : 'ENTRADA');
+      setFormType(novo);
     };
 
     function setFormType(tipo) {
@@ -590,7 +693,7 @@
 
     function parseCurrencyToNumber(valStr) {
       if (!valStr) return 0;
-      let clean = valStr.replace(/[^\d,-]/g, '').replace(',', '.');
+      let clean = String(valStr).replace(/[^\d,-]/g, '').replace(',', '.');
       return parseFloat(clean) || 0;
     }
 
@@ -603,23 +706,113 @@
       document.getElementById('upload-preview').classList.add('hidden');
     };
 
-    // FUNÇÃO DE DOWNLOAD PRESERVADA INTACTA
     window.downloadFile = function(id) {
       const item = nfeList.find(x => x.id === id);
       if (!item || !item.fileData) {
         showToast('Nenhum comprovante anexado.', 'warning');
         return;
       }
-      const a = document.createElement('a');
-      a.href = item.fileData;
-      a.download = item.fileName || `Comprovante_${item.numero}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      showToast('Download iniciado!', 'success');
+      try {
+        const parts = item.fileData.split(',');
+        const contentTypeMatch = parts[0].match(/:(.*?);/);
+        const contentType = contentTypeMatch ? contentTypeMatch[1] : 'application/pdf';
+        
+        const raw = window.atob(parts[1]);
+        const uInt8Array = new Uint8Array(raw.length);
+        for (let i = 0; i < raw.length; ++i) { uInt8Array[i] = raw.charCodeAt(i); }
+
+        const blob = new Blob([uInt8Array], { type: contentType });
+        const blobUrl = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = item.fileName || `Comprovante_${item.numero}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+        showToast('Download iniciado!', 'success');
+      } catch (e) {
+        showToast('Erro ao processar arquivo.', 'warning');
+      }
     };
 
-    // SALVAMENTO COM CORREÇÃO NO BOTÃO
+    // ABRIR MODAL DE EDIÇÃO
+    window.openEditModal = function(id) {
+      const item = nfeList.find(x => x.id === id);
+      if (!item) return;
+
+      document.getElementById('edit-id').value = item.id;
+      document.getElementById('edit-tipo').value = item.tipo || 'SAIDA';
+      document.getElementById('edit-status').value = item.status || 'Pendente';
+      document.getElementById('edit-numero').value = item.numero || '';
+      document.getElementById('edit-cnpj').value = item.cnpj || '';
+      document.getElementById('edit-fornecedor').value = item.fornecedor || '';
+      document.getElementById('edit-valor').value = formatCurrency(item.valor || 0).replace('R$', '').trim();
+      document.getElementById('edit-emissao').value = item.emissao || '';
+      document.getElementById('edit-categoria').value = item.categoria || '';
+      document.getElementById('edit-atuacao').value = item.atuacao || '';
+      document.getElementById('edit-observacoes').value = item.observacoes || '';
+      
+      editSelectedFileData = item.fileData || null;
+      document.getElementById('edit-file-input').value = '';
+
+      document.getElementById('edit-modal').classList.remove('hidden');
+    };
+
+    window.closeEditModal = function() {
+      document.getElementById('edit-modal').classList.add('hidden');
+    };
+
+    // SALVAR EDIÇÃO DO MODAL
+    window.saveEdit = async function(event) {
+      event.preventDefault();
+      const id = document.getElementById('edit-id').value;
+      const fileInput = document.getElementById('edit-file-input');
+
+      let fileDataToSave = editSelectedFileData;
+      let fileNameToSave = `DOC_${document.getElementById('edit-numero').value}.pdf`;
+
+      if (fileInput.files && fileInput.files[0]) {
+        const file = fileInput.files[0];
+        fileNameToSave = file.name;
+        const reader = new FileReader();
+        reader.onload = async function(evt) {
+          fileDataToSave = evt.target.result;
+          await commitUpdate(id, fileDataToSave, fileNameToSave);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        await commitUpdate(id, fileDataToSave, fileNameToSave);
+      }
+    };
+
+    async function commitUpdate(id, fileData, fileName) {
+      const updatedData = {
+        tipo: document.getElementById('edit-tipo').value,
+        status: document.getElementById('edit-status').value,
+        numero: document.getElementById('edit-numero').value.trim(),
+        cnpj: document.getElementById('edit-cnpj').value.trim(),
+        fornecedor: document.getElementById('edit-fornecedor').value.trim(),
+        valor: parseCurrencyToNumber(document.getElementById('edit-valor').value),
+        emissao: document.getElementById('edit-emissao').value,
+        categoria: document.getElementById('edit-categoria').value,
+        atuacao: document.getElementById('edit-atuacao').value.trim(),
+        observacoes: document.getElementById('edit-observacoes').value.trim(),
+        fileData: fileData,
+        fileName: fileName
+      };
+
+      try {
+        const docRef = doc(db, "transacoes", id);
+        await updateDoc(docRef, updatedData);
+        showToast('Registro atualizado com sucesso!', 'success');
+        closeEditModal();
+      } catch (err) {
+        showToast('Erro ao atualizar: ' + err.message, 'warning');
+      }
+    }
+
     document.getElementById('nfe-form').onsubmit = async function(event) {
       event.preventDefault();
 
@@ -631,11 +824,6 @@
         showToast('Informe um valor válido.', 'warning');
         return;
       }
-
-      const btnSubmit = document.getElementById('btn-submit');
-      const btnSubmitText = document.getElementById('btn-submit-text');
-      btnSubmit.disabled = true;
-      btnSubmitText.textContent = "Salvando...";
 
       const newRecord = {
         tipo: tipoSelecionado,
@@ -655,6 +843,9 @@
         criadoEm: serverTimestamp()
       };
 
+      const btnSubmit = document.getElementById('btn-submit');
+      btnSubmit.disabled = true;
+
       try {
         await addDoc(collection(db, "transacoes"), newRecord);
         showToast('Registro salvo com sucesso!', 'success');
@@ -664,39 +855,16 @@
         showToast('Erro ao salvar: ' + err.message, 'warning');
       } finally {
         btnSubmit.disabled = false;
-        btnSubmitText.textContent = "Salvar Registro";
       }
     };
 
-    // EDICÃO DINÂMICA DE STATUS
-    window.cycleStatus = async function(id, currentStatus) {
-      const statusCycle = {
-        'Pendente': 'Paga',
-        'Paga': 'Recusado',
-        'Recusado': 'Pendente',
-        'Aprovada': 'Paga',
-        'Cancelada': 'Pendente'
-      };
-
-      const nextStatus = statusCycle[currentStatus] || 'Pendente';
-
-      try {
-        const docRef = doc(db, "transacoes", id);
-        await updateDoc(docRef, { status: nextStatus });
-        showToast(`Status atualizado para: ${nextStatus}`, 'success');
-      } catch (err) {
-        showToast('Erro ao atualizar status.', 'warning');
-      }
-    };
-
-    // EXCLUSÃO
     window.deleteNFe = async function(id) {
       if (!confirm('Deseja realmente remover este registro?')) return;
       try {
         await deleteDoc(doc(db, "transacoes", id));
         showToast('Registro excluído com sucesso.', 'warning');
       } catch (e) {
-        showToast('Erro ao excluir registro.', 'warning');
+        showToast('Erro ao excluir.', 'warning');
       }
     };
 
@@ -778,13 +946,13 @@
           ? `<span class="text-emerald-400 font-bold font-mono">+${formatCurrency(item.valor)}</span>`
           : `<span class="text-rose-400 font-bold font-mono">-${formatCurrency(item.valor)}</span>`;
 
-        let statusBadge = `<button onclick="cycleStatus('${item.id}', '${item.status}')" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:opacity-80 transition-opacity">Pendente 🔄</button>`;
-        if (item.status === 'Paga' || item.status === 'Pago') {
-          statusBadge = `<button onclick="cycleStatus('${item.id}', '${item.status}')" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:opacity-80 transition-opacity">Pago 🔄</button>`;
+        let statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">Pendente</span>`;
+        if (item.status === 'Pago') {
+          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">Pago</span>`;
         } else if (item.status === 'Recusado') {
-          statusBadge = `<button onclick="cycleStatus('${item.id}', '${item.status}')" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30 hover:opacity-80 transition-opacity">Recusado 🔄</button>`;
+          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30">Recusado</span>`;
         } else if (item.status === 'Cancelada') {
-          statusBadge = `<button onclick="cycleStatus('${item.id}', '${item.status}')" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/10 text-slate-400 border border-slate-500/30 hover:opacity-80 transition-opacity">Cancelada 🔄</button>`;
+          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/10 text-slate-400 border border-slate-500/30">Cancelada</span>`;
         }
 
         const hasFileBtn = item.fileData 
@@ -810,7 +978,8 @@
           <td class="py-3.5 px-4 text-center">${statusBadge}</td>
           <td class="py-3.5 px-4 text-right">
             ${hasFileBtn}
-            <button onclick="deleteNFe('${item.id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-red-950 text-red-400 transition-colors" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+            <button onclick="openEditModal('${item.id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-amber-950 text-amber-400 mr-1" title="Editar Registro"><i data-lucide="pen-tool" class="w-4 h-4"></i></button>
+            <button onclick="deleteNFe('${item.id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-red-950 text-red-400" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
           </td>
         `;
         tbody.appendChild(tr);
