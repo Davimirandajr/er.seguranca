@@ -145,7 +145,7 @@
 
   <div class="floor-reflection"></div>
 
-  <!-- Firebase v10 SDK -->
+<!-- FIREBASE AUTH SCRIPT -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -172,8 +172,8 @@
       try {
         await signInWithEmailAndPassword(auth, email, password);
         
-        // Salva na sessão para liberar os portais protegidos
-        sessionStorage.setItem("er_logged_user", email);
+        // CORRIGIDO: Salva exatamente a mesma chave que os portais exigem
+        localStorage.setItem("er_usuario_logado", email);
 
         showToast("Login autorizado! Redirecionando...");
 
@@ -200,9 +200,12 @@
 
     function showToast(message) {
       const toast = document.getElementById('toast');
-      document.getElementById('toastMessage').textContent = message;
-      toast.classList.remove('hidden');
-      setTimeout(() => toast.classList.add('hidden'), 4000);
+      const toastMsg = document.getElementById('toastMessage');
+      if (toast && toastMsg) {
+        toastMsg.textContent = message;
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 4000);
+      }
     }
   </script>
 </body>
