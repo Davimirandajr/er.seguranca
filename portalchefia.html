@@ -395,6 +395,20 @@
     let editSelectedFileData = null;
     let chartEvolutionInstance = null;
     let chartCategoriesInstance = null;
+    
+    
+    window.onload = function() {
+  // VERIFICAÇÃO DE SEGURANÇA DE ACESSO
+  const usuarioLogado = localStorage.getItem('er_usuario_logado');
+  if (!usuarioLogado) {
+    alert('Acesso negado! Faça login para entrar no sistema.');
+    window.location.href = 'index.html'; // Redireciona de volta para a tela de login
+    return;
+  }
+
+  lucide.createIcons();
+  listenFirestore();
+};
 
     window.onload = function() {
       lucide.createIcons();
