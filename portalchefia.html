@@ -90,7 +90,7 @@
           <i data-lucide="shield-check" class="w-8 h-8 text-cyan-400"></i>
           Painel Executivo de Resultado Financeiro (DRE)
         </h1>
-        <p class="text-xs sm:text-sm text-slate-400 mt-1">Acompanhamento consolidado em tempo real.</p>
+        <p class="text-xs sm:text-sm text-slate-400 mt-1">Acompanhamento consolidado em tempo real do fluxo corporativo.</p>
       </div>
 
       <div class="flex items-center space-x-3">
@@ -118,7 +118,7 @@
           <div class="p-2 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20"><i data-lucide="arrow-up-right" class="w-5 h-5"></i></div>
         </div>
         <div class="mt-3"><span id="kpi-saidas-val" class="text-xl sm:text-2xl font-black text-rose-400 font-mono">R$ 0,00</span></div>
-        <div class="mt-2 text-[10px] text-slate-400">Total Custos/NF-e</div>
+        <div class="mt-2 text-[10px] text-slate-400">Total Custos & Salários</div>
       </div>
 
       <div class="glass-card rounded-2xl p-4 sm:p-5 relative overflow-hidden">
@@ -148,7 +148,7 @@
           <div class="p-2 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20"><i data-lucide="files" class="w-5 h-5"></i></div>
         </div>
         <div class="mt-3"><span id="kpi-total-count" class="text-xl sm:text-2xl font-black text-white font-mono">0</span></div>
-        <div class="mt-2 text-[10px] text-slate-400">Transações no Banco</div>
+        <div class="mt-2 text-[10px] text-slate-400">Transações no Sistema</div>
       </div>
     </section>
 
@@ -182,13 +182,13 @@
           <div class="p-2 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"><i data-lucide="database" class="w-5 h-5"></i></div>
           <div>
             <h2 class="text-lg font-bold text-white">Auditoria & Download de Documentos</h2>
-            <p class="text-xs text-slate-400">Busca dinâmica e download direto das notas fiscais armazenadas</p>
+            <p class="text-xs text-slate-400">Busca dinâmica e download direto dos comprovantes e notas</p>
           </div>
         </div>
         <div id="table-summary-pill" class="text-xs font-mono bg-slate-900 border border-slate-800 text-cyan-400 px-4 py-2 rounded-xl">Aguardando dados...</div>
       </div>
 
-      <!-- FILTROS E CAMPO DE BUSCA AMBA -->
+      <!-- FILTROS E CAMPO DE BUSCA -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 bg-slate-950/70 p-4 rounded-xl border border-slate-800">
         <div>
           <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Tipo de Fluxo</label>
@@ -201,13 +201,14 @@
 
         <div>
           <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Busca Rápida</label>
-          <input type="text" id="filter-search" oninput="renderTable()" placeholder="Nº, Chave, Fornecedor/Cliente..." class="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+          <input type="text" id="filter-search" oninput="renderTable()" placeholder="Nº, Colaborador, Fornecedor..." class="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
         </div>
 
         <div>
           <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Categoria</label>
           <select id="filter-categoria" onchange="renderTable()" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
             <option value="ALL">Todas as Categorias</option>
+            <option value="Salários e Encargos">Salários e Encargos</option>
             <option value="Equipamentos de Monitoramento">Equipamentos de Monitoramento</option>
             <option value="Vigilância Presencial">Vigilância Presencial</option>
             <option value="Faturamento Contratos de Vigilância">Faturamento Contratos</option>
@@ -219,8 +220,9 @@
           <select id="filter-status" onchange="renderTable()" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
             <option value="ALL">Todos os Status</option>
             <option value="Pendente">Pendente</option>
+            <option value="Paga">Pago</option>
+            <option value="Recusado">Recusado</option>
             <option value="Aprovada">Aprovada</option>
-            <option value="Paga">Paga</option>
             <option value="Cancelada">Cancelada</option>
           </select>
         </div>
@@ -242,9 +244,9 @@
                 <input type="checkbox" id="select-all-checkbox" onchange="toggleSelectAll(this)" class="rounded bg-slate-900 border-slate-700 text-cyan-500">
               </th>
               <th class="py-3.5 px-4">Tipo</th>
-              <th class="py-3.5 px-4">ID / Nº Doc</th>
-              <th class="py-3.5 px-4">Fornecedor / Cliente</th>
-              <th class="py-3.5 px-4">Categoria</th>
+              <th class="py-3.5 px-4">Referência / Nº Doc</th>
+              <th class="py-3.5 px-4">Colaborador / Fornecedor</th>
+              <th class="py-3.5 px-4">Categoria / Atuação</th>
               <th class="py-3.5 px-4">Data Emissão</th>
               <th class="py-3.5 px-4">Valor Total</th>
               <th class="py-3.5 px-4 text-center">Status</th>
@@ -291,7 +293,6 @@
       listenFirestore();
     };
 
-    // FUNÇÃO DE LOGOUT
     window.logout = function() {
       if (confirm('Deseja realmente encerrar a sessão?')) {
         window.location.href = 'index.html';
@@ -416,24 +417,43 @@
       });
     }
 
-    // FUNÇÃO DE DOWNLOAD DO ARQUIVO ANEXADO
     window.downloadFile = function(id) {
       const item = nfeData.find(x => x.id === id);
       if (!item || !item.fileData) {
-        showToast('Nenhum arquivo físico encontrado para esta nota.', 'warning');
+        showToast('Nenhum arquivo anexado nesta transação.', 'warning');
         return;
       }
 
-      const a = document.createElement('a');
-      a.href = item.fileData;
-      a.download = item.fileName || `NF_${item.numero}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      showToast('Download do documento iniciado!', 'success');
+      try {
+        const parts = item.fileData.split(',');
+        const contentTypeMatch = parts[0].match(/:(.*?);/);
+        const contentType = contentTypeMatch ? contentTypeMatch[1] : 'application/pdf';
+        
+        const raw = window.atob(parts[1]);
+        const rawLength = raw.length;
+        const uInt8Array = new Uint8Array(rawLength);
+
+        for (let i = 0; i < rawLength; ++i) {
+          uInt8Array[i] = raw.charCodeAt(i);
+        }
+
+        const blob = new Blob([uInt8Array], { type: contentType });
+        const blobUrl = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = item.fileName || `Comprovante_${item.numero}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+        showToast('Download do documento original concluído!', 'success');
+      } catch (e) {
+        showToast('Erro ao processar o arquivo para download.', 'warning');
+      }
     };
 
-    // RENDERIZAÇÃO DA TABELA COM FILTROS E BOTÃO DE DOWNLOAD
     window.renderTable = function() {
       const search = document.getElementById('filter-search').value.toLowerCase();
       const categoria = document.getElementById('filter-categoria').value;
@@ -454,10 +474,10 @@
       const tbody = document.getElementById('owner-table-body');
       tbody.innerHTML = '';
 
-      document.getElementById('table-summary-pill').textContent = `Exibindo ${filtrados.length} registros no banco`;
+      document.getElementById('table-summary-pill').textContent = `Exibindo ${filtrados.length} registros`;
 
       if (filtrados.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="py-12 text-center text-slate-500">Nenhum registro encontrado no Banco de Dados.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="py-12 text-center text-slate-500">Nenhum registro encontrado.</td></tr>`;
         lucide.createIcons();
         return;
       }
@@ -468,21 +488,31 @@
         tr.className = "hover:bg-slate-800/40 transition-colors";
 
         const isEntrada = (item.tipo === 'ENTRADA');
+        const isSalario = (item.categoria === 'Salários e Encargos');
+
         const tipoBadge = isEntrada 
           ? `<span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">ENTRADA</span>`
-          : `<span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-rose-500/10 text-rose-400 border border-rose-500/30">SAÍDA</span>`;
+          : (isSalario 
+              ? `<span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-amber-500/10 text-amber-400 border border-amber-500/30">SALÁRIO</span>`
+              : `<span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-rose-500/10 text-rose-400 border border-rose-500/30">SAÍDA</span>`);
 
         const valorFormatted = isEntrada
           ? `<span class="text-emerald-400 font-bold font-mono">+${formatCurrency(item.valor)}</span>`
           : `<span class="text-rose-400 font-bold font-mono">-${formatCurrency(item.valor)}</span>`;
 
-        let statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">${item.status}</span>`;
-        if (item.status === 'Aprovada' || item.status === 'Paga') {
-          statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">${item.status}</span>`;
+        let statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">Pendente</span>`;
+        if (item.status === 'Paga') {
+          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">Pago</span>`;
+        } else if (item.status === 'Recusado') {
+          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30">Recusado</span>`;
+        } else if (item.status === 'Aprovada') {
+          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">Aprovada</span>`;
+        } else if (item.status === 'Cancelada') {
+          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/10 text-slate-400 border border-slate-500/30">Cancelada</span>`;
         }
 
         const hasFileBtn = item.fileData 
-          ? `<button onclick="downloadFile('${item.id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-cyan-950 text-cyan-400 transition-colors" title="Baixar Documento Original"><i data-lucide="download" class="w-4 h-4"></i></button>`
+          ? `<button onclick="downloadFile('${item.id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-cyan-950 text-cyan-400 transition-colors" title="Baixar Comprovante"><i data-lucide="download" class="w-4 h-4"></i></button>`
           : `<span class="text-[10px] text-slate-600">Sem Anexo</span>`;
 
         tr.innerHTML = `
@@ -492,7 +522,7 @@
           <td class="py-3.5 px-4">${tipoBadge}</td>
           <td class="py-3.5 px-4 font-mono">
             <div class="font-bold text-white">${item.numero}</div>
-            <div class="text-[10px] text-slate-500 truncate max-w-[120px]">${item.chave}</div>
+            <div class="text-[10px] text-slate-500 truncate max-w-[120px]">${item.chave !== 'N/A' ? item.chave : ''}</div>
           </td>
           <td class="py-3.5 px-4">
             <div class="font-bold text-slate-200">${item.fornecedor}</div>
@@ -500,6 +530,7 @@
           </td>
           <td class="py-3.5 px-4 text-slate-300">
             <span class="inline-block px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-[10px]">${item.categoria}</span>
+            ${item.atuacao ? `<div class="text-[10px] text-cyan-400 mt-0.5">Atuação: ${item.atuacao}</div>` : ''}
           </td>
           <td class="py-3.5 px-4 font-mono text-slate-400">${formatDate(item.emissao)}</td>
           <td class="py-3.5 px-4">${valorFormatted}</td>
@@ -507,7 +538,7 @@
           <td class="py-3.5 px-4 text-right space-x-1">
             ${hasFileBtn}
             <button onclick="toggleApproveStatus('${item.id}', '${item.status}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-emerald-950 text-emerald-400 transition-colors" title="Aprovar / Alternar Status"><i data-lucide="check-circle-2" class="w-4 h-4"></i></button>
-            <button onclick="deleteNFe('${item.id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-red-950 text-red-400 transition-colors" title="Excluir Transação"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+            <button onclick="deleteNFe('${item.id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-red-950 text-red-400 transition-colors" title="Excluir Registro"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -561,12 +592,12 @@
     };
 
     window.deleteNFe = async function(id) {
-      if (!confirm('Deseja realmente remover esta transação do Banco de Dados?')) return;
+      if (!confirm('Deseja realmente remover esta transação?')) return;
       try {
         await deleteDoc(doc(db, "transacoes", id));
-        showToast('Registro excluído do Firebase.', 'warning');
+        showToast('Registro excluído com sucesso.', 'warning');
       } catch (e) {
-        showToast('Erro ao excluir no Firebase.', 'warning');
+        showToast('Erro ao excluir registro.', 'warning');
       }
     };
 
