@@ -165,7 +165,7 @@
         </div>
       </div>
 
-      <!-- Card 2: Salários e Encargos (NOVO CARD DEDICADO) -->
+      <!-- Card 2: Salários e Encargos -->
       <div onclick="openForm('SALARIO')" class="glass-card rounded-2xl p-6 cursor-pointer hover:border-amber-500/50 transition-all group relative overflow-hidden border border-slate-800 flex flex-col justify-between">
         <div class="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition-all"></div>
         <div class="flex items-center space-x-4">
@@ -341,7 +341,7 @@
           <button type="button" onclick="backToCards()" class="px-5 py-2.5 rounded-xl border border-slate-700 hover:bg-slate-800 text-slate-300 text-sm font-medium">Cancelar</button>
           <button type="submit" id="btn-submit" class="btn-neon-primary px-8 py-2.5 rounded-xl font-bold text-sm text-white flex items-center space-x-2">
             <i data-lucide="send" class="w-4 h-4"></i>
-            <span>Salvar Registro</span>
+            <span id="btn-submit-text">Salvar Registro</span>
           </button>
         </div>
       </form>
@@ -433,10 +433,10 @@
     <span id="toast-message">Notificação</span>
   </div>
 
-  <!-- FIREBASE V10 INTEGRATED -->
+  <!-- FIREBASE INTEGRATION -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, deleteDoc, updateDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBkIE0buv-9l-MTlh6m4H_uBd_l4UJChfI",
@@ -603,6 +603,7 @@
       document.getElementById('upload-preview').classList.add('hidden');
     };
 
+    // FUNÇÃO DE DOWNLOAD PRESERVADA INTACTA
     window.downloadFile = function(id) {
       const item = nfeList.find(x => x.id === id);
       if (!item || !item.fileData) {
@@ -618,6 +619,7 @@
       showToast('Download iniciado!', 'success');
     };
 
+    // SALVAMENTO COM CORREÇÃO NO BOTÃO
     document.getElementById('nfe-form').onsubmit = async function(event) {
       event.preventDefault();
 
@@ -629,6 +631,11 @@
         showToast('Informe um valor válido.', 'warning');
         return;
       }
+
+      const btnSubmit = document.getElementById('btn-submit');
+      const btnSubmitText = document.getElementById('btn-submit-text');
+      btnSubmit.disabled = true;
+      btnSubmitText.textContent = "Salvando...";
 
       const newRecord = {
         tipo: tipoSelecionado,
@@ -648,9 +655,6 @@
         criadoEm: serverTimestamp()
       };
 
-      const btnSubmit = document.getElementById('btn-submit');
-      btnSubmit.disabled = true;
-
       try {
         await addDoc(collection(db, "transacoes"), newRecord);
         showToast('Registro salvo com sucesso!', 'success');
@@ -660,16 +664,39 @@
         showToast('Erro ao salvar: ' + err.message, 'warning');
       } finally {
         btnSubmit.disabled = false;
+        btnSubmitText.textContent = "Salvar Registro";
       }
     };
 
+    // EDICÃO DINÂMICA DE STATUS
+    window.cycleStatus = async function(id, currentStatus) {
+      const statusCycle = {
+        'Pendente': 'Paga',
+        'Paga': 'Recusado',
+        'Recusado': 'Pendente',
+        'Aprovada': 'Paga',
+        'Cancelada': 'Pendente'
+      };
+
+      const nextStatus = statusCycle[currentStatus] || 'Pendente';
+
+      try {
+        const docRef = doc(db, "transacoes", id);
+        await updateDoc(docRef, { status: nextStatus });
+        showToast(`Status atualizado para: ${nextStatus}`, 'success');
+      } catch (err) {
+        showToast('Erro ao atualizar status.', 'warning');
+      }
+    };
+
+    // EXCLUSÃO
     window.deleteNFe = async function(id) {
       if (!confirm('Deseja realmente remover este registro?')) return;
       try {
         await deleteDoc(doc(db, "transacoes", id));
         showToast('Registro excluído com sucesso.', 'warning');
       } catch (e) {
-        showToast('Erro ao excluir.', 'warning');
+        showToast('Erro ao excluir registro.', 'warning');
       }
     };
 
@@ -751,13 +778,13 @@
           ? `<span class="text-emerald-400 font-bold font-mono">+${formatCurrency(item.valor)}</span>`
           : `<span class="text-rose-400 font-bold font-mono">-${formatCurrency(item.valor)}</span>`;
 
-        let statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">Pendente</span>`;
-        if (item.status === 'Paga') {
-          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">Pago</span>`;
+        let statusBadge = `<button onclick="cycleStatus('${item.id}', '${item.status}')" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:opacity-80 transition-opacity">Pendente 🔄</button>`;
+        if (item.status === 'Paga' || item.status === 'Pago') {
+          statusBadge = `<button onclick="cycleStatus('${item.id}', '${item.status}')" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:opacity-80 transition-opacity">Pago 🔄</button>`;
         } else if (item.status === 'Recusado') {
-          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30">Recusado</span>`;
+          statusBadge = `<button onclick="cycleStatus('${item.id}', '${item.status}')" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30 hover:opacity-80 transition-opacity">Recusado 🔄</button>`;
         } else if (item.status === 'Cancelada') {
-          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/10 text-slate-400 border border-slate-500/30">Cancelada</span>`;
+          statusBadge = `<button onclick="cycleStatus('${item.id}', '${item.status}')" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/10 text-slate-400 border border-slate-500/30 hover:opacity-80 transition-opacity">Cancelada 🔄</button>`;
         }
 
         const hasFileBtn = item.fileData 
@@ -783,7 +810,7 @@
           <td class="py-3.5 px-4 text-center">${statusBadge}</td>
           <td class="py-3.5 px-4 text-right">
             ${hasFileBtn}
-            <button onclick="deleteNFe('${item.id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-red-950 text-red-400" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+            <button onclick="deleteNFe('${item.id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-red-950 text-red-400 transition-colors" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
           </td>
         `;
         tbody.appendChild(tr);
