@@ -536,9 +536,17 @@
   </div>
 
   <!-- FIREBASE V10 INTEGRATED -->
+<!-- FIREBASE V10 INTEGRATED -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // BLOQUEIO IMEDIATO DE SEGURANÇA (Executa antes da página carregar)
+    if (!localStorage.getItem('er_usuario_logado')) {
+      alert('Acesso negado! Faça login para entrar no sistema.');
+      window.location.href = 'index.html';
+      throw new Error('Acesso não autorizado.');
+    }
 
     const firebaseConfig = {
       apiKey: "AIzaSyBkIE0buv-9l-MTlh6m4H_uBd_l4UJChfI",
@@ -557,19 +565,7 @@
     let currentSelectedFileData = null;
     let editSelectedFileData = null;
     
-    window.onload = function() {
-  // VERIFICAÇÃO DE SEGURANÇA DE ACESSO
-  const usuarioLogado = localStorage.getItem('er_usuario_logado');
-  if (!usuarioLogado) {
-    alert('Acesso negado! Faça login para entrar no sistema.');
-    window.location.href = 'index.html'; // Redireciona de volta para a tela de login
-    return;
-  }
-
-  lucide.createIcons();
-  listenFirestore();
-};
-
+    // ÚNICO window.onload unificado e correto
     window.onload = function() {
       lucide.createIcons();
       document.getElementById('input-data-emissao').valueAsDate = new Date();
@@ -579,6 +575,7 @@
 
     window.logout = function() {
       if (confirm('Deseja realmente encerrar a sessão?')) {
+        localStorage.removeItem('er_usuario_logado'); // Limpa a credencial ao sair
         window.location.href = 'index.html';
       }
     };
