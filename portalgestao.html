@@ -488,10 +488,10 @@
     let currentSelectedFileData = null;
     let editSelectedFileData = null;
     
-    // ÚNICO window.onload unificado e correto
     window.onload = function() {
       lucide.createIcons();
-      document.getElementById('input-data-emissao').valueAsDate = new Date();
+      const inputEmissao = document.getElementById('input-data-emissao');
+      if (inputEmissao) inputEmissao.valueAsDate = new Date();
       setupDragAndDrop();
       listenFirestore();
     };
@@ -519,6 +519,7 @@
 
     function setupDragAndDrop() {
       const dropZone = document.getElementById('drop-zone');
+      if (!dropZone) return;
       ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropZone.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
       });
@@ -534,9 +535,12 @@
       const reader = new FileReader();
       reader.onload = function(evt) {
         currentSelectedFileData = evt.target.result;
-        document.getElementById('upload-placeholder').classList.add('hidden');
-        document.getElementById('upload-preview').classList.remove('hidden');
-        document.getElementById('file-name').textContent = file.name;
+        const placeholder = document.getElementById('upload-placeholder');
+        const preview = document.getElementById('upload-preview');
+        const fileName = document.getElementById('file-name');
+        if (placeholder) placeholder.classList.add('hidden');
+        if (preview) preview.classList.remove('hidden');
+        if (fileName) fileName.textContent = file.name;
       };
       reader.readAsDataURL(file);
     }
@@ -546,20 +550,26 @@
     };
 
     window.openForm = function(tipo) {
-      document.getElementById('selection-cards-section').classList.add('hidden');
-      document.getElementById('new-nfe-form').classList.remove('hidden');
+      const cards = document.getElementById('selection-cards-section');
+      const formSec = document.getElementById('new-nfe-form');
+      if (cards) cards.classList.add('hidden');
+      if (formSec) formSec.classList.remove('hidden');
       setFormType(tipo);
-      document.getElementById('new-nfe-form').scrollIntoView({ behavior: 'smooth' });
+      if (formSec) formSec.scrollIntoView({ behavior: 'smooth' });
     };
 
     window.backToCards = function() {
-      document.getElementById('new-nfe-form').classList.add('hidden');
-      document.getElementById('selection-cards-section').classList.remove('hidden');
+      const formSec = document.getElementById('new-nfe-form');
+      const cards = document.getElementById('selection-cards-section');
+      if (formSec) formSec.classList.add('hidden');
+      if (cards) cards.classList.remove('hidden');
       resetForm();
     };
 
     window.toggleActiveType = function() {
-      const atual = document.getElementById('input-tipo-transacao-hidden').value;
+      const hiddenInput = document.getElementById('input-tipo-transacao-hidden');
+      if (!hiddenInput) return;
+      const atual = hiddenInput.value;
       const novo = atual === 'SAIDA' ? 'ENTRADA' : 'SAIDA';
       setFormType(novo);
     };
@@ -571,49 +581,65 @@
       const containerAtuacao = document.getElementById('container-atuacao');
       const containerChave = document.getElementById('container-chave');
       const inputChave = document.getElementById('input-chave');
+      const hiddenInput = document.getElementById('input-tipo-transacao-hidden');
 
       if (tipo === 'SALARIO') {
-        document.getElementById('input-tipo-transacao-hidden').value = 'SAIDA';
-        badge.className = "px-3 py-1 rounded-lg text-xs font-black bg-amber-500/20 text-amber-300 border border-amber-500/40";
-        badge.textContent = "SAÍDA (Folha de Pagamento / Salário)";
-        title.textContent = "Lançamento de Salários e Encargos";
+        if (hiddenInput) hiddenInput.value = 'SAIDA';
+        if (badge) {
+          badge.className = "px-3 py-1 rounded-lg text-xs font-black bg-amber-500/20 text-amber-300 border border-amber-500/40";
+          badge.textContent = "SAÍDA (Folha de Pagamento / Salário)";
+        }
+        if (title) title.textContent = "Lançamento de Salários e Encargos";
         
-        document.getElementById('label-numero').innerHTML = `Referência / Mês-Ano <span class="text-red-400">*</span>`;
-        document.getElementById('label-cnpj').innerHTML = `CPF / Identificação <span class="text-red-400">*</span>`;
-        document.getElementById('label-fornecedor').innerHTML = `Nome do Colaborador <span class="text-red-400">*</span>`;
+        const lblNum = document.getElementById('label-numero');
+        const lblCnpj = document.getElementById('label-cnpj');
+        const lblForn = document.getElementById('label-fornecedor');
+        if (lblNum) lblNum.innerHTML = `Referência / Mês-Ano <span class="text-red-400">*</span>`;
+        if (lblCnpj) lblCnpj.innerHTML = `CPF / Identificação <span class="text-red-400">*</span>`;
+        if (lblForn) lblForn.innerHTML = `Nome do Colaborador <span class="text-red-400">*</span>`;
         
-        containerAtuacao.classList.remove('hidden');
-        containerChave.classList.remove('lg:col-span-2');
-        inputChave.required = false;
-        inputCategoria.value = "Salários e Encargos";
+        if (containerAtuacao) containerAtuacao.classList.remove('hidden');
+        if (containerChave) containerChave.classList.remove('lg:col-span-2');
+        if (inputChave) inputChave.required = false;
+        if (inputCategoria) inputCategoria.value = "Salários e Encargos";
       } else if (tipo === 'ENTRADA') {
-        document.getElementById('input-tipo-transacao-hidden').value = 'ENTRADA';
-        badge.className = "px-3 py-1 rounded-lg text-xs font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
-        badge.textContent = "ENTRADA (Receita / Faturamento)";
-        title.textContent = "Registrar Nova Entrada (Receita)";
+        if (hiddenInput) hiddenInput.value = 'ENTRADA';
+        if (badge) {
+          badge.className = "px-3 py-1 rounded-lg text-xs font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+          badge.textContent = "ENTRADA (Receita / Faturamento)";
+        }
+        if (title) title.textContent = "Registrar Nova Entrada (Receita)";
         
-        document.getElementById('label-numero').innerHTML = `Nº do Documento <span class="text-red-400">*</span>`;
-        document.getElementById('label-cnpj').innerHTML = `CNPJ / CPF do Cliente <span class="text-red-400">*</span>`;
-        document.getElementById('label-fornecedor').innerHTML = `Nome do Cliente <span class="text-red-400">*</span>`;
+        const lblNum = document.getElementById('label-numero');
+        const lblCnpj = document.getElementById('label-cnpj');
+        const lblForn = document.getElementById('label-fornecedor');
+        if (lblNum) lblNum.innerHTML = `Nº do Documento <span class="text-red-400">*</span>`;
+        if (lblCnpj) lblCnpj.innerHTML = `CNPJ / CPF do Cliente <span class="text-red-400">*</span>`;
+        if (lblForn) lblForn.innerHTML = `Nome do Cliente <span class="text-red-400">*</span>`;
         
-        containerAtuacao.classList.add('hidden');
-        containerChave.classList.add('lg:col-span-2');
-        inputChave.required = true;
-        inputCategoria.value = "";
+        if (containerAtuacao) containerAtuacao.classList.add('hidden');
+        if (containerChave) containerChave.classList.add('lg:col-span-2');
+        if (inputChave) inputChave.required = true;
+        if (inputCategoria) inputCategoria.value = "";
       } else {
-        document.getElementById('input-tipo-transacao-hidden').value = 'SAIDA';
-        badge.className = "px-3 py-1 rounded-lg text-xs font-black bg-rose-500/20 text-rose-300 border border-rose-500/40";
-        badge.textContent = "SAÍDA (Despesa / NF-e)";
-        title.textContent = "Anexar Nova Nota Fiscal / Despesa";
+        if (hiddenInput) hiddenInput.value = 'SAIDA';
+        if (badge) {
+          badge.className = "px-3 py-1 rounded-lg text-xs font-black bg-rose-500/20 text-rose-300 border border-rose-500/40";
+          badge.textContent = "SAÍDA (Despesa / NF-e)";
+        }
+        if (title) title.textContent = "Anexar Nova Nota Fiscal / Despesa";
         
-        document.getElementById('label-numero').innerHTML = `Número da Nota / Doc <span class="text-red-400">*</span>`;
-        document.getElementById('label-cnpj').innerHTML = `CNPJ do Emissor / Fornecedor <span class="text-red-400">*</span>`;
-        document.getElementById('label-fornecedor').innerHTML = `Razão Social / Fornecedor <span class="text-red-400">*</span>`;
+        const lblNum = document.getElementById('label-numero');
+        const lblCnpj = document.getElementById('label-cnpj');
+        const lblForn = document.getElementById('label-fornecedor');
+        if (lblNum) lblNum.innerHTML = `Número da Nota / Doc <span class="text-red-400">*</span>`;
+        if (lblCnpj) lblCnpj.innerHTML = `CNPJ do Emissor / Fornecedor <span class="text-red-400">*</span>`;
+        if (lblForn) lblForn.innerHTML = `Razão Social / Fornecedor <span class="text-red-400">*</span>`;
         
-        containerAtuacao.classList.add('hidden');
-        containerChave.classList.add('lg:col-span-2');
-        inputChave.required = true;
-        inputCategoria.value = "";
+        if (containerAtuacao) containerAtuacao.classList.add('hidden');
+        if (containerChave) containerChave.classList.add('lg:col-span-2');
+        if (inputChave) inputChave.required = true;
+        if (inputCategoria) inputCategoria.value = "";
       }
     }
 
@@ -634,9 +660,12 @@
       e.stopPropagation();
       currentSelectedFile = null;
       currentSelectedFileData = null;
-      document.getElementById('file-input').value = '';
-      document.getElementById('upload-placeholder').classList.remove('hidden');
-      document.getElementById('upload-preview').classList.add('hidden');
+      const fileIn = document.getElementById('file-input');
+      const placeholder = document.getElementById('upload-placeholder');
+      const preview = document.getElementById('upload-preview');
+      if (fileIn) fileIn.value = '';
+      if (placeholder) placeholder.classList.remove('hidden');
+      if (preview) preview.classList.add('hidden');
     };
 
     window.downloadFile = function(id) {
@@ -670,45 +699,55 @@
       }
     };
 
-    // ABRIR MODAL DE EDIÇÃO
+    // ABRIR MODAL DE EDIÇÃO COM VALIDAÇÃO SEGURA CONTRA ELEMENTOS NULOS
     window.openEditModal = function(id) {
       const item = nfeList.find(x => x.id === id);
       if (!item) return;
 
-      document.getElementById('edit-id').value = item.id;
-      document.getElementById('edit-tipo').value = item.tipo || 'SAIDA';
-      document.getElementById('edit-status').value = item.status || 'Pendente';
-      document.getElementById('edit-numero').value = item.numero || '';
-      document.getElementById('edit-cnpj').value = item.cnpj || '';
-      document.getElementById('edit-fornecedor').value = item.fornecedor || '';
-      document.getElementById('edit-valor').value = formatCurrency(item.valor || 0).replace('R$', '').trim();
-      document.getElementById('edit-emissao').value = item.emissao || '';
-      document.getElementById('edit-categoria').value = item.categoria || '';
-      document.getElementById('edit-atuacao').value = item.atuacao || '';
-      document.getElementById('edit-forma-pgto').value = item.formaPgto || 'Transferência';
-      document.getElementById('edit-local-pgto').value = item.localPgto || 'BRAD - ER';
-      document.getElementById('edit-observacoes').value = item.observacoes || '';
+      const setVal = (elementId, val) => {
+        const el = document.getElementById(elementId);
+        if (el) el.value = val;
+      };
+
+      setVal('edit-id', item.id);
+      setVal('edit-tipo', item.tipo || 'SAIDA');
+      setVal('edit-status', item.status || 'Pendente');
+      setVal('edit-numero', item.numero || '');
+      setVal('edit-cnpj', item.cnpj || '');
+      setVal('edit-fornecedor', item.fornecedor || '');
+      setVal('edit-valor', formatCurrency(item.valor || 0).replace('R$', '').trim());
+      setVal('edit-emissao', item.emissao || '');
+      setVal('edit-categoria', item.categoria || '');
+      setVal('edit-atuacao', item.atuacao || '');
+      setVal('edit-forma-pgto', item.formaPgto || 'Transferência');
+      setVal('edit-local-pgto', item.localPgto || 'BRAD - ER');
+      setVal('edit-observacoes', item.observacoes || '');
       
       editSelectedFileData = item.fileData || null;
-      document.getElementById('edit-file-input').value = '';
+      const fileInput = document.getElementById('edit-file-input');
+      if (fileInput) fileInput.value = '';
 
-      document.getElementById('edit-modal').classList.remove('hidden');
+      const modal = document.getElementById('edit-modal');
+      if (modal) modal.classList.remove('hidden');
     };
 
     window.closeEditModal = function() {
-      document.getElementById('edit-modal').classList.add('hidden');
+      const modal = document.getElementById('edit-modal');
+      if (modal) modal.classList.add('hidden');
     };
 
-    // SALVAR EDIÇÃO DO MODAL
     window.saveEdit = async function(event) {
       event.preventDefault();
-      const id = document.getElementById('edit-id').value;
+      const idElem = document.getElementById('edit-id');
+      if (!idElem) return;
+      const id = idElem.value;
       const fileInput = document.getElementById('edit-file-input');
+      const numElem = document.getElementById('edit-numero');
 
       let fileDataToSave = editSelectedFileData;
-      let fileNameToSave = `DOC_${document.getElementById('edit-numero').value}.pdf`;
+      let fileNameToSave = `DOC_${numElem ? numElem.value : 'arquivo'}.pdf`;
 
-      if (fileInput.files && fileInput.files[0]) {
+      if (fileInput && fileInput.files && fileInput.files[0]) {
         const file = fileInput.files[0];
         fileNameToSave = file.name;
         const reader = new FileReader();
@@ -723,19 +762,24 @@
     };
 
     async function commitUpdate(id, fileData, fileName) {
+      const getVal = (id) => {
+        const el = document.getElementById(id);
+        return el ? el.value.trim() : '';
+      };
+
       const updatedData = {
-        tipo: document.getElementById('edit-tipo').value,
-        status: document.getElementById('edit-status').value,
-        numero: document.getElementById('edit-numero').value.trim(),
-        cnpj: document.getElementById('edit-cnpj').value.trim(),
-        fornecedor: document.getElementById('edit-fornecedor').value.trim(),
-        valor: parseCurrencyToNumber(document.getElementById('edit-valor').value),
-        emissao: document.getElementById('edit-emissao').value,
-        categoria: document.getElementById('edit-categoria').value,
-        atuacao: document.getElementById('edit-atuacao').value.trim(),
-        formaPgto: document.getElementById('edit-forma-pgto').value,
-        localPgto: document.getElementById('edit-local-pgto').value,
-        observacoes: document.getElementById('edit-observacoes').value.trim(),
+        tipo: getVal('edit-tipo'),
+        status: getVal('edit-status'),
+        numero: getVal('edit-numero'),
+        cnpj: getVal('edit-cnpj'),
+        fornecedor: getVal('edit-fornecedor'),
+        valor: parseCurrencyToNumber(getVal('edit-valor')),
+        emissao: getVal('edit-emissao'),
+        categoria: getVal('edit-categoria'),
+        atuacao: getVal('edit-atuacao'),
+        formaPgto: getVal('edit-forma-pgto') || 'Transferência',
+        localPgto: getVal('edit-local-pgto') || 'BRAD - ER',
+        observacoes: getVal('edit-observacoes'),
         fileData: fileData,
         fileName: fileName
       };
@@ -750,52 +794,69 @@
       }
     }
 
-    document.getElementById('nfe-form').onsubmit = async function(event) {
-      event.preventDefault();
+    const nfeForm = document.getElementById('nfe-form');
+    if (nfeForm) {
+      nfeForm.onsubmit = async function(event) {
+        event.preventDefault();
 
-      const tipoSelecionado = document.getElementById('input-tipo-transacao-hidden').value;
-      const valorFormatado = document.getElementById('input-valor').value;
-      const valorNumerico = parseCurrencyToNumber(valorFormatado);
+        const tipoElem = document.getElementById('input-tipo-transacao-hidden');
+        const valorElem = document.getElementById('input-valor');
+        const numElem = document.getElementById('input-numero');
+        const cnpjElem = document.getElementById('input-cnpj');
+        const fornElem = document.getElementById('input-fornecedor');
+        const atuacaoElem = document.getElementById('input-atuacao');
+        const chaveElem = document.getElementById('input-chave');
+        const emissaoElem = document.getElementById('input-data-emissao');
+        const vencElem = document.getElementById('input-data-vencimento');
+        const formaElem = document.getElementById('input-forma-pgto');
+        const localElem = document.getElementById('input-local-pgto');
+        const catElem = document.getElementById('input-categoria');
+        const statusElem = document.getElementById('input-status');
+        const obsElem = document.getElementById('input-observacoes');
 
-      if (valorNumerico <= 0) {
-        showToast('Informe um valor válido.', 'warning');
-        return;
-      }
+        const tipoSelecionado = tipoElem ? tipoElem.value : 'SAIDA';
+        const valorNumerico = parseCurrencyToNumber(valorElem ? valorElem.value : '0');
 
-      const newRecord = {
-        tipo: tipoSelecionado,
-        numero: document.getElementById('input-numero').value.trim(),
-        cnpj: document.getElementById('input-cnpj').value.trim(),
-        fornecedor: document.getElementById('input-fornecedor').value.trim(),
-        atuacao: document.getElementById('input-atuacao').value.trim() || 'Geral',
-        chave: document.getElementById('input-chave').value.trim() || 'N/A',
-        valor: valorNumerico,
-        emissao: document.getElementById('input-data-emissao').value,
-        vencimento: document.getElementById('input-data-vencimento').value || null,
-        formaPgto: document.getElementById('input-forma-pgto').value,
-        localPgto: document.getElementById('input-local-pgto').value,
-        categoria: document.getElementById('input-categoria').value,
-        status: document.getElementById('input-status').value,
-        fileName: currentSelectedFile || `DOC_${document.getElementById('input-numero').value.replace(/\D/g, '')}.pdf`,
-        fileData: currentSelectedFileData || null,
-        observacoes: document.getElementById('input-observacoes').value.trim(),
-        criadoEm: serverTimestamp()
+        if (valorNumerico <= 0) {
+          showToast('Informe um valor válido.', 'warning');
+          return;
+        }
+
+        const newRecord = {
+          tipo: tipoSelecionado,
+          numero: numElem ? numElem.value.trim() : '',
+          cnpj: cnpjElem ? cnpjElem.value.trim() : '',
+          fornecedor: fornElem ? fornElem.value.trim() : '',
+          atuacao: atuacaoElem ? atuacaoElem.value.trim() : 'Geral',
+          chave: chaveElem ? chaveElem.value.trim() : 'N/A',
+          valor: valorNumerico,
+          emissao: emissaoElem ? emissaoElem.value : '',
+          vencimento: vencElem ? vencElem.value : null,
+          formaPgto: formaElem ? formaElem.value : 'Transferência',
+          localPgto: localElem ? localElem.value : 'BRAD - ER',
+          categoria: catElem ? catElem.value : '',
+          status: statusElem ? statusElem.value : 'Pendente',
+          fileName: currentSelectedFile || `DOC_${numElem ? numElem.value.replace(/\D/g, '') : 'arquivo'}.pdf`,
+          fileData: currentSelectedFileData || null,
+          observacoes: obsElem ? obsElem.value.trim() : '',
+          criadoEm: serverTimestamp()
+        };
+
+        const btnSubmit = document.getElementById('btn-submit');
+        if (btnSubmit) btnSubmit.disabled = true;
+
+        try {
+          await addDoc(collection(db, "transacoes"), newRecord);
+          showToast('Registro salvo com sucesso!', 'success');
+          resetForm();
+          backToCards();
+        } catch (err) {
+          showToast('Erro ao salvar: ' + err.message, 'warning');
+        } finally {
+          if (btnSubmit) btnSubmit.disabled = false;
+        }
       };
-
-      const btnSubmit = document.getElementById('btn-submit');
-      btnSubmit.disabled = true;
-
-      try {
-        await addDoc(collection(db, "transacoes"), newRecord);
-        showToast('Registro salvo com sucesso!', 'success');
-        resetForm();
-        backToCards();
-      } catch (err) {
-        showToast('Erro ao salvar: ' + err.message, 'warning');
-      } finally {
-        btnSubmit.disabled = false;
-      }
-    };
+    }
 
     window.deleteNFe = async function(id) {
       if (!confirm('Deseja realmente remover este registro?')) return;
@@ -807,7 +868,7 @@
       }
     };
 
-    // EXPORTAÇÃO EXECUTIVA EM EXCEL (COM CORES, TOTAIS E PADRÃO DO CLIENTE)
+    // EXPORTAÇÃO EXECUTIVA EM EXCEL (COM CORES, TOTAIS, DINHEIRO E PADRÃO DO CLIENTE)
     window.exportToCSV = function() {
       if (!nfeList || nfeList.length === 0) {
         showToast('Não há registros para exportar.', 'warning');
@@ -980,35 +1041,51 @@
 
       const balanco = totalEntradas - totalSaidas;
 
-      document.getElementById('stat-total-entradas').textContent = formatCurrency(totalEntradas);
-      document.getElementById('count-entradas').textContent = countEntradas;
-
-      document.getElementById('stat-total-saidas').textContent = formatCurrency(totalSaidas);
-      document.getElementById('count-saidas').textContent = countSaidas;
-
+      const statEntradas = document.getElementById('stat-total-entradas');
+      const countEnt = document.getElementById('count-entradas');
+      const statSaidas = document.getElementById('stat-total-saidas');
+      const countSai = document.getElementById('count-saidas');
       const balancoElem = document.getElementById('stat-balanco-liquido');
-      balancoElem.textContent = formatCurrency(balanco);
+      const subtext = document.getElementById('stat-balanco-subtext');
+      const totalCount = document.getElementById('stat-total-count');
+      const pendingCountElem = document.getElementById('stat-pending-count');
 
-      if (balanco >= 0) {
-        balancoElem.className = "text-2xl sm:text-3xl font-black text-emerald-400 font-mono";
-        document.getElementById('stat-balanco-subtext').textContent = "Superávit / Balanço Positivo";
-      } else {
-        balancoElem.className = "text-2xl sm:text-3xl font-black text-rose-400 font-mono";
-        document.getElementById('stat-balanco-subtext').textContent = "Déficit / Balanço Negativo";
+      if (statEntradas) statEntradas.textContent = formatCurrency(totalEntradas);
+      if (countEnt) countEnt.textContent = countEntradas;
+      if (statSaidas) statSaidas.textContent = formatCurrency(totalSaidas);
+      if (countSai) countSai.textContent = countSaidas;
+      if (balancoElem) balancoElem.textContent = formatCurrency(balanco);
+
+      if (balancoElem) {
+        if (balanco >= 0) {
+          balancoElem.className = "text-2xl sm:text-3xl font-black text-emerald-400 font-mono";
+          if (subtext) subtext.textContent = "Superávit / Balanço Positivo";
+        } else {
+          balancoElem.className = "text-2xl sm:text-3xl font-black text-rose-400 font-mono";
+          if (subtext) subtext.textContent = "Déficit / Balanço Negativo";
+        }
       }
 
-      document.getElementById('stat-total-count').textContent = nfeList.length;
-      document.getElementById('stat-pending-count').textContent = `${pendingCount} pendentes`;
+      if (totalCount) totalCount.textContent = nfeList.length;
+      if (pendingCountElem) pendingCountElem.textContent = `${pendingCount} pendentes`;
     };
 
     window.renderTable = function() {
-      const search = document.getElementById('filter-search').value.toLowerCase();
-      const categoria = document.getElementById('filter-categoria').value;
-      const status = document.getElementById('filter-status').value;
-      const tipo = document.getElementById('filter-tipo').value;
+      const searchElem = document.getElementById('filter-search');
+      const catElem = document.getElementById('filter-categoria');
+      const statusElem = document.getElementById('filter-status');
+      const tipoElem = document.getElementById('filter-tipo');
+
+      const search = searchElem ? searchElem.value.toLowerCase() : '';
+      const categoria = catElem ? catElem.value : 'ALL';
+      const status = statusElem ? statusElem.value : 'ALL';
+      const tipo = tipoElem ? tipoElem.value : 'ALL';
 
       const filtrados = nfeList.filter(item => {
-        const matchesSearch = item.numero.toLowerCase().includes(search) || item.fornecedor.toLowerCase().includes(search) || item.cnpj.includes(search);
+        const num = (item.numero || '').toLowerCase();
+        const forn = (item.fornecedor || '').toLowerCase();
+        const cnpj = (item.cnpj || '');
+        const matchesSearch = num.includes(search) || forn.includes(search) || cnpj.includes(search);
         const matchesCat = (categoria === 'ALL' || item.categoria === categoria);
         const matchesStatus = (status === 'ALL' || item.status === status);
         const matchesTipo = (tipo === 'ALL' || item.tipo === tipo);
@@ -1016,9 +1093,11 @@
       });
 
       const tbody = document.getElementById('nfe-table-body');
+      if (!tbody) return;
       tbody.innerHTML = '';
 
-      document.getElementById('filter-summary-pill').textContent = `Exibindo ${filtrados.length} registros`;
+      const summaryPill = document.getElementById('filter-summary-pill');
+      if (summaryPill) summaryPill.textContent = `Exibindo ${filtrados.length} registros`;
 
       if (filtrados.length === 0) {
         tbody.innerHTML = `<tr><td colspan="8" class="py-12 text-center text-slate-500">Nenhum registro encontrado.</td></tr>`;
@@ -1059,15 +1138,15 @@
         tr.innerHTML = `
           <td class="py-3.5 px-4">${tipoTag}</td>
           <td class="py-3.5 px-4 font-mono">
-            <div class="font-bold text-white">${item.numero}</div>
-            <div class="text-[10px] text-slate-500">${item.chave !== 'N/A' ? item.chave : ''}</div>
+            <div class="font-bold text-white">${item.numero || ''}</div>
+            <div class="text-[10px] text-slate-500">${item.chave && item.chave !== 'N/A' ? item.chave : ''}</div>
           </td>
           <td class="py-3.5 px-4">
-            <div class="font-semibold text-slate-200">${item.fornecedor}</div>
-            <div class="text-[10px] text-slate-400 font-mono">${item.cnpj}</div>
+            <div class="font-semibold text-slate-200">${item.fornecedor || ''}</div>
+            <div class="text-[10px] text-slate-400 font-mono">${item.cnpj || ''}</div>
           </td>
           <td class="py-3.5 px-4 text-slate-300">
-            <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700/60 text-[11px]">${item.categoria}</span>
+            <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700/60 text-[11px]">${item.categoria || ''}</span>
             ${item.atuacao ? `<div class="text-[10px] text-cyan-400 mt-0.5">Atuação: ${item.atuacao}</div>` : ''}
             <div class="text-[10px] text-slate-400 mt-0.5">Local: <strong class="text-slate-200">${item.localPgto || 'BRAD - ER'}</strong></div>
           </td>
@@ -1087,20 +1166,28 @@
     };
 
     window.clearFilters = function() {
-      document.getElementById('filter-search').value = '';
-      document.getElementById('filter-categoria').value = 'ALL';
-      document.getElementById('filter-status').value = 'ALL';
-      document.getElementById('filter-tipo').value = 'ALL';
+      const s = document.getElementById('filter-search');
+      const c = document.getElementById('filter-categoria');
+      const st = document.getElementById('filter-status');
+      const t = document.getElementById('filter-tipo');
+      if (s) s.value = '';
+      if (c) c.value = 'ALL';
+      if (st) st.value = 'ALL';
+      if (t) t.value = 'ALL';
       renderTable();
     };
 
     window.resetForm = function() {
-      document.getElementById('nfe-form').reset();
+      const form = document.getElementById('nfe-form');
+      if (form) form.reset();
       currentSelectedFile = null;
       currentSelectedFileData = null;
-      document.getElementById('upload-placeholder').classList.remove('hidden');
-      document.getElementById('upload-preview').classList.add('hidden');
-      document.getElementById('input-data-emissao').valueAsDate = new Date();
+      const placeholder = document.getElementById('upload-placeholder');
+      const preview = document.getElementById('upload-preview');
+      const emissao = document.getElementById('input-data-emissao');
+      if (placeholder) placeholder.classList.remove('hidden');
+      if (preview) preview.classList.add('hidden');
+      if (emissao) emissao.valueAsDate = new Date();
     };
 
     function formatCurrency(val) {
@@ -1134,7 +1221,9 @@
 
     function showToast(msg, type = 'info') {
       const toast = document.getElementById('toast');
-      document.getElementById('toast-message').textContent = msg;
+      const toastMsg = document.getElementById('toast-message');
+      if (!toast || !toastMsg) return;
+      toastMsg.textContent = msg;
       toast.className = `fixed bottom-6 right-6 z-50 max-w-md bg-slate-900 border ${type === 'success' ? 'border-emerald-500 text-emerald-200' : 'border-amber-500 text-amber-200'} text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 backdrop-blur-md`;
       toast.classList.remove('hidden');
       setTimeout(() => toast.classList.add('hidden'), 4000);
