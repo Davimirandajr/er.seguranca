@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portal Executivo & Diretoria | ER Segurança e Vigilância LTDA</title>
-  
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -372,7 +372,6 @@
     <i data-lucide="info" id="toast-icon" class="w-5 h-5 text-cyan-400"></i>
     <span id="toast-message">Notificação</span>
   </div>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -381,7 +380,7 @@
     if (!localStorage.getItem('er_usuario_logado')) {
       alert('Acesso negado! Faça login para entrar no sistema.');
       window.location.href = 'index.html';
-      throw new Error('Acesso não autorizado.'); // Interrompe a execução do script na hora
+      throw new Error('Acesso não autorizado.');
     }
 
     const firebaseConfig = {
@@ -402,7 +401,6 @@
     let chartEvolutionInstance = null;
     let chartCategoriesInstance = null;
     
-    // ÚNICO window.onload unificado e correto
     window.onload = function() {
       lucide.createIcons();
       listenFirestore();
@@ -410,7 +408,7 @@
 
     window.logout = function() {
       if (confirm('Deseja realmente encerrar a sessão?')) {
-        localStorage.removeItem('er_usuario_logado'); // Limpa a credencial ao sair
+        localStorage.removeItem('er_usuario_logado');
         window.location.href = 'index.html';
       }
     };
@@ -546,7 +544,6 @@
       });
     }
 
-    // DOWNLOAD DE ARQUIVO INTACTO
     window.downloadFile = function(id) {
       const item = nfeData.find(x => x.id === id);
       if (!item || !item.fileData) {
@@ -580,7 +577,6 @@
       }
     };
 
-    // ABRIR MODAL DE EDIÇÃO
     window.openEditModal = function(id) {
       const item = nfeData.find(x => x.id === id);
       if (!item) return;
@@ -796,16 +792,58 @@
       }
     };
 
+    // EXPORTAÇÃO EXCEL EM FORMATO PROFISSIONAL EXATAMENTE IDÊNTICO AO DO CLIENTE
     window.exportToCSV = function() {
-      let csv = 'Tipo;Numero;Fornecedor;CNPJ;Valor;Emissao;Status\n';
-      nfeData.forEach(i => { csv += `"${i.tipo || 'SAIDA'}";"${i.numero}";"${i.fornecedor}";"${i.cnpj}";${i.valor};"${i.emissao}";"${i.status}"\n`; });
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `DRE_Executivo_${Date.now()}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
+      if (!nfeData || nfeData.length === 0) {
+        showToast('Não há registros para exportar.', 'warning');
+        return;
+      }
+
+      const dadosFormatados = nfeData.map(item => {
+        let diaSemana = 'N/A';
+        if (item.emissao) {
+          const d = new Date(item.emissao + 'T00:00:00');
+          const dias = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'];
+          diaSemana = dias[d.getDay()] || '';
+        }
+
+        const valorAPagar = parseFloat(item.valor || 0);
+        const pago = (item.status === 'Pago' || item.status === 'Aprovada') ? valorAPagar : 0;
+        const diferenca = pago - valorAPagar;
+
+        return {
+          "Data de Vencimento.": item.emissao || '',
+          "Dia": diaSemana,
+          "Tipo": item.tipo || 'Programado',
+          "Plano Conta": item.categoria || '',
+          "Quem (Destino)": item.fornecedor || '',
+          "Como (forma de pgto.)": item.formaPgto || 'Transferência',
+          "Contrato": item.contrato || 'GRUPO ER',
+          "A Pagar": valorAPagar,
+          "Data Pgto": item.dataPgto || '',
+          "Pago": pago,
+          "Diferença": diferenca,
+          "Local de pgto.": item.localPgto || 'BRAD - ER',
+          "Observações": item.observacoes || '',
+          "Status": item.status || 'Pendente'
+        };
+      });
+
+      const worksheet = XLSX.utils.json_to_sheet(dadosFormatados);
+      
+      const colWidths = [
+        { wch: 18 }, { wch: 15 }, { wch: 12 }, { wch: 22 }, 
+        { wch: 30 }, { wch: 20 }, { wch: 15 }, { wch: 12 }, 
+        { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 15 }, 
+        { wch: 35 }, { wch: 12 }
+      ];
+      worksheet['!cols'] = colWidths;
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "RELATÓRIO DE DESPESAS");
+
+      XLSX.writeFile(workbook, `Relatorio_Programacao_Financeira_Chefia_${Date.now()}.xlsx`);
+      showToast('Planilha Excel gerada no padrão do cliente!', 'success');
     };
 
     function showToast(msg, type = 'info') {
@@ -815,6 +853,6 @@
       toast.classList.remove('hidden');
       setTimeout(() => toast.classList.add('hidden'), 4000);
     }
-  </script>
+</script>
 </body>
 </html>
