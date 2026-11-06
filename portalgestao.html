@@ -459,7 +459,6 @@
     <span id="toast-message">Notificação</span>
   </div>
 
-  <!-- FIREBASE V10 INTEGRATED -->
 <!-- FIREBASE V10 INTEGRATED -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -499,7 +498,7 @@
 
     window.logout = function() {
       if (confirm('Deseja realmente encerrar a sessão?')) {
-        localStorage.removeItem('er_usuario_logado'); // Limpa a credencial ao sair
+        localStorage.removeItem('er_usuario_logado');
         window.location.href = 'index.html';
       }
     };
@@ -686,6 +685,8 @@
       document.getElementById('edit-emissao').value = item.emissao || '';
       document.getElementById('edit-categoria').value = item.categoria || '';
       document.getElementById('edit-atuacao').value = item.atuacao || '';
+      document.getElementById('edit-forma-pgto').value = item.formaPgto || 'Transferência';
+      document.getElementById('edit-local-pgto').value = item.localPgto || 'BRAD - ER';
       document.getElementById('edit-observacoes').value = item.observacoes || '';
       
       editSelectedFileData = item.fileData || null;
@@ -732,6 +733,8 @@
         emissao: document.getElementById('edit-emissao').value,
         categoria: document.getElementById('edit-categoria').value,
         atuacao: document.getElementById('edit-atuacao').value.trim(),
+        formaPgto: document.getElementById('edit-forma-pgto').value,
+        localPgto: document.getElementById('edit-local-pgto').value,
         observacoes: document.getElementById('edit-observacoes').value.trim(),
         fileData: fileData,
         fileName: fileName
@@ -769,6 +772,8 @@
         valor: valorNumerico,
         emissao: document.getElementById('input-data-emissao').value,
         vencimento: document.getElementById('input-data-vencimento').value || null,
+        formaPgto: document.getElementById('input-forma-pgto').value,
+        localPgto: document.getElementById('input-local-pgto').value,
         categoria: document.getElementById('input-categoria').value,
         status: document.getElementById('input-status').value,
         fileName: currentSelectedFile || `DOC_${document.getElementById('input-numero').value.replace(/\D/g, '')}.pdf`,
@@ -800,6 +805,164 @@
       } catch (e) {
         showToast('Erro ao excluir.', 'warning');
       }
+    };
+
+    // EXPORTAÇÃO EXECUTIVA EM EXCEL (COM CORES, TOTAIS E PADRÃO DO CLIENTE)
+    window.exportToCSV = function() {
+      if (!nfeList || nfeList.length === 0) {
+        showToast('Não há registros para exportar.', 'warning');
+        return;
+      }
+
+      let totalAPagar = 0;
+      let totalPago = 0;
+
+      nfeList.forEach(item => {
+        const aPagar = parseFloat(item.valor || 0);
+        const pago = (item.status === 'Pago') ? aPagar : 0;
+        totalAPagar += aPagar;
+        totalPago += pago;
+      });
+
+      const totalDiferenca = totalPago - totalAPagar;
+      const dataEmissaoRelatorio = new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+
+      let linhasHtml = '';
+
+      nfeList.forEach(item => {
+        let diaSemana = 'N/A';
+        if (item.emissao) {
+          const d = new Date(item.emissao + 'T00:00:00');
+          const dias = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'];
+          diaSemana = dias[d.getDay()] || '';
+        }
+
+        const aPagar = parseFloat(item.valor || 0);
+        const isPago = (item.status === 'Pago');
+        const pago = isPago ? aPagar : 0;
+        const diferenca = pago - aPagar;
+        const statusText = item.status || 'Pendente';
+
+        let statusStyle = 'background-color: #fef3c7; color: #d97706; border: 1px solid #f59e0b;';
+        if (isPago) {
+          statusStyle = 'background-color: #d1fae5; color: #059669; border: 1px solid #10b981;';
+        } else if (statusText === 'Recusado') {
+          statusStyle = 'background-color: #ffe4e6; color: #e11d48; border: 1px solid #f43f5e;';
+        } else if (statusText === 'Cancelada') {
+          statusStyle = 'background-color: #f1f5f9; color: #64748b; border: 1px solid #94a3b8;';
+        }
+
+        const tipoStyle = (item.tipo === 'ENTRADA') 
+          ? 'color: #059669; font-weight: bold;' 
+          : 'color: #e11d48; font-weight: bold;';
+
+        linhasHtml += `
+          <tr style="height: 28px;">
+            <td style="text-align: center; border: 1px solid #cbd5e1;">${item.emissao ? formatDate(item.emissao) : ''}</td>
+            <td style="text-align: center; border: 1px solid #cbd5e1; text-transform: capitalize;">${diaSemana}</td>
+            <td style="text-align: center; border: 1px solid #cbd5e1; ${tipoStyle}">${item.tipo || 'SAIDA'}</td>
+            <td style="border: 1px solid #cbd5e1; background-color: #f8fafc;">${item.categoria || ''}</td>
+            <td style="border: 1px solid #cbd5e1; font-weight: 600;">${item.fornecedor || ''}</td>
+            <td style="border: 1px solid #cbd5e1;">${item.formaPgto || 'Transferência'}</td>
+            <td style="text-align: center; border: 1px solid #cbd5e1;">GRUPO ER</td>
+            <td style="text-align: right; border: 1px solid #cbd5e1; font-weight: bold;">R$ ${aPagar.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            <td style="text-align: center; border: 1px solid #cbd5e1;">${item.emissao ? formatDate(item.emissao) : '-'}</td>
+            <td style="text-align: right; border: 1px solid #cbd5e1; font-weight: bold; color: #059669;">R$ ${pago.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            <td style="text-align: right; border: 1px solid #cbd5e1; font-weight: bold; color: ${diferenca < 0 ? '#e11d48' : '#059669'};">R$ ${diferenca.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            <td style="border: 1px solid #cbd5e1;">${item.localPgto || 'BRAD - ER'}</td>
+            <td style="border: 1px solid #cbd5e1; font-size: 11px; color: #475569;">${item.observacoes || ''}</td>
+            <td style="text-align: center; border: 1px solid #cbd5e1;">
+              <span style="padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; ${statusStyle}">${statusText}</span>
+            </td>
+          </tr>
+        `;
+      });
+
+      const excelTemplate = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+        <head>
+          <meta charset="utf-8">
+          <!--[if gte mso 9]>
+          <xml>
+            <x:ExcelWorkbook>
+              <x:ExcelWorksheets>
+                <x:ExcelWorksheet>
+                  <x:Name>PROGRAMAÇÃO FINANCEIRA</x:Name>
+                  <x:WorksheetOptions>
+                    <x:DisplayGridlines/>
+                  </x:WorksheetOptions>
+                </x:ExcelWorksheet>
+              </x:ExcelWorksheets>
+            </x:ExcelWorkbook>
+          </xml>
+          <![endif]-->
+          <style>
+            body { font-family: 'Segoe UI', Arial, sans-serif; }
+            .header-title { background-color: #0f172a; color: #ffffff; font-size: 16px; font-weight: bold; text-align: center; height: 40px; vertical-align: middle; }
+            .header-subtitle { background-color: #1e293b; color: #38bdf8; font-size: 11px; text-align: center; height: 22px; vertical-align: middle; }
+            .kpi-card { background-color: #f1f5f9; border: 1px solid #cbd5e1; font-size: 11px; font-weight: bold; text-align: center; vertical-align: middle; }
+            th { background-color: #0f172a; color: #ffffff; font-size: 12px; font-weight: bold; text-transform: uppercase; border: 1px solid #334155; text-align: center; height: 32px; vertical-align: middle; }
+            .footer-total { background-color: #0f172a; color: #ffffff; font-size: 13px; font-weight: bold; border: 1px solid #334155; height: 32px; vertical-align: middle; }
+          </style>
+        </head>
+        <body>
+          <table>
+            <tr><th colspan="14" class="header-title">GRUPO ER SEGURANÇA — RELATÓRIO DE PROGRAMAÇÃO FINANCEIRA</th></tr>
+            <tr><td colspan="14" class="header-subtitle">Emitido em: ${dataEmissaoRelatorio} | Total de Lançamentos: ${nfeList.length}</td></tr>
+            <tr style="height: 10px;"><td colspan="14"></td></tr>
+            <tr style="height: 30px;">
+              <td colspan="3" class="kpi-card" style="background-color: #eff6ff; color: #1e40af;">TOTAL A PAGAR: R$ ${totalAPagar.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+              <td colspan="4" class="kpi-card" style="background-color: #ecfdf5; color: #065f46;">TOTAL PAGO: R$ ${totalPago.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+              <td colspan="7" class="kpi-card" style="background-color: ${totalDiferenca < 0 ? '#fff1f2' : '#f0fdf4'}; color: ${totalDiferenca < 0 ? '#9f1239' : '#166534'};">DIFERENÇA: R$ ${totalDiferenca.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+            </tr>
+            <tr style="height: 15px;"><td colspan="14"></td></tr>
+            <thead>
+              <tr>
+                <th style="width: 120px;">Data Venc.</th>
+                <th style="width: 110px;">Dia</th>
+                <th style="width: 90px;">Tipo</th>
+                <th style="width: 180px;">Plano Conta</th>
+                <th style="width: 240px;">Quem (Destino)</th>
+                <th style="width: 160px;">Como (Pgto)</th>
+                <th style="width: 120px;">Contrato</th>
+                <th style="width: 130px;">A Pagar</th>
+                <th style="width: 110px;">Data Pgto</th>
+                <th style="width: 130px;">Pago</th>
+                <th style="width: 130px;">Diferença</th>
+                <th style="width: 140px;">Local Pgto</th>
+                <th style="width: 260px;">Observações</th>
+                <th style="width: 110px;">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${linhasHtml}
+            </tbody>
+            <tfoot>
+              <tr class="footer-total">
+                <td colspan="7" style="text-align: right; padding-right: 15px; border: 1px solid #334155;">TOTAL CONSOLIDADO:</td>
+                <td style="text-align: right; border: 1px solid #334155;">R$ ${totalAPagar.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+                <td style="border: 1px solid #334155;"></td>
+                <td style="text-align: right; border: 1px solid #334155; color: #34d399;">R$ ${totalPago.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+                <td style="text-align: right; border: 1px solid #334155; color: ${totalDiferenca < 0 ? '#f87171' : '#34d399'};">R$ ${totalDiferenca.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+                <td colspan="3" style="border: 1px solid #334155;"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </body>
+        </html>
+      `;
+
+      const blob = new Blob([excelTemplate], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Programacao_Financeira_ER_Seguranca_${Date.now()}.xls`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      showToast('Relatório executivo gerado com sucesso!', 'success');
     };
 
     window.renderDashboard = function() {
@@ -906,6 +1069,7 @@
           <td class="py-3.5 px-4 text-slate-300">
             <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700/60 text-[11px]">${item.categoria}</span>
             ${item.atuacao ? `<div class="text-[10px] text-cyan-400 mt-0.5">Atuação: ${item.atuacao}</div>` : ''}
+            <div class="text-[10px] text-slate-400 mt-0.5">Local: <strong class="text-slate-200">${item.localPgto || 'BRAD - ER'}</strong></div>
           </td>
           <td class="py-3.5 px-4 font-mono text-slate-400">${formatDate(item.emissao)}</td>
           <td class="py-3.5 px-4">${valorFormatted}</td>
