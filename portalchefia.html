@@ -792,14 +792,31 @@
       }
     };
 
-// EXPORTAÇÃO EXCEL EM FORMATO PROFISSIONAL EXATAMENTE IDÊNTICO AO DO CLIENTE
+// EXPORTAÇÃO EXCEL DE ALTO PADRÃO (COM CORES VIVAS, TOTAIS E FILTROS)
     window.exportToCSV = function() {
       if (!nfeData || nfeData.length === 0) {
         showToast('Não há registros para exportar.', 'warning');
         return;
       }
 
-      const dadosFormatados = nfeData.map(item => {
+      // 1. Cálculo dos Totais Gerais para o Cabeçalho da Planilha
+      let totalAPagar = 0;
+      let totalPago = 0;
+
+      nfeData.forEach(item => {
+        const aPagar = parseFloat(item.valor || 0);
+        const pago = (item.status === 'Pago' || item.status === 'Aprovada') ? aPagar : 0;
+        totalAPagar += aPagar;
+        totalPago += pago;
+      });
+
+      const totalDiferenca = totalPago - totalAPagar;
+      const dataEmissaoRelatorio = new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+
+      // 2. Construção das Linhas da Tabela com Estilização e Cores por Status
+      let linhasHtml = '';
+
+      nfeData.forEach(item => {
         let diaSemana = 'N/A';
         if (item.emissao) {
           const d = new Date(item.emissao + 'T00:00:00');
@@ -807,43 +824,150 @@
           diaSemana = dias[d.getDay()] || '';
         }
 
-        const valorAPagar = parseFloat(item.valor || 0);
-        const pago = (item.status === 'Pago' || item.status === 'Aprovada') ? valorAPagar : 0;
-        const diferenca = pago - valorAPagar;
+        const aPagar = parseFloat(item.valor || 0);
+        const isPago = (item.status === 'Pago' || item.status === 'Aprovada');
+        const pago = isPago ? aPagar : 0;
+        const diferenca = pago - aPagar;
+        const statusText = item.status || 'Pendente';
 
-        return {
-          "Data de Vencimento.": item.emissao ? formatDate(item.emissao) : '',
-          "Dia": diaSemana,
-          "Tipo": item.tipo || 'Programado',
-          "Plano Conta": item.categoria || '',
-          "Quem (Destino)": item.fornecedor || '',
-          "Como (forma de pgto.)": item.formaPgto || 'Transferência',
-          "Contrato": item.contrato || 'GRUPO ER',
-          "A Pagar": valorAPagar,
-          "Data Pgto": item.dataPgto ? formatDate(item.dataPgto) : '',
-          "Pago": pago,
-          "Diferença": diferenca,
-          "Local de pgto.": item.localPgto || 'BRAD - ER',
-          "Observações": item.observacoes || '',
-          "Status": item.status || 'Pendente'
-        };
+        // Cores vivas para as badges de status no Excel
+        let statusStyle = 'background-color: #fef3c7; color: #d97706; border: 1px solid #f59e0b;'; // Amarelo/Alerta (Pendente)
+        if (isPago) {
+          statusStyle = 'background-color: #d1fae5; color: #059669; border: 1px solid #10b981;'; // Verde (Pago/Aprovada)
+        } else if (statusText === 'Recusado') {
+          statusStyle = 'background-color: #ffe4e6; color: #e11d48; border: 1px solid #f43f5e;'; // Vermelho (Recusado)
+        } else if (statusText === 'Cancelada') {
+          statusStyle = 'background-color: #f1f5f9; color: #64748b; border: 1px solid #94a3b8;'; // Cinza (Cancelada)
+        }
+
+        // Cor de entrada vs saída
+        const tipoStyle = (item.tipo === 'ENTRADA') 
+          ? 'color: #059669; font-weight: bold;' 
+          : 'color: #e11d48; font-weight: bold;';
+
+        linhasHtml += `
+          <tr style="height: 28px;">
+            <td style="text-align: center; border: 1px solid #cbd5e1;">${item.emissao ? formatDate(item.emissao) : ''}</td>
+            <td style="text-align: center; border: 1px solid #cbd5e1; text-transform: capitalize;">${diaSemana}</td>
+            <td style="text-align: center; border: 1px solid #cbd5e1; ${tipoStyle}">${item.tipo || 'SAIDA'}</td>
+            <td style="border: 1px solid #cbd5e1; background-color: #f8fafc;">${item.categoria || ''}</td>
+            <td style="border: 1px solid #cbd5e1; font-weight: 600;">${item.fornecedor || ''}</td>
+            <td style="border: 1px solid #cbd5e1;">${item.formaPgto || 'Transferência'}</td>
+            <td style="text-align: center; border: 1px solid #cbd5e1;">${item.contrato || 'GRUPO ER'}</td>
+            <td style="text-align: right; border: 1px solid #cbd5e1; font-weight: bold;">R$ ${aPagar.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            <td style="text-align: center; border: 1px solid #cbd5e1;">${item.dataPgto ? formatDate(item.dataPgto) : '-'}</td>
+            <td style="text-align: right; border: 1px solid #cbd5e1; font-weight: bold; color: #059669;">R$ ${pago.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            <td style="text-align: right; border: 1px solid #cbd5e1; font-weight: bold; color: ${diferenca < 0 ? '#e11d48' : '#059669'};">R$ ${diferenca.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            <td style="border: 1px solid #cbd5e1;">${item.localPgto || 'BRAD - ER'}</td>
+            <td style="border: 1px solid #cbd5e1; font-size: 11px; color: #475569;">${item.observacoes || ''}</td>
+            <td style="text-align: center; border: 1px solid #cbd5e1;">
+              <span style="padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; ${statusStyle}">${statusText}</span>
+            </td>
+          </tr>
+        `;
       });
 
-      const worksheet = XLSX.utils.json_to_sheet(dadosFormatados);
-      
-      const colWidths = [
-        { wch: 20 }, { wch: 16 }, { wch: 14 }, { wch: 24 }, 
-        { wch: 32 }, { wch: 22 }, { wch: 16 }, { wch: 15 }, 
-        { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 16 }, 
-        { wch: 35 }, { wch: 14 }
-      ];
-      worksheet['!cols'] = colWidths;
+      // 3. Montagem do Template HTML/XML Completo com Layout Executivo e Cores da ER Segurança
+      const excelTemplate = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+        <head>
+          <meta charset="utf-8">
+          <!-- Configurações para ativar busca e filtros automáticos no Excel -->
+          <!--[if gte mso 9]>
+          <xml>
+            <x:ExcelWorkbook>
+              <x:ExcelWorksheets>
+                <x:ExcelWorksheet>
+                  <x:Name>PROGRAMAÇÃO FINANCEIRA</x:Name>
+                  <x:WorksheetOptions>
+                    <x:DisplayGridlines/>
+                  </x:WorksheetOptions>
+                </x:ExcelWorksheet>
+              </x:ExcelWorksheets>
+            </x:ExcelWorkbook>
+          </xml>
+          <![endif]-->
+          <style>
+            body { font-family: 'Segoe UI', Arial, sans-serif; }
+            .header-title { background-color: #0f172a; color: #ffffff; font-size: 16px; font-weight: bold; text-align: center; height: 40px; vertical-align: middle; }
+            .header-subtitle { background-color: #1e293b; color: #38bdf8; font-size: 11px; text-align: center; height: 22px; vertical-align: middle; }
+            .kpi-card { background-color: #f1f5f9; border: 1px solid #cbd5e1; font-size: 11px; font-weight: bold; text-align: center; vertical-align: middle; }
+            th { background-color: #0f172a; color: #ffffff; font-size: 12px; font-weight: bold; text-transform: uppercase; border: 1px solid #334155; text-align: center; height: 32px; vertical-align: middle; }
+            .footer-total { background-color: #0f172a; color: #ffffff; font-size: 13px; font-weight: bold; border: 1px solid #334155; height: 32px; vertical-align: middle; }
+          </style>
+        </head>
+        <body>
+          <table>
+            <!-- CABEÇALHO CORPORATIVO -->
+            <tr>
+              <th colspan="14" class="header-title">GRUPO ER SEGURANÇA — RELATÓRIO DE PROGRAMAÇÃO FINANCEIRA</th>
+            </tr>
+            <tr>
+              <td colspan="14" class="header-subtitle">Relatório gerado em: ${dataEmissaoRelatorio} | Total de Lançamentos: ${nfeData.length}</td>
+            </tr>
+            <tr style="height: 10px;"><td colspan="14"></td></tr>
 
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "RELATÓRIO DE DESPESAS");
+            <!-- BLOCO DE QUADRADOS COLORIDOS (KPIS / RESUMO DE VALORES NO TOPO DA PLANILHA) -->
+            <tr style="height: 30px;">
+              <td colspan="3" class="kpi-card" style="background-color: #eff6ff; color: #1e40af;">TOTAL A PAGAR (PREVISTO): R$ ${totalAPagar.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+              <td colspan="4" class="kpi-card" style="background-color: #ecfdf5; color: #065f46;">TOTAL PAGO (REALIZADO): R$ ${totalPago.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+              <td colspan="7" class="kpi-card" style="background-color: ${totalDiferenca < 0 ? '#fff1f2' : '#f0fdf4'}; color: ${totalDiferenca < 0 ? '#9f1239' : '#166534'};">BALANÇO / DIFERENÇA: R$ ${totalDiferenca.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+            </tr>
+            <tr style="height: 15px;"><td colspan="14"></td></tr>
 
-      XLSX.writeFile(workbook, `Relatorio_Programacao_Financeira_Chefia_${Date.now()}.xlsx`);
-      showToast('Planilha Excel gerada no padrão do cliente!', 'success');
+            <!-- CABEÇALHO DAS COLUNAS (COM SUPORTE A FILTROS E BUSCA NO EXCEL) -->
+            <thead>
+              <tr>
+                <th style="width: 120px;">Data Venc.</th>
+                <th style="width: 110px;">Dia</th>
+                <th style="width: 90px;">Tipo</th>
+                <th style="width: 180px;">Plano Conta</th>
+                <th style="width: 240px;">Quem (Destino)</th>
+                <th style="width: 160px;">Como (Pgto)</th>
+                <th style="width: 120px;">Contrato</th>
+                <th style="width: 130px;">A Pagar</th>
+                <th style="width: 110px;">Data Pgto</th>
+                <th style="width: 130px;">Pago</th>
+                <th style="width: 130px;">Diferença</th>
+                <th style="width: 140px;">Local Pgto</th>
+                <th style="width: 260px;">Observações</th>
+                <th style="width: 110px;">Status</th>
+              </tr>
+            </thead>
+
+            <!-- CORPO DOS DADOS COM CORES DE STATUS -->
+            <tbody>
+              ${linhasHtml}
+            </tbody>
+
+            <!-- LINHA DE TOTALIZAÇÃO NO RODAPÉ DA PLANILHA -->
+            <tfoot>
+              <tr class="footer-total">
+                <td colspan="7" style="text-align: right; padding-right: 15px; border: 1px solid #334155;">TOTAL CONSOLIDADO:</td>
+                <td style="text-align: right; border: 1px solid #334155;">R$ ${totalAPagar.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+                <td style="border: 1px solid #334155;"></td>
+                <td style="text-align: right; border: 1px solid #334155; color: #34d399;">R$ ${totalPago.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+                <td style="text-align: right; border: 1px solid #334155; color: ${totalDiferenca < 0 ? '#f87171' : '#34d399'};">R$ ${totalDiferenca.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+                <td colspan="3" style="border: 1px solid #334155;"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </body>
+        </html>
+      `;
+
+      // 4. Download Automático do Arquivo .xls/.xlsx com Estilo
+      const blob = new Blob([excelTemplate], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Programacao_Financeira_ER_Seguranca_${Date.now()}.xls`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      showToast('Planilha executiva colorida e com totais exportada!', 'success');
     };
 
     function showToast(msg, type = 'info') {
