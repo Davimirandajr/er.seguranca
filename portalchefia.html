@@ -792,7 +792,7 @@
       }
     };
 
-    // EXPORTAÇÃO EXCEL EM FORMATO PROFISSIONAL EXATAMENTE IDÊNTICO AO DO CLIENTE
+// EXPORTAÇÃO EXCEL EM FORMATO PROFISSIONAL EXATAMENTE IDÊNTICO AO DO CLIENTE
     window.exportToCSV = function() {
       if (!nfeData || nfeData.length === 0) {
         showToast('Não há registros para exportar.', 'warning');
@@ -812,7 +812,7 @@
         const diferenca = pago - valorAPagar;
 
         return {
-          "Data de Vencimento.": item.emissao || '',
+          "Data de Vencimento.": item.emissao ? formatDate(item.emissao) : '',
           "Dia": diaSemana,
           "Tipo": item.tipo || 'Programado',
           "Plano Conta": item.categoria || '',
@@ -820,7 +820,7 @@
           "Como (forma de pgto.)": item.formaPgto || 'Transferência',
           "Contrato": item.contrato || 'GRUPO ER',
           "A Pagar": valorAPagar,
-          "Data Pgto": item.dataPgto || '',
+          "Data Pgto": item.dataPgto ? formatDate(item.dataPgto) : '',
           "Pago": pago,
           "Diferença": diferenca,
           "Local de pgto.": item.localPgto || 'BRAD - ER',
@@ -832,10 +832,10 @@
       const worksheet = XLSX.utils.json_to_sheet(dadosFormatados);
       
       const colWidths = [
-        { wch: 18 }, { wch: 15 }, { wch: 12 }, { wch: 22 }, 
-        { wch: 30 }, { wch: 20 }, { wch: 15 }, { wch: 12 }, 
-        { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 15 }, 
-        { wch: 35 }, { wch: 12 }
+        { wch: 20 }, { wch: 16 }, { wch: 14 }, { wch: 24 }, 
+        { wch: 32 }, { wch: 22 }, { wch: 16 }, { wch: 15 }, 
+        { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 16 }, 
+        { wch: 35 }, { wch: 14 }
       ];
       worksheet['!cols'] = colWidths;
 
