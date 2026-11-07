@@ -546,7 +546,7 @@
   </div>
 
   <!-- SCRIPT FIREBASE INTEGRADO -->
-  <script type="module">
+<script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -958,17 +958,24 @@
         return;
       }
 
-      let totalAPagar = 0;
-      let totalPago = 0;
+      let totalEntradas = 0;
+      let totalSaidasPrevistas = 0;
+      let totalSaidasPagas = 0;
 
       nfeList.forEach(item => {
-        const aPagar = parseFloat(item.valor || 0);
-        const pago = (item.status === 'Pago') ? aPagar : 0;
-        totalAPagar += aPagar;
-        totalPago += pago;
+        const valor = parseFloat(item.valor || 0);
+        if (item.tipo === 'ENTRADA') {
+          totalEntradas += valor;
+        } else {
+          totalSaidasPrevistas += valor;
+          if (item.status === 'Pago') {
+            totalSaidasPagas += valor;
+          }
+        }
       });
 
-      const totalDiferenca = totalPago - totalAPagar;
+      // Balanço Líquido Real (Entradas - Saídas efetivamente pagas)
+      const balancoLiquidoReal = totalEntradas - totalSaidasPagas;
       const dataEmissaoRelatorio = new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
 
       let linhasHtml = '';
@@ -981,11 +988,13 @@
           diaSemana = dias[d.getDay()] || '';
         }
 
-        const aPagar = parseFloat(item.valor || 0);
+        const valorItem = parseFloat(item.valor || 0);
+        const isEntrada = (item.tipo === 'ENTRADA');
         const isPago = (item.status === 'Pago');
-        const pago = isPago ? aPagar : 0;
-        const diferenca = pago - aPagar;
         const statusText = item.status || 'Pendente';
+
+        let aPagar = isEntrada ? 0 : valorItem;
+        let pago = isPago ? valorItem : 0;
 
         let statusStyle = 'background-color: #fef3c7; color: #d97706; border: 1px solid #f59e0b;';
         if (isPago) {
@@ -996,23 +1005,21 @@
           statusStyle = 'background-color: #f1f5f9; color: #64748b; border: 1px solid #94a3b8;';
         }
 
-        const tipoStyle = (item.tipo === 'ENTRADA') 
-          ? 'color: #059669; font-weight: bold;' 
-          : 'color: #e11d48; font-weight: bold;';
+        const tipoStyle = isEntrada ? 'color: #059669; font-weight: bold;' : 'color: #e11d48; font-weight: bold;';
 
         linhasHtml += `
           <tr style="height: 28px;">
             <td style="text-align: center; border: 1px solid #cbd5e1;">${item.emissao ? formatDate(item.emissao) : ''}</td>
             <td style="text-align: center; border: 1px solid #cbd5e1; text-transform: capitalize;">${diaSemana}</td>
-            <td style="text-align: center; border: 1px solid #cbd5e1; ${tipoStyle}">${item.tipo || 'SAIDA'}</td>
+            <td style="text-align: center; border: 1px solid #cbd5e1; ${tipoStyle}">${isEntrada ? 'ENTRADA' : 'SAIDA'}</td>
             <td style="border: 1px solid #cbd5e1; background-color: #f8fafc;">${item.categoria || ''}</td>
             <td style="border: 1px solid #cbd5e1; font-weight: 600;">${item.fornecedor || ''}</td>
             <td style="border: 1px solid #cbd5e1;">${item.formaPgto || 'Transferência'}</td>
             <td style="text-align: center; border: 1px solid #cbd5e1;">GRUPO ER</td>
-            <td style="text-align: right; border: 1px solid #cbd5e1; font-weight: bold;">R$ ${aPagar.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-            <td style="text-align: center; border: 1px solid #cbd5e1;">${item.emissao ? formatDate(item.emissao) : '-'}</td>
-            <td style="text-align: right; border: 1px solid #cbd5e1; font-weight: bold; color: #059669;">R$ ${pago.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-            <td style="text-align: right; border: 1px solid #cbd5e1; font-weight: bold; color: ${diferenca < 0 ? '#e11d48' : '#059669'};">R$ ${diferenca.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            <td style="text-align: right; border: 1px solid #cbd5e1; font-weight: bold;">${isEntrada ? '-' : 'R$ ' + aPagar.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+            <td style="text-align: center; border: 1px solid #cbd5e1;">${isPago && item.emissao ? formatDate(item.emissao) : '-'}</td>
+            <td style="text-align: right; border: 1px solid #cbd5e1; font-weight: bold; color: #059669;">${isEntrada ? '+ R$ ' + valorItem.toLocaleString('pt-BR', {minimumFractionDigits: 2}) : (isPago ? 'R$ ' + pago.toLocaleString('pt-BR', {minimumFractionDigits: 2}) : 'R$ 0,00')}</td>
+            <td style="text-align: right; border: 1px solid #cbd5e1; font-weight: bold; color: ${isEntrada ? '#059669' : '#1e293b'};">${isEntrada ? 'Receita' : (isPago ? 'Liquidado' : 'Pendente')}</td>
             <td style="border: 1px solid #cbd5e1;">${item.localPgto || 'BRAD - ER'}</td>
             <td style="border: 1px solid #cbd5e1; font-size: 11px; color: #475569;">${item.observacoes || ''}</td>
             <td style="text-align: center; border: 1px solid #cbd5e1;">
@@ -1031,7 +1038,7 @@
             <x:ExcelWorkbook>
               <x:ExcelWorksheets>
                 <x:ExcelWorksheet>
-                  <x:Name>PROGRAMAÇÃO FINANCEIRA</x:Name>
+                  <x:Name>FLUXO E PROGRAMAÇÃO</x:Name>
                   <x:WorksheetOptions>
                     <x:DisplayGridlines/>
                   </x:WorksheetOptions>
@@ -1051,13 +1058,13 @@
         </head>
         <body>
           <table>
-            <tr><th colspan="14" class="header-title">GRUPO ER SEGURANÇA — RELATÓRIO DE PROGRAMAÇÃO FINANCEIRA</th></tr>
-            <tr><td colspan="14" class="header-subtitle">Emitido em: ${dataEmissaoRelatorio} | Total de Lançamentos: ${nfeList.length}</td></tr>
+            <tr><th colspan="14" class="header-title">GRUPO ER SEGURANÇA — FLUXO FINANCEIRO E CONSOLIDADO</th></tr>
+            <tr><td colspan="14" class="header-subtitle">Emitido em: ${dataEmissaoRelatorio} | Total de Registros: ${nfeList.length}</td></tr>
             <tr style="height: 10px;"><td colspan="14"></td></tr>
             <tr style="height: 30px;">
-              <td colspan="3" class="kpi-card" style="background-color: #eff6ff; color: #1e40af;">TOTAL A PAGAR: R$ ${totalAPagar.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-              <td colspan="4" class="kpi-card" style="background-color: #ecfdf5; color: #065f46;">TOTAL PAGO: R$ ${totalPago.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-              <td colspan="7" class="kpi-card" style="background-color: ${totalDiferenca < 0 ? '#fff1f2' : '#f0fdf4'}; color: ${totalDiferenca < 0 ? '#9f1239' : '#166534'};">DIFERENÇA: R$ ${totalDiferenca.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+              <td colspan="4" class="kpi-card" style="background-color: #ecfdf5; color: #065f46;">TOTAL ENTRADAS (RECEITAS): R$ ${totalEntradas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+              <td colspan="4" class="kpi-card" style="background-color: #fff1f2; color: #9f1239;">TOTAL SAÍDAS (PAGAS): R$ ${totalSaidasPagas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+              <td colspan="6" class="kpi-card" style="background-color: ${balancoLiquidoReal < 0 ? '#fff1f2' : '#f0fdf4'}; color: ${balancoLiquidoReal < 0 ? '#9f1239' : '#166534'};">BALANÇO LÍQUIDO REAL: R$ ${balancoLiquidoReal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
             </tr>
             <tr style="height: 15px;"><td colspan="14"></td></tr>
             <thead>
@@ -1071,8 +1078,8 @@
                 <th style="width: 120px;">Contrato</th>
                 <th style="width: 130px;">A Pagar</th>
                 <th style="width: 110px;">Data Pgto</th>
-                <th style="width: 130px;">Pago</th>
-                <th style="width: 130px;">Diferença</th>
+                <th style="width: 130px;">Pago / Recebido</th>
+                <th style="width: 130px;">Situação</th>
                 <th style="width: 140px;">Local Pgto</th>
                 <th style="width: 260px;">Observações</th>
                 <th style="width: 110px;">Status</th>
@@ -1083,11 +1090,11 @@
             </tbody>
             <tfoot>
               <tr class="footer-total">
-                <td colspan="7" style="text-align: right; padding-right: 15px; border: 1px solid #334155;">TOTAL CONSOLIDADO:</td>
-                <td style="text-align: right; border: 1px solid #334155;">R$ ${totalAPagar.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+                <td colspan="7" style="text-align: right; padding-right: 15px; border: 1px solid #334155;">CONSOLIDADO LÍQUIDO (ENTRADAS - SAÍDAS PAGAS):</td>
+                <td style="text-align: right; border: 1px solid #334155;">R$ ${totalSaidasPrevistas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
                 <td style="border: 1px solid #334155;"></td>
-                <td style="text-align: right; border: 1px solid #334155; color: #34d399;">R$ ${totalPago.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-                <td style="text-align: right; border: 1px solid #334155; color: ${totalDiferenca < 0 ? '#f87171' : '#34d399'};">R$ ${totalDiferenca.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+                <td style="text-align: right; border: 1px solid #334155; color: #34d399;">R$ ${totalEntradas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+                <td style="text-align: right; border: 1px solid #334155; color: ${balancoLiquidoReal < 0 ? '#f87171' : '#34d399'};">R$ ${balancoLiquidoReal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
                 <td colspan="3" style="border: 1px solid #334155;"></td>
               </tr>
             </tfoot>
@@ -1100,13 +1107,13 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Programacao_Financeira_ER_Seguranca_${Date.now()}.xls`;
+      a.download = `Fluxo_Financeiro_Real_${Date.now()}.xls`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      showToast('Relatório executivo gerado com sucesso!', 'success');
+      showToast('Relatório de fluxo líquido gerado com sucesso!', 'success');
     };
 
     window.renderDashboard = function() {
