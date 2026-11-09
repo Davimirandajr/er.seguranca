@@ -1,190 +1,209 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="dark">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portal Operacional - Gestão Financeira | ER Segurança</title>
-  <!-- Tailwind CSS -->
+  
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: { 
+            brand: { blue: '#2563eb', red: '#dc2626', cyan: '#0284c7', emerald: '#059669', lightBg: '#f0f7ff' } 
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f0f7ff; color: #0f172a; min-height: 100vh; }
+    .bg-light-dashboard {
+      background-image: linear-gradient(to bottom, rgba(240, 247, 255, 0.85), rgba(224, 242, 254, 0.95)),
+                        url('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=2000&auto=format&fit=crop');
+      background-size: cover; background-position: center; background-attachment: fixed;
+    }
+    .tech-grid {
+      background-size: 32px 32px;
+      background-image: linear-gradient(to right, rgba(14, 165, 233, 0.05) 1px, transparent 1px), 
+                        linear-gradient(to bottom, rgba(14, 165, 233, 0.05) 1px, transparent 1px);
+    }
     .glass-card {
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(56, 189, 248, 0.3); box-shadow: 0 10px 30px -5px rgba(14, 165, 233, 0.12), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
     }
     .btn-neon-primary {
-      background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
-      transition: all 0.3s ease;
+      background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 15px rgba(2, 132, 199, 0.35); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .btn-neon-primary:hover {
-      box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
-      transform: translateY(-1px);
+    .btn-neon-primary:hover { box-shadow: 0 6px 22px rgba(2, 132, 199, 0.5); transform: translateY(-1px); }
+    .drop-active {
+      border-color: #0284c7 !important;
+      background-color: rgba(2, 132, 199, 0.1) !important;
     }
   </style>
 </head>
-<body class="bg-[#020617] text-slate-100 min-h-screen flex flex-col font-sans selection:bg-cyan-500 selection:text-white">
+<body class="bg-light-dashboard tech-grid flex flex-col min-h-screen text-slate-800 antialiased pb-12 select-none">
 
-  <!-- NAVBAR -->
-  <header class="glass-card sticky top-0 z-40 border-b border-slate-800/80">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+  <!-- HEADER -->
+  <header class="sticky top-0 z-40 glass-card border-b border-sky-200/60 bg-white/80 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
       <div class="flex items-center space-x-3">
-        <div class="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
-          <i data-lucide="shield-check" class="w-6 h-6"></i>
-        </div>
+        <svg class="w-10 h-10" viewBox="0 0 300 200" fill="none">
+          <defs>
+            <linearGradient id="headerBlue" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3b82f6" /><stop offset="100%" stop-color="#1d4ed8" /></linearGradient>
+            <linearGradient id="headerRed" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ef4444" /><stop offset="100%" stop-color="#dc2626" /></linearGradient>
+          </defs>
+          <path d="M 130 45 L 75 45 C 55 45 40 60 40 80 C 40 90 50 100 70 100 L 120 100 L 70 100 C 50 100 40 110 40 120 C 40 140 55 155 75 155 L 130 155" stroke="url(#headerBlue)" stroke-width="22" stroke-linecap="round" fill="none" />
+          <path d="M 155 45 L 210 45 C 245 45 260 65 260 85 C 260 105 245 118 210 118 L 155 118 M 200 118 L 255 155" stroke="url(#headerRed)" stroke-width="22" stroke-linecap="round" fill="none" />
+        </svg>
         <div>
-          <span class="text-sm font-extrabold tracking-wider text-white block">ER SEGURANÇA</span>
-          <span class="text-[10px] uppercase font-bold tracking-widest text-cyan-400">Portal Operacional</span>
+          <div class="flex items-center space-x-2">
+            <span class="font-black text-lg sm:text-xl tracking-wider text-blue-700">GRUPO ER</span>
+            <span class="hidden sm:inline-block px-2 py-0.5 text-[10px] font-bold uppercase bg-blue-100 text-blue-700 border border-blue-300 rounded-md">
+              Portal Operacional
+            </span>
+          </div>
+          <p class="text-[11px] font-extrabold text-red-600 tracking-widest uppercase">PORTARIA E VIGILÂNCIA LTDA</p>
         </div>
       </div>
-      <div class="flex items-center space-x-3">
-        <button onclick="logout()" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-rose-950/40 text-slate-300 hover:text-rose-400 text-xs font-semibold flex items-center space-x-2 border border-slate-800 transition-colors">
+
+      <div class="flex items-center space-x-3 sm:space-x-4">
+        <button onclick="exportToCSV()" class="btn-neon-primary px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 shadow-md">
+          <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-200"></i>
+          <span class="hidden sm:inline">Baixar Relatório Executivo</span>
+        </button>
+
+        <button onclick="logout()" class="p-2.5 rounded-xl bg-white hover:bg-rose-50 border border-slate-200 text-slate-600 hover:text-red-600 transition-colors shadow-sm" title="Encerrar Sessão">
           <i data-lucide="log-out" class="w-4 h-4"></i>
-          <span>Sair do Sistema</span>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- CONTEÚDO PRINCIPAL -->
+  <!-- MAIN -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-8 flex-grow w-full">
     
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-sky-200/80 pb-6">
       <div>
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
-          <i data-lucide="arrow-left-right" class="w-8 h-8 text-cyan-400"></i>
-          Gestão de Fluxo Financeiro e Operacional
+        <h1 class="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
+          <i data-lucide="arrow-left-right" class="w-8 h-8 text-blue-600"></i>
+          Gestão de Fluxo Financeiro
         </h1>
-        <p class="text-sm text-slate-400 mt-1">Lançamento e gerenciamento em tempo real de receitas, despesas, salários e folha de pagamento.</p>
+        <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">Lançamento de receitas, despesas operacionais, salários e boletins de medição.</p>
       </div>
-
-      <!-- BOTÃO DE BAIXAR O RELATÓRIO EXECUTIVO EM EXCEL -->
-      <button onclick="exportToCSV()" class="btn-neon-primary px-5 py-2.5 rounded-xl text-xs font-bold text-white flex items-center justify-center space-x-2 shadow-lg hover:scale-105 transition-all shrink-0">
-        <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-300"></i>
-        <span>Baixar Relatório Executivo (.xls)</span>
-      </button>
+      <div class="text-xs text-slate-500 font-bold bg-white/80 px-3 py-1.5 rounded-xl border border-sky-200 shadow-sm">
+        CNPJ Padrão: <span class="font-mono text-blue-700">13.506.821/0001-46</span>
+      </div>
     </div>
 
     <!-- KPIS -->
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
       <div class="glass-card rounded-2xl p-5 relative overflow-hidden">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Entradas (Receitas)</span>
-          <div class="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"><i data-lucide="arrow-down-left" class="w-5 h-5"></i></div>
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Entradas (Receitas)</span>
+          <div class="p-2.5 rounded-xl bg-emerald-100 text-emerald-700 border border-emerald-300"><i data-lucide="arrow-down-left" class="w-5 h-5"></i></div>
         </div>
-        <div class="mt-4"><span id="stat-total-entradas" class="text-2xl sm:text-3xl font-black text-emerald-400 font-mono">R$ 0,00</span></div>
-        <p class="text-[11px] text-slate-400 mt-2"><span id="count-entradas" class="text-emerald-400 font-bold">0</span> recebimentos</p>
+        <div class="mt-4"><span id="stat-total-entradas" class="text-2xl sm:text-3xl font-black text-emerald-600 font-mono">R$ 0,00</span></div>
+        <p class="text-[11px] text-slate-500 font-medium mt-2"><span id="count-entradas" class="text-emerald-700 font-bold">0</span> recebimentos</p>
       </div>
 
       <div class="glass-card rounded-2xl p-5 relative overflow-hidden">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Saídas (Despesas)</span>
-          <div class="p-2.5 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20"><i data-lucide="arrow-up-right" class="w-5 h-5"></i></div>
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Saídas (Despesas)</span>
+          <div class="p-2.5 rounded-xl bg-rose-100 text-rose-700 border border-rose-300"><i data-lucide="arrow-up-right" class="w-5 h-5"></i></div>
         </div>
-        <div class="mt-4"><span id="stat-total-saidas" class="text-2xl sm:text-3xl font-black text-rose-400 font-mono">R$ 0,00</span></div>
-        <p class="text-[11px] text-slate-400 mt-2"><span id="count-saidas" class="text-rose-400 font-bold">0</span> pagamentos</p>
+        <div class="mt-4"><span id="stat-total-saidas" class="text-2xl sm:text-3xl font-black text-rose-600 font-mono">R$ 0,00</span></div>
+        <p class="text-[11px] text-slate-500 font-medium mt-2"><span id="count-saidas" class="text-rose-700 font-bold">0</span> pagamentos</p>
       </div>
 
       <div class="glass-card rounded-2xl p-5 relative overflow-hidden">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Balanço Líquido</span>
-          <div class="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"><i data-lucide="scale" class="w-5 h-5"></i></div>
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Balanço Líquido</span>
+          <div class="p-2.5 rounded-xl bg-blue-100 text-blue-700 border border-blue-300"><i data-lucide="scale" class="w-5 h-5"></i></div>
         </div>
-        <div class="mt-4"><span id="stat-balanco-liquido" class="text-2xl sm:text-3xl font-black text-cyan-300 font-mono">R$ 0,00</span></div>
-        <p id="stat-balanco-subtext" class="text-[11px] text-slate-400 mt-2">Diferença Entradas vs. Saídas</p>
+        <div class="mt-4"><span id="stat-balanco-liquido" class="text-2xl sm:text-3xl font-black text-blue-700 font-mono">R$ 0,00</span></div>
+        <p id="stat-balanco-subtext" class="text-[11px] text-slate-500 font-medium mt-2">Diferença Entradas vs. Saídas</p>
       </div>
 
       <div class="glass-card rounded-2xl p-5 relative overflow-hidden">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Registros</span>
-          <div class="p-2.5 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20"><i data-lucide="files" class="w-5 h-5"></i></div>
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Registros</span>
+          <div class="p-2.5 rounded-xl bg-sky-100 text-sky-700 border border-sky-300"><i data-lucide="files" class="w-5 h-5"></i></div>
         </div>
         <div class="mt-4 flex items-baseline justify-between">
-          <span id="stat-total-count" class="text-3xl font-black text-white font-mono">0</span>
-          <span id="stat-pending-count" class="text-xs text-amber-400 font-bold">0 pendentes</span>
+          <span id="stat-total-count" class="text-3xl font-black text-slate-800 font-mono">0</span>
+          <span id="stat-pending-count" class="text-xs text-amber-600 font-bold">0 pendentes</span>
         </div>
-        <p class="text-[11px] text-slate-400 mt-2">Registrados no sistema</p>
+        <p class="text-[11px] text-slate-500 font-medium mt-2">Cadastradas no sistema</p>
       </div>
     </section>
 
-    <!-- SESSÃO 1: 3 CARDS DE ESCOLHA INICIAL -->
+    <!-- CARDS DE SELEÇÃO INICIAL -->
     <section id="selection-cards-section" class="grid grid-cols-1 md:grid-cols-3 gap-6 my-6">
-      
-      <!-- Card 1: Despesa Operacional / NF-e -->
-      <div onclick="openForm('SAIDA')" class="glass-card rounded-2xl p-6 cursor-pointer hover:border-rose-500/50 transition-all group relative overflow-hidden border border-slate-800 flex flex-col justify-between">
-        <div class="absolute top-0 right-0 w-32 h-32 bg-rose-500/10 rounded-full blur-2xl group-hover:bg-rose-500/20 transition-all"></div>
+      <!-- Card Saída -->
+      <div onclick="openForm('SAIDA')" class="glass-card rounded-2xl p-6 cursor-pointer hover:border-rose-400 transition-all group relative overflow-hidden border border-slate-200">
         <div class="flex items-center space-x-4">
-          <div class="p-3.5 rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/20 group-hover:scale-110 transition-transform shrink-0">
+          <div class="p-3.5 rounded-2xl bg-rose-100 text-rose-600 border border-rose-200 group-hover:scale-110 transition-transform">
             <i data-lucide="file-text" class="w-7 h-7"></i>
           </div>
           <div>
-            <span class="text-[10px] uppercase font-bold tracking-widest text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">Saída Operacional</span>
-            <h3 class="text-lg font-extrabold text-white mt-1">Despesa & Nota Fiscal</h3>
-            <p class="text-xs text-slate-400 mt-1">Custos operacionais, fornecedores e notas fiscais.</p>
+            <span class="text-[10px] uppercase font-bold tracking-widest text-rose-700 bg-rose-100 px-2 py-0.5 rounded border border-rose-200">Saída Operacional</span>
+            <h3 class="text-lg font-extrabold text-slate-800 mt-1">Despesa & Nota Fiscal</h3>
+            <p class="text-xs text-slate-500 mt-1">Registrar pagamentos (2 anexos: NF + Comprovante).</p>
           </div>
-        </div>
-        <div class="mt-6 flex items-center text-xs font-bold text-rose-400 group-hover:translate-x-1 transition-transform">
-          <span>Lançar Despesa</span>
-          <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
         </div>
       </div>
 
-      <!-- Card 2: Salários e Encargos -->
-      <div onclick="openForm('SALARIO')" class="glass-card rounded-2xl p-6 cursor-pointer hover:border-amber-500/50 transition-all group relative overflow-hidden border border-slate-800 flex flex-col justify-between">
-        <div class="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition-all"></div>
+      <!-- Card Salários -->
+      <div onclick="openForm('SALARIO')" class="glass-card rounded-2xl p-6 cursor-pointer hover:border-amber-400 transition-all group relative overflow-hidden border border-slate-200">
         <div class="flex items-center space-x-4">
-          <div class="p-3.5 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 group-hover:scale-110 transition-transform shrink-0">
+          <div class="p-3.5 rounded-2xl bg-amber-100 text-amber-700 border border-amber-200 group-hover:scale-110 transition-transform">
             <i data-lucide="users" class="w-7 h-7"></i>
           </div>
           <div>
-            <span class="text-[10px] uppercase font-bold tracking-widest text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">Folha de Pagamento</span>
-            <h3 class="text-lg font-extrabold text-white mt-1">Salários & Encargos</h3>
-            <p class="text-xs text-slate-400 mt-1">Lançamento por colaborador, função, valor e status.</p>
+            <span class="text-[10px] uppercase font-bold tracking-widest text-amber-800 bg-amber-100 px-2 py-0.5 rounded border border-amber-200">Folha / RH</span>
+            <h3 class="text-lg font-extrabold text-slate-800 mt-1">Salários & Encargos</h3>
+            <p class="text-xs text-slate-500 mt-1">Holerites, rescisão e comprovantes de pagamentos.</p>
           </div>
-        </div>
-        <div class="mt-6 flex items-center text-xs font-bold text-amber-400 group-hover:translate-x-1 transition-transform">
-          <span>Lançar Salários</span>
-          <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
         </div>
       </div>
 
-      <!-- Card 3: Receita / Entrada -->
-      <div onclick="openForm('ENTRADA')" class="glass-card rounded-2xl p-6 cursor-pointer hover:border-emerald-500/50 transition-all group relative overflow-hidden border border-slate-800 flex flex-col justify-between">
-        <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all"></div>
+      <!-- Card Receita / Entrada -->
+      <div onclick="openForm('ENTRADA')" class="glass-card rounded-2xl p-6 cursor-pointer hover:border-emerald-400 transition-all group relative overflow-hidden border border-slate-200">
         <div class="flex items-center space-x-4">
-          <div class="p-3.5 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 group-hover:scale-110 transition-transform shrink-0">
+          <div class="p-3.5 rounded-2xl bg-emerald-100 text-emerald-700 border border-emerald-200 group-hover:scale-110 transition-transform">
             <i data-lucide="badge-dollar-sign" class="w-7 h-7"></i>
           </div>
           <div>
-            <span class="text-[10px] uppercase font-bold tracking-widest text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">Receita Corporativa</span>
-            <h3 class="text-lg font-extrabold text-white mt-1">Registrar Entrada</h3>
-            <p class="text-xs text-slate-400 mt-1">Faturamento de contratos, clientes e recebimentos.</p>
+            <span class="text-[10px] uppercase font-bold tracking-widest text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-200">Receita Corporativa</span>
+            <h3 class="text-lg font-extrabold text-slate-800 mt-1">Registrar Entrada</h3>
+            <p class="text-xs text-slate-500 mt-1">Recebimentos (2 anexos: NF + Boletim de Medição).</p>
           </div>
         </div>
-        <div class="mt-6 flex items-center text-xs font-bold text-emerald-400 group-hover:translate-x-1 transition-transform">
-          <span>Lançar Receita</span>
-          <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
-        </div>
       </div>
-
     </section>
 
-    <!-- SESSÃO 2: FORMULÁRIO DINÂMICO DE CADASTRO -->
+    <!-- FORMULÁRIO CADASTRO -->
     <section id="new-nfe-form" class="glass-card rounded-2xl p-6 sm:p-8 relative hidden">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
+      <div class="flex items-center justify-between border-b border-sky-200 pb-4 mb-6">
         <div class="flex items-center space-x-3">
-          <div id="form-icon-box" class="p-2 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"><i data-lucide="file-plus-2" class="w-5 h-5"></i></div>
+          <div id="form-icon-box" class="p-2 rounded-lg bg-blue-100 text-blue-700 border border-blue-200"><i data-lucide="file-plus-2" class="w-5 h-5"></i></div>
           <div>
-            <h2 id="form-main-title" class="text-lg font-bold text-white">Cadastrar Nova Transação</h2>
-            <p class="text-xs text-slate-400">Preencha os dados abaixo para salvar no banco de dados</p>
+            <h2 id="form-main-title" class="text-lg font-bold text-slate-800">Cadastrar Nova Transação</h2>
+            <p class="text-xs text-slate-500">Preencha os campos e anexe até 2 documentos comprobatórios</p>
           </div>
         </div>
         
-        <button type="button" onclick="backToCards()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center space-x-2 border border-slate-700">
-          <i data-lucide="arrow-left" class="w-4 h-4"></i>
-          <span>Voltar aos Cards</span>
+        <button type="button" onclick="backToCards()" class="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold border border-slate-300">
+          <i data-lucide="arrow-left" class="w-4 h-4 inline mr-1"></i>Voltar
         </button>
       </div>
 
@@ -193,57 +212,47 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           
-          <div class="lg:col-span-3 bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex items-center justify-between">
+          <div class="lg:col-span-3 bg-blue-50/80 p-3.5 rounded-xl border border-blue-200 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-              <span class="text-xs uppercase font-bold text-slate-400">Sessão Ativa:</span>
-              <span id="badge-tipo-ativo" class="px-3 py-1 rounded-lg text-xs font-black bg-rose-500/20 text-rose-300 border border-rose-500/40">SAÍDA (Gasto / NF-e)</span>
+              <span class="text-xs uppercase font-bold text-slate-600">Sessão Ativa:</span>
+              <span id="badge-tipo-ativo" class="px-3 py-1 rounded-lg text-xs font-black bg-rose-100 text-rose-700 border border-rose-300">SAÍDA (Despesa / NF-e)</span>
             </div>
-            <button type="button" onclick="toggleActiveType()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700">Alternar Tipo</button>
+            <button type="button" onclick="toggleActiveType()" class="px-3 py-1 rounded-lg text-xs font-bold bg-white text-blue-700 border border-blue-300 hover:bg-blue-50">Alternar Tipo</button>
           </div>
 
           <div>
-            <label id="label-numero" class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Referência / Nº Doc <span class="text-red-400">*</span></label>
-            <input type="text" id="input-numero" required placeholder="Ex: NF-001248 ou FOLHA-10/2026" class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+            <label id="label-numero" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Número da Nota / Ref <span class="text-red-500">*</span></label>
+            <input type="text" id="input-numero" required placeholder="Ex: NF-001248" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-600">
           </div>
 
           <div>
-            <label id="label-cnpj" class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">CNPJ do Fornecedor / CPF Colaborador <span class="text-red-400">*</span></label>
-            <input type="text" id="input-cnpj" required placeholder="00.000.000/0001-00" maxlength="18" oninput="maskCNPJ(this)" class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-blue-500">
+            <label id="label-cnpj" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">CNPJ / CPF <span class="text-red-500">*</span></label>
+            <input type="text" id="input-cnpj" required value="13.506.821/0001-46" maxlength="18" oninput="maskCNPJ(this)" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 font-mono focus:outline-none focus:border-blue-600">
           </div>
 
           <div>
-            <label id="label-fornecedor" class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Nome do Colaborador / Fornecedor <span class="text-red-400">*</span></label>
-            <input type="text" id="input-fornecedor" required placeholder="Ex: Nome do Colaborador ou Razão Social" class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
-          </div>
-
-          <div id="container-atuacao" class="hidden">
-            <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Atuação / Cargo <span class="text-red-400">*</span></label>
-            <input type="text" id="input-atuacao" placeholder="Ex: Vigilante, Supervisor, Administrativo" class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
-          </div>
-
-          <div id="container-chave" class="lg:col-span-2">
-            <label id="label-chave" class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Chave de Acesso / Código de Transação <span class="text-red-400">*</span></label>
-            <input type="text" id="input-chave" required placeholder="Código ou chave da transação" class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-cyan-300 font-mono tracking-wider focus:outline-none focus:border-blue-500">
+            <label id="label-fornecedor" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Fornecedor / Favorecido <span class="text-red-500">*</span></label>
+            <input type="text" id="input-fornecedor" required placeholder="Ex: Grupo ER ou Nome do Cliente" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-600">
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Valor Total (R$) <span class="text-red-400">*</span></label>
-            <input type="text" id="input-valor" required placeholder="R$ 0,00" oninput="maskCurrencyInput(this)" class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-emerald-400 font-mono font-bold focus:outline-none focus:border-blue-500">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Valor Total (R$) <span class="text-red-500">*</span></label>
+            <input type="text" id="input-valor" required placeholder="R$ 0,00" oninput="maskCurrencyInput(this)" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-emerald-700 font-mono font-bold focus:outline-none focus:border-blue-600">
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Data de Emissão / Pagamento <span class="text-red-400">*</span></label>
-            <input type="date" id="input-data-emissao" required class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Data de Emissão / Evento <span class="text-red-500">*</span></label>
+            <input type="date" id="input-data-emissao" required class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-600">
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Data de Vencimento</label>
-            <input type="date" id="input-data-vencimento" class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Data de Vencimento</label>
+            <input type="date" id="input-data-vencimento" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-600">
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Forma de Pagamento</label>
-            <select id="input-forma-pgto" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Forma de Pagamento</label>
+            <select id="input-forma-pgto" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-600">
               <option value="Transferência">Transferência / PIX</option>
               <option value="Boleto">Boleto Bancário</option>
               <option value="Cartão de Crédito">Cartão de Crédito</option>
@@ -253,8 +262,8 @@
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Local de Pagamento (Banco / Dinheiro)</label>
-            <select id="input-local-pgto" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Local de Pagamento</label>
+            <select id="input-local-pgto" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-600">
               <option value="BRAD - ER">Bradesco - ER Segurança</option>
               <option value="NUBANK">Nubank</option>
               <option value="ITAU">Itaú</option>
@@ -264,13 +273,18 @@
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Categoria <span class="text-red-400">*</span></label>
-            <select id="input-categoria" required class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Categoria <span class="text-red-500">*</span></label>
+            <select id="input-categoria" required class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-600">
               <option value="">Selecione uma categoria...</option>
-              <optgroup label="Folha de Pagamento & RH">
-                <option value="Salários e Encargos">Salários e Encargos (Pró-labore / Holerite)</option>
+              <optgroup label="Folha & Pessoal">
+                <option value="Salários e Encargos">Salários e Encargos</option>
+                <option value="Serviços Prestados">Serviços Prestados</option>
+                <option value="Alimentação">Alimentação</option>
+                <option value="Rescisão">Rescisão</option>
+                <option value="Transporte/Combustível">Transporte / Combustível</option>
+                <option value="Pró-labore">Pró-labore</option>
               </optgroup>
-              <optgroup label="Saídas (Despesas Operacionais)">
+              <optgroup label="Operacional & Saídas">
                 <option value="Equipamentos de Monitoramento">Equipamentos de Monitoramento</option>
                 <option value="Vigilância Presencial">Vigilância Presencial</option>
                 <option value="Manutenção de CFTV">Manutenção de CFTV</option>
@@ -278,18 +292,18 @@
                 <option value="Uniformes e EPIs">Uniformes e EPIs</option>
                 <option value="Despesas Operacionais / Serviços">Despesas Operacionais / Serviços</option>
               </optgroup>
-              <optgroup label="Entradas (Receitas / Faturamento)">
+              <optgroup label="Receitas & Entradas">
                 <option value="Faturamento Contratos de Vigilância">Faturamento Contratos de Vigilância</option>
                 <option value="Serviços de Segurança Eventual">Serviços de Segurança Eventual</option>
-                <option value="Instalações & CFTV Clientes">Instalações & CFTV Clientes</option>
+                <option value="Boletim de Medição">Boletim de Medição / Faturamento</option>
                 <option value="Outras Receitas">Outras Receitas</option>
               </optgroup>
             </select>
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Status do Pagamento <span class="text-red-400">*</span></label>
-            <select id="input-status" required class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Status Inicial <span class="text-red-500">*</span></label>
+            <select id="input-status" required class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-600">
               <option value="Pendente" selected>Pendente</option>
               <option value="Pago">Pago / Liquidado</option>
               <option value="Recusado">Recusado</option>
@@ -297,77 +311,118 @@
             </select>
           </div>
 
-          <!-- DOCK DE UPLOAD -->
-          <div class="lg:col-span-2">
-            <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Comprovante / Holerite / Anexo</label>
-            <div id="drop-zone" class="relative border-2 border-dashed border-slate-700 hover:border-cyan-500 rounded-xl p-4 text-center cursor-pointer bg-slate-900/40 transition-all" onclick="document.getElementById('file-input').click()">
-              <input type="file" id="file-input" class="hidden" accept=".xml,.pdf,.png,.jpg" onchange="handleFileSelect(event)">
-              
-              <div id="upload-placeholder" class="flex flex-col items-center justify-center space-y-1">
-                <i data-lucide="upload-cloud" class="w-6 h-6 text-cyan-400"></i>
-                <span class="text-xs text-slate-300 font-semibold">Arraste e solte o comprovante / holerite (.pdf, .jpg) aqui</span>
-                <span class="text-[10px] text-slate-500">ou clique para selecionar no computador</span>
-              </div>
-              
-              <div id="upload-preview" class="hidden flex items-center justify-between bg-slate-800/80 p-2 rounded-lg text-xs">
-                <div class="flex items-center space-x-2 truncate">
-                  <i data-lucide="file-check-2" class="w-4 h-4 text-emerald-400 shrink-0"></i>
-                  <span id="file-name" class="font-mono text-cyan-300 truncate max-w-xs"></span>
+          <div id="container-atuacao" class="hidden">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Cargo / Função (Salários)</label>
+            <input type="text" id="input-atuacao" placeholder="Ex: Vigilante, Supervisor" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-600">
+          </div>
+
+          <!-- DOCK DE UPLOAD DUPLO (2 DOCUMENTOS POR REGISTRO) -->
+          <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <!-- ANEXO 1 -->
+            <div>
+              <label id="lbl-anexo-1" class="block text-xs font-bold text-slate-700 uppercase mb-1">Anexo 1: Nota Fiscal / Comprovante Principal</label>
+              <div id="drop-zone-1" class="border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-xl p-3 text-center cursor-pointer bg-white transition-all" onclick="document.getElementById('file-input-1').click()">
+                <input type="file" id="file-input-1" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.xml" onchange="handleFileSelect(event, 1)">
+                
+                <div id="upload-placeholder-1" class="flex flex-col items-center justify-center space-y-1 py-1">
+                  <i data-lucide="upload-cloud" class="w-5 h-5 text-blue-600"></i>
+                  <span class="text-xs text-slate-700 font-semibold">Arraste ou clique para enviar o Doc 1</span>
                 </div>
-                <button type="button" onclick="removeFile(event)" class="text-red-400 hover:text-red-300 p-1"><i data-lucide="x" class="w-4 h-4"></i></button>
+                
+                <div id="upload-preview-1" class="hidden flex items-center justify-between bg-blue-50 p-2 rounded-lg text-xs">
+                  <div class="flex items-center space-x-2 truncate">
+                    <i data-lucide="file-check-2" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+                    <span id="file-name-1" class="font-mono text-blue-800 truncate max-w-[150px]"></span>
+                  </div>
+                  <div class="flex items-center space-x-1">
+                    <button type="button" onclick="previewSelectedFile(event, 1)" class="p-1 text-blue-600 hover:text-blue-800" title="Visualizar Anexo 1"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                    <button type="button" onclick="removeFile(event, 1)" class="p-1 text-red-600 hover:text-red-800" title="Remover"><i data-lucide="x" class="w-4 h-4"></i></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ANEXO 2 -->
+            <div>
+              <label id="lbl-anexo-2" class="block text-xs font-bold text-slate-700 uppercase mb-1">Anexo 2: Boletim de Medição / Holerite / Comprovante</label>
+              <div id="drop-zone-2" class="border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-xl p-3 text-center cursor-pointer bg-white transition-all" onclick="document.getElementById('file-input-2').click()">
+                <input type="file" id="file-input-2" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.xml" onchange="handleFileSelect(event, 2)">
+                
+                <div id="upload-placeholder-2" class="flex flex-col items-center justify-center space-y-1 py-1">
+                  <i data-lucide="file-plus" class="w-5 h-5 text-blue-600"></i>
+                  <span class="text-xs text-slate-700 font-semibold">Arraste ou clique para enviar o Doc 2</span>
+                </div>
+                
+                <div id="upload-preview-2" class="hidden flex items-center justify-between bg-blue-50 p-2 rounded-lg text-xs">
+                  <div class="flex items-center space-x-2 truncate">
+                    <i data-lucide="file-check-2" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+                    <span id="file-name-2" class="font-mono text-blue-800 truncate max-w-[150px]"></span>
+                  </div>
+                  <div class="flex items-center space-x-1">
+                    <button type="button" onclick="previewSelectedFile(event, 2)" class="p-1 text-blue-600 hover:text-blue-800" title="Visualizar Anexo 2"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                    <button type="button" onclick="removeFile(event, 2)" class="p-1 text-red-600 hover:text-red-800" title="Remover"><i data-lucide="x" class="w-4 h-4"></i></button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+
         </div>
 
         <div>
-          <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Observações / Detalhes</label>
-          <textarea id="input-observacoes" rows="2" placeholder="Observações e detalhes do lançamento..." class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500"></textarea>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Observações Internas</label>
+          <textarea id="input-observacoes" rows="2" placeholder="Detalhes operacionais adicionais..." class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-600"></textarea>
         </div>
 
-        <div class="flex items-center justify-end space-x-4 pt-2">
-          <button type="button" onclick="backToCards()" class="px-5 py-2.5 rounded-xl border border-slate-700 hover:bg-slate-800 text-slate-300 text-sm font-medium">Cancelar</button>
+        <div class="flex items-center justify-end space-x-4 pt-2 border-t border-slate-200">
+          <button type="button" onclick="backToCards()" class="px-5 py-2.5 rounded-xl border border-slate-300 hover:bg-slate-100 text-slate-700 text-sm font-bold">Cancelar</button>
           <button type="submit" id="btn-submit" class="btn-neon-primary px-8 py-2.5 rounded-xl font-bold text-sm text-white flex items-center space-x-2">
             <i data-lucide="send" class="w-4 h-4"></i>
-            <span>Salvar Registro</span>
+            <span>Salvar Lançamento</span>
           </button>
         </div>
       </form>
     </section>
 
-    <!-- TABELA -->
+    <!-- TABELA DE TRANSAÇÕES -->
     <section class="glass-card rounded-2xl p-6 sm:p-8 space-y-6">
-      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-sky-200 pb-5">
         <div class="flex items-center space-x-3">
-          <div class="p-2 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20"><i data-lucide="search" class="w-5 h-5"></i></div>
+          <div class="p-2 rounded-lg bg-blue-100 text-blue-700 border border-blue-200"><i data-lucide="search" class="w-5 h-5"></i></div>
           <div>
-            <h2 class="text-lg font-bold text-white">Transações Registradas</h2>
-            <p class="text-xs text-slate-400">Consulta direta no banco de dados corporativo</p>
+            <h2 class="text-lg font-bold text-slate-800">Transações Registradas</h2>
+            <p class="text-xs text-slate-500">Histórico completo consolidado em tempo real</p>
           </div>
         </div>
-        <div id="filter-summary-pill" class="text-xs font-mono bg-slate-900 border border-slate-800 text-cyan-400 px-4 py-2 rounded-xl">Nenhum registro</div>
+        <div id="filter-summary-pill" class="text-xs font-mono bg-white border border-sky-200 text-blue-700 px-4 py-2 rounded-xl font-bold">Nenhum registro</div>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 bg-slate-900/50 p-4 rounded-xl border border-slate-800/80">
+      <!-- FILTROS -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 bg-blue-50/60 p-4 rounded-xl border border-sky-200">
         <div>
-          <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Tipo de Fluxo</label>
-          <select id="filter-tipo" onchange="renderTable()" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+          <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Tipo de Fluxo</label>
+          <select id="filter-tipo" onchange="renderTable()" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none">
             <option value="ALL">Todas</option>
             <option value="ENTRADA">Entradas</option>
-            <option value="SAIDA">Saídas (Despesas e Salários)</option>
+            <option value="SAIDA">Saídas</option>
           </select>
         </div>
 
         <div>
-          <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Busca Rápida</label>
-          <input type="text" id="filter-search" oninput="renderTable()" placeholder="Nº, Nome, CPF/CNPJ..." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+          <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Busca Rápida</label>
+          <input type="text" id="filter-search" oninput="renderTable()" placeholder="Nº, Nome, CPF/CNPJ..." class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none">
         </div>
 
         <div>
-          <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Categoria</label>
-          <select id="filter-categoria" onchange="renderTable()" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+          <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Categoria</label>
+          <select id="filter-categoria" onchange="renderTable()" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none">
             <option value="ALL">Todas as Categorias</option>
             <option value="Salários e Encargos">Salários e Encargos</option>
+            <option value="Serviços Prestados">Serviços Prestados</option>
+            <option value="Alimentação">Alimentação</option>
+            <option value="Rescisão">Rescisão</option>
+            <option value="Transporte/Combustível">Transporte/Combustível</option>
+            <option value="Pró-labore">Pró-labore</option>
             <option value="Equipamentos de Monitoramento">Equipamentos de Monitoramento</option>
             <option value="Vigilância Presencial">Vigilância Presencial</option>
             <option value="Faturamento Contratos de Vigilância">Faturamento Contratos</option>
@@ -375,8 +430,8 @@
         </div>
 
         <div>
-          <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Status</label>
-          <select id="filter-status" onchange="renderTable()" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+          <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Status</label>
+          <select id="filter-status" onchange="renderTable()" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none">
             <option value="ALL">Todos os Status</option>
             <option value="Pendente">Pendente</option>
             <option value="Pago">Pago</option>
@@ -386,47 +441,47 @@
         </div>
 
         <div>
-          <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Ação</label>
-          <button onclick="clearFilters()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg py-2 text-xs font-semibold flex items-center justify-center space-x-2">
+          <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Ação</label>
+          <button onclick="clearFilters()" class="w-full bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-lg py-2 text-xs font-bold flex items-center justify-center space-x-2">
             <i data-lucide="filter-x" class="w-3.5 h-3.5"></i>
             <span>Limpar Filtros</span>
           </button>
         </div>
       </div>
 
-      <div class="overflow-x-auto rounded-xl border border-slate-800">
+      <div class="overflow-x-auto rounded-xl border border-slate-200">
         <table class="w-full text-left text-xs">
-          <thead class="bg-slate-950 text-slate-400 font-semibold uppercase tracking-wider border-b border-slate-800">
+          <thead class="bg-slate-100 text-slate-700 font-bold uppercase border-b border-slate-200">
             <tr>
               <th class="py-3.5 px-4">Tipo</th>
-              <th class="py-3.5 px-4">Referência / Doc</th>
-              <th class="py-3.5 px-4">Colaborador / Fornecedor</th>
-              <th class="py-3.5 px-4">Categoria / Atuação</th>
+              <th class="py-3.5 px-4">Nº Ref / Doc</th>
+              <th class="py-3.5 px-4">Favorecido / Fornecedor</th>
+              <th class="py-3.5 px-4">Categoria / Local</th>
               <th class="py-3.5 px-4">Emissão</th>
               <th class="py-3.5 px-4">Valor Total</th>
               <th class="py-3.5 px-4 text-center">Status</th>
-              <th class="py-3.5 px-4 text-right">Ações</th>
+              <th class="py-3.5 px-4 text-right">Anexos / Ações</th>
             </tr>
           </thead>
-          <tbody id="nfe-table-body" class="divide-y divide-slate-800/60 bg-slate-900/30 font-medium"></tbody>
+          <tbody id="nfe-table-body" class="divide-y divide-slate-200 bg-white font-medium"></tbody>
         </table>
       </div>
     </section>
 
   </main>
 
-  <!-- MODAL DE EDIÇÃO COMPLETA -->
-  <div id="edit-modal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-    <div class="glass-card rounded-2xl p-6 sm:p-8 max-w-2xl w-full border border-slate-700/80 shadow-2xl relative my-8">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
+  <!-- MODAL DE EDIÇÃO -->
+  <div id="edit-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="glass-card rounded-2xl p-6 sm:p-8 max-w-2xl w-full border border-sky-300 shadow-2xl relative my-8 bg-white">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-4 mb-6">
         <div class="flex items-center space-x-3">
-          <div class="p-2 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"><i data-lucide="edit-3" class="w-5 h-5"></i></div>
+          <div class="p-2 rounded-lg bg-blue-100 text-blue-700 border border-blue-200"><i data-lucide="edit-3" class="w-5 h-5"></i></div>
           <div>
-            <h3 class="text-lg font-bold text-white">Editar Transação</h3>
-            <p class="text-xs text-slate-400">Atualize os dados e o local de pagamento</p>
+            <h3 class="text-lg font-bold text-slate-800">Editar Transação</h3>
+            <p class="text-xs text-slate-500">Atualize os valores, categoria ou substitua documentos anexados</p>
           </div>
         </div>
-        <button onclick="closeEditModal()" class="text-slate-400 hover:text-white p-1.5 rounded-lg bg-slate-800/60 hover:bg-slate-700"><i data-lucide="x" class="w-5 h-5"></i></button>
+        <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg bg-slate-100"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
 
       <form id="edit-form" onsubmit="saveEdit(event)" class="space-y-4">
@@ -434,16 +489,16 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Tipo de Fluxo</label>
-            <select id="edit-tipo" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Tipo de Fluxo</label>
+            <select id="edit-tipo" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
               <option value="SAIDA">Saída / Despesa / Salário</option>
               <option value="ENTRADA">Entrada / Receita</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Status do Pagamento</label>
-            <select id="edit-status" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Status do Pagamento</label>
+            <select id="edit-status" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
               <option value="Pendente">Pendente</option>
               <option value="Pago">Pago</option>
               <option value="Recusado">Recusado</option>
@@ -452,61 +507,61 @@
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Referência / Nº Doc</label>
-            <input type="text" id="edit-numero" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nº Doc / Referência</label>
+            <input type="text" id="edit-numero" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-slate-300 uppercase mb-1">CNPJ / CPF</label>
-            <input type="text" id="edit-cnpj" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono focus:outline-none">
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">CNPJ / CPF</label>
+            <input type="text" id="edit-cnpj" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 font-mono focus:outline-none">
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Colaborador / Fornecedor</label>
-            <input type="text" id="edit-fornecedor" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Favorecido / Fornecedor</label>
+            <input type="text" id="edit-fornecedor" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Valor Total (R$)</label>
-            <input type="text" id="edit-valor" required oninput="maskCurrencyInput(this)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-emerald-400 font-mono font-bold focus:outline-none">
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Valor Total (R$)</label>
+            <input type="text" id="edit-valor" required oninput="maskCurrencyInput(this)" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-emerald-700 font-mono font-bold focus:outline-none">
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Data de Emissão</label>
-            <input type="date" id="edit-emissao" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Data de Emissão</label>
+            <input type="date" id="edit-emissao" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Categoria</label>
-            <select id="edit-categoria" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Categoria</label>
+            <select id="edit-categoria" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
               <option value="Salários e Encargos">Salários e Encargos</option>
+              <option value="Serviços Prestados">Serviços Prestados</option>
+              <option value="Alimentação">Alimentação</option>
+              <option value="Rescisão">Rescisão</option>
+              <option value="Transporte/Combustível">Transporte/Combustível</option>
+              <option value="Pró-labore">Pró-labore</option>
               <option value="Equipamentos de Monitoramento">Equipamentos de Monitoramento</option>
               <option value="Vigilância Presencial">Vigilância Presencial</option>
-              <option value="Manutenção de CFTV">Manutenção de CFTV</option>
-              <option value="Licenças de Software">Licenças de Software</option>
-              <option value="Uniformes e EPIs">Uniformes e EPIs</option>
               <option value="Despesas Operacionais / Serviços">Despesas Operacionais / Serviços</option>
               <option value="Faturamento Contratos de Vigilância">Faturamento Contratos de Vigilância</option>
-              <option value="Serviços de Segurança Eventual">Serviços de Segurança Eventual</option>
-              <option value="Instalações & CFTV Clientes">Instalações & CFTV Clientes</option>
+              <option value="Boletim de Medição">Boletim de Medição</option>
               <option value="Outras Receitas">Outras Receitas</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Forma de Pagamento</label>
-            <select id="edit-forma-pgto" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Forma de Pagamento</label>
+            <select id="edit-forma-pgto" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
               <option value="Transferência">Transferência / PIX</option>
               <option value="Boleto">Boleto Bancário</option>
               <option value="Cartão de Crédito">Cartão de Crédito</option>
               <option value="Dinheiro">Dinheiro</option>
-              <option value="Débito Automático">Débito Automático</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Local de Pagamento (Banco / Dinheiro)</label>
-            <select id="edit-local-pgto" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Local de Pagamento</label>
+            <select id="edit-local-pgto" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
               <option value="BRAD - ER">Bradesco - ER Segurança</option>
               <option value="NUBANK">Nubank</option>
               <option value="ITAU">Itaú</option>
@@ -515,38 +570,65 @@
             </select>
           </div>
 
-          <div class="sm:col-span-2">
-            <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Atuação / Cargo (Opcional)</label>
-            <input type="text" id="edit-atuacao" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+          <div class="sm:col-span-2 space-y-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <span class="block text-xs font-bold text-slate-700 uppercase">Substituir Documentos Anexados</span>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[10px] font-bold text-slate-500 uppercase">Anexo 1 (NF / Comprovante)</label>
+                <input type="file" id="edit-file-input-1" accept=".pdf,.png,.jpg,.jpeg,.xml" class="w-full text-xs text-slate-600 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:bg-blue-100 file:text-blue-700">
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-slate-500 uppercase">Anexo 2 (Medição / Holerite)</label>
+                <input type="file" id="edit-file-input-2" accept=".pdf,.png,.jpg,.jpeg,.xml" class="w-full text-xs text-slate-600 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:bg-blue-100 file:text-blue-700">
+              </div>
+            </div>
           </div>
 
           <div class="sm:col-span-2">
-            <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Atualizar Comprovante / Holerite / Anexo</label>
-            <input type="file" id="edit-file-input" accept=".xml,.pdf,.png,.jpg" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-300 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-cyan-500/20 file:text-cyan-300 hover:file:bg-cyan-500/30">
-          </div>
-
-          <div class="sm:col-span-2">
-            <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Observações</label>
-            <textarea id="edit-observacoes" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"></textarea>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Observações</label>
+            <textarea id="edit-observacoes" rows="2" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none"></textarea>
           </div>
         </div>
 
-        <div class="flex items-center justify-end space-x-3 pt-4 border-t border-slate-800">
-          <button type="button" onclick="closeEditModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold">Cancelar</button>
+        <div class="flex items-center justify-end space-x-3 pt-4 border-t border-slate-200">
+          <button type="button" onclick="closeEditModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">Cancelar</button>
           <button type="submit" id="btn-save-edit" class="btn-neon-primary px-6 py-2 rounded-xl text-xs font-bold text-white">Salvar Alterações</button>
         </div>
       </form>
     </div>
   </div>
 
+  <!-- MODAL DE VISUALIZAÇÃO DE ANEXO (PREVIEW NATIVO) -->
+  <div id="preview-modal" class="fixed inset-0 z-50 hidden bg-slate-900/70 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-4xl w-full h-[85vh] flex flex-col shadow-2xl border border-slate-300 overflow-hidden">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="file-text" class="w-5 h-5 text-blue-600"></i>
+          <span id="preview-title" class="font-bold text-slate-800 text-sm">Visualizar Anexo</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <a id="preview-download-btn" href="#" download class="px-3 py-1.5 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-bold flex items-center space-x-1">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            <span>Baixar</span>
+          </a>
+          <button onclick="closePreviewModal()" class="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+      </div>
+      <div id="preview-body" class="flex-grow bg-slate-100 flex items-center justify-center overflow-auto p-4">
+        <!-- Conteúdo dinâmico da imagem ou PDF -->
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST -->
-  <div id="toast" class="fixed bottom-6 right-6 z-50 hidden max-w-md bg-slate-900 border border-cyan-500/50 text-slate-100 text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 backdrop-blur-md">
+  <div id="toast" class="fixed bottom-6 right-6 z-50 hidden max-w-md bg-slate-900 border border-blue-500 text-slate-100 text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 backdrop-blur-md">
     <i data-lucide="info" id="toast-icon" class="w-5 h-5 text-cyan-400"></i>
     <span id="toast-message">Notificação</span>
   </div>
 
-  <!-- SCRIPT FIREBASE INTEGRADO -->
-<script type="module">
+  <!-- SCRIPT FIREBASE COMPLETO -->
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -569,15 +651,18 @@
     const db = getFirestore(app);
 
     let nfeList = [];
-    let currentSelectedFile = null;
-    let currentSelectedFileData = null;
-    let editSelectedFileData = null;
     
+    // Suporte para 2 arquivos por registro
+    let fileObj1 = { name: null, data: null };
+    let fileObj2 = { name: null, data: null };
+    let editFileObj1 = { name: null, data: null };
+    let editFileObj2 = { name: null, data: null };
+
     window.onload = function() {
       lucide.createIcons();
-      const inputEmissao = document.getElementById('input-data-emissao');
-      if (inputEmissao) inputEmissao.valueAsDate = new Date();
-      setupDragAndDrop();
+      document.getElementById('input-data-emissao').valueAsDate = new Date();
+      setupDragAndDrop(1);
+      setupDragAndDrop(2);
       listenFirestore();
     };
 
@@ -602,129 +687,151 @@
       });
     }
 
-    function setupDragAndDrop() {
-      const dropZone = document.getElementById('drop-zone');
+    function setupDragAndDrop(index) {
+      const dropZone = document.getElementById(`drop-zone-${index}`);
       if (!dropZone) return;
       ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropZone.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
       });
       dropZone.addEventListener('drop', (e) => {
         const files = e.dataTransfer.files;
-        if (files && files.length > 0) processFile(files[0]);
+        if (files && files.length > 0) processFile(files[0], index);
       }, false);
     }
 
-    function processFile(file) {
+    function processFile(file, index) {
       if (!file) return;
-      currentSelectedFile = file.name;
       const reader = new FileReader();
       reader.onload = function(evt) {
-        currentSelectedFileData = evt.target.result;
-        const placeholder = document.getElementById('upload-placeholder');
-        const preview = document.getElementById('upload-preview');
-        const fileName = document.getElementById('file-name');
-        if (placeholder) placeholder.classList.add('hidden');
-        if (preview) preview.classList.remove('hidden');
-        if (fileName) fileName.textContent = file.name;
+        if (index === 1) {
+          fileObj1.name = file.name;
+          fileObj1.data = evt.target.result;
+        } else {
+          fileObj2.name = file.name;
+          fileObj2.data = evt.target.result;
+        }
+        
+        document.getElementById(`upload-placeholder-${index}`).classList.add('hidden');
+        document.getElementById(`upload-preview-${index}`).classList.remove('hidden');
+        document.getElementById(`file-name-${index}`).textContent = file.name;
       };
       reader.readAsDataURL(file);
     }
 
-    window.handleFileSelect = function(e) {
-      processFile(e.target.files[0]);
+    window.handleFileSelect = function(e, index) {
+      processFile(e.target.files[0], index);
+    };
+
+    window.removeFile = function(e, index) {
+      if (e) e.stopPropagation();
+      if (index === 1) {
+        fileObj1 = { name: null, data: null };
+      } else {
+        fileObj2 = { name: null, data: null };
+      }
+      document.getElementById(`file-input-${index}`).value = '';
+      document.getElementById(`upload-placeholder-${index}`).classList.remove('hidden');
+      document.getElementById(`upload-preview-${index}`).classList.add('hidden');
+    };
+
+    window.previewSelectedFile = function(e, index) {
+      if (e) e.stopPropagation();
+      const obj = (index === 1) ? fileObj1 : fileObj2;
+      if (!obj || !obj.data) {
+        showToast('Nenhum anexo para visualizar.', 'warning');
+        return;
+      }
+      openPreviewModal(obj.name || 'Anexo', obj.data);
+    };
+
+    window.openPreviewModal = function(name, dataUrl) {
+      const modal = document.getElementById('preview-modal');
+      const title = document.getElementById('preview-title');
+      const body = document.getElementById('preview-body');
+      const dlBtn = document.getElementById('preview-download-btn');
+
+      title.textContent = name;
+      dlBtn.href = dataUrl;
+      dlBtn.download = name;
+
+      body.innerHTML = '';
+      if (dataUrl.startsWith('data:image/')) {
+        body.innerHTML = `<img src="${dataUrl}" class="max-w-full max-h-full object-contain rounded-lg shadow-md"/>`;
+      } else {
+        body.innerHTML = `<iframe src="${dataUrl}" class="w-full h-full border-0 rounded-lg"></iframe>`;
+      }
+
+      modal.classList.remove('hidden');
+    };
+
+    window.closePreviewModal = function() {
+      document.getElementById('preview-modal').classList.add('hidden');
     };
 
     window.openForm = function(tipo) {
-      const cards = document.getElementById('selection-cards-section');
-      const formSec = document.getElementById('new-nfe-form');
-      if (cards) cards.classList.add('hidden');
-      if (formSec) formSec.classList.remove('hidden');
+      document.getElementById('selection-cards-section').classList.add('hidden');
+      document.getElementById('new-nfe-form').classList.remove('hidden');
       setFormType(tipo);
-      if (formSec) formSec.scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('new-nfe-form').scrollIntoView({ behavior: 'smooth' });
     };
 
     window.backToCards = function() {
-      const formSec = document.getElementById('new-nfe-form');
-      const cards = document.getElementById('selection-cards-section');
-      if (formSec) formSec.classList.add('hidden');
-      if (cards) cards.classList.remove('hidden');
+      document.getElementById('new-nfe-form').classList.add('hidden');
+      document.getElementById('selection-cards-section').classList.remove('hidden');
       resetForm();
     };
 
     window.toggleActiveType = function() {
       const hiddenInput = document.getElementById('input-tipo-transacao-hidden');
       if (!hiddenInput) return;
-      const atual = hiddenInput.value;
-      const novo = atual === 'SAIDA' ? 'ENTRADA' : 'SAIDA';
+      const novo = hiddenInput.value === 'SAIDA' ? 'ENTRADA' : 'SAIDA';
       setFormType(novo);
     };
 
     function setFormType(tipo) {
       const badge = document.getElementById('badge-tipo-ativo');
       const title = document.getElementById('form-main-title');
-      const inputCategoria = document.getElementById('input-categoria');
       const containerAtuacao = document.getElementById('container-atuacao');
-      const containerChave = document.getElementById('container-chave');
-      const inputChave = document.getElementById('input-chave');
+      const inputCategoria = document.getElementById('input-categoria');
       const hiddenInput = document.getElementById('input-tipo-transacao-hidden');
+
+      const lbl1 = document.getElementById('lbl-anexo-1');
+      const lbl2 = document.getElementById('lbl-anexo-2');
 
       if (tipo === 'SALARIO') {
         if (hiddenInput) hiddenInput.value = 'SAIDA';
         if (badge) {
-          badge.className = "px-3 py-1 rounded-lg text-xs font-black bg-amber-500/20 text-amber-300 border border-amber-500/40";
+          badge.className = "px-3 py-1 rounded-lg text-xs font-black bg-amber-100 text-amber-800 border border-amber-300";
           badge.textContent = "SAÍDA (Folha de Pagamento / Salário)";
         }
         if (title) title.textContent = "Lançamento de Salários e Encargos";
-        
-        const lblNum = document.getElementById('label-numero');
-        const lblCnpj = document.getElementById('label-cnpj');
-        const lblForn = document.getElementById('label-fornecedor');
-        if (lblNum) lblNum.innerHTML = `Referência / Mês-Ano <span class="text-red-400">*</span>`;
-        if (lblCnpj) lblCnpj.innerHTML = `CPF / Identificação <span class="text-red-400">*</span>`;
-        if (lblForn) lblForn.innerHTML = `Nome do Colaborador <span class="text-red-400">*</span>`;
-        
         if (containerAtuacao) containerAtuacao.classList.remove('hidden');
-        if (containerChave) containerChave.classList.remove('lg:col-span-2');
-        if (inputChave) inputChave.required = false;
         if (inputCategoria) inputCategoria.value = "Salários e Encargos";
+
+        if (lbl1) lbl1.textContent = "Anexo 1: Comprovante de Pagamento";
+        if (lbl2) lbl2.textContent = "Anexo 2: Holerite / Encargos";
       } else if (tipo === 'ENTRADA') {
         if (hiddenInput) hiddenInput.value = 'ENTRADA';
         if (badge) {
-          badge.className = "px-3 py-1 rounded-lg text-xs font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+          badge.className = "px-3 py-1 rounded-lg text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-300";
           badge.textContent = "ENTRADA (Receita / Faturamento)";
         }
         if (title) title.textContent = "Registrar Nova Entrada (Receita)";
-        
-        const lblNum = document.getElementById('label-numero');
-        const lblCnpj = document.getElementById('label-cnpj');
-        const lblForn = document.getElementById('label-fornecedor');
-        if (lblNum) lblNum.innerHTML = `Nº do Documento <span class="text-red-400">*</span>`;
-        if (lblCnpj) lblCnpj.innerHTML = `CNPJ / CPF do Cliente <span class="text-red-400">*</span>`;
-        if (lblForn) lblForn.innerHTML = `Nome do Cliente <span class="text-red-400">*</span>`;
-        
         if (containerAtuacao) containerAtuacao.classList.add('hidden');
-        if (containerChave) containerChave.classList.add('lg:col-span-2');
-        if (inputChave) inputChave.required = true;
-        if (inputCategoria) inputCategoria.value = "";
+
+        if (lbl1) lbl1.textContent = "Anexo 1: Nota Fiscal de Serviços";
+        if (lbl2) lbl2.textContent = "Anexo 2: Boletim de Medição / Comprovante";
       } else {
         if (hiddenInput) hiddenInput.value = 'SAIDA';
         if (badge) {
-          badge.className = "px-3 py-1 rounded-lg text-xs font-black bg-rose-500/20 text-rose-300 border border-rose-500/40";
+          badge.className = "px-3 py-1 rounded-lg text-xs font-black bg-rose-100 text-rose-800 border border-rose-300";
           badge.textContent = "SAÍDA (Despesa / NF-e)";
         }
-        if (title) title.textContent = "Anexar Nova Nota Fiscal / Despesa";
-        
-        const lblNum = document.getElementById('label-numero');
-        const lblCnpj = document.getElementById('label-cnpj');
-        const lblForn = document.getElementById('label-fornecedor');
-        if (lblNum) lblNum.innerHTML = `Número da Nota / Doc <span class="text-red-400">*</span>`;
-        if (lblCnpj) lblCnpj.innerHTML = `CNPJ do Emissor / Fornecedor <span class="text-red-400">*</span>`;
-        if (lblForn) lblForn.innerHTML = `Razão Social / Fornecedor <span class="text-red-400">*</span>`;
-        
+        if (title) title.textContent = "Anexar Nova Despesa / NF-e";
         if (containerAtuacao) containerAtuacao.classList.add('hidden');
-        if (containerChave) containerChave.classList.add('lg:col-span-2');
-        if (inputChave) inputChave.required = true;
-        if (inputCategoria) inputCategoria.value = "";
+
+        if (lbl1) lbl1.textContent = "Anexo 1: Nota Fiscal / Fatura";
+        if (lbl2) lbl2.textContent = "Anexo 2: Comprovante de Pagamento";
       }
     }
 
@@ -741,55 +848,12 @@
       return parseFloat(clean) || 0;
     }
 
-    window.removeFile = function(e) {
-      e.stopPropagation();
-      currentSelectedFile = null;
-      currentSelectedFileData = null;
-      const fileIn = document.getElementById('file-input');
-      const placeholder = document.getElementById('upload-placeholder');
-      const preview = document.getElementById('upload-preview');
-      if (fileIn) fileIn.value = '';
-      if (placeholder) placeholder.classList.remove('hidden');
-      if (preview) preview.classList.add('hidden');
-    };
-
-    window.downloadFile = function(id) {
-      const item = nfeList.find(x => x.id === id);
-      if (!item || !item.fileData) {
-        showToast('Nenhum comprovante anexado.', 'warning');
-        return;
-      }
-      try {
-        const parts = item.fileData.split(',');
-        const contentTypeMatch = parts[0].match(/:(.*?);/);
-        const contentType = contentTypeMatch ? contentTypeMatch[1] : 'application/pdf';
-        
-        const raw = window.atob(parts[1]);
-        const uInt8Array = new Uint8Array(raw.length);
-        for (let i = 0; i < raw.length; ++i) { uInt8Array[i] = raw.charCodeAt(i); }
-
-        const blob = new Blob([uInt8Array], { type: contentType });
-        const blobUrl = URL.createObjectURL(blob);
-
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        a.download = item.fileName || `Comprovante_${item.numero}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
-        showToast('Download iniciado!', 'success');
-      } catch (e) {
-        showToast('Erro ao processar arquivo.', 'warning');
-      }
-    };
-
     window.openEditModal = function(id) {
       const item = nfeList.find(x => x.id === id);
       if (!item) return;
 
-      const setVal = (elementId, val) => {
-        const el = document.getElementById(elementId);
+      const setVal = (elId, val) => {
+        const el = document.getElementById(elId);
         if (el) el.value = val;
       };
 
@@ -797,57 +861,51 @@
       setVal('edit-tipo', item.tipo || 'SAIDA');
       setVal('edit-status', item.status || 'Pendente');
       setVal('edit-numero', item.numero || '');
-      setVal('edit-cnpj', item.cnpj || '');
+      setVal('edit-cnpj', item.cnpj || '13.506.821/0001-46');
       setVal('edit-fornecedor', item.fornecedor || '');
       setVal('edit-valor', formatCurrency(item.valor || 0).replace('R$', '').trim());
       setVal('edit-emissao', item.emissao || '');
       setVal('edit-categoria', item.categoria || '');
-      setVal('edit-atuacao', item.atuacao || '');
       setVal('edit-forma-pgto', item.formaPgto || 'Transferência');
       setVal('edit-local-pgto', item.localPgto || 'BRAD - ER');
       setVal('edit-observacoes', item.observacoes || '');
-      
-      editSelectedFileData = item.fileData || null;
-      const fileInput = document.getElementById('edit-file-input');
-      if (fileInput) fileInput.value = '';
 
-      const modal = document.getElementById('edit-modal');
-      if (modal) modal.classList.remove('hidden');
+      editFileObj1 = { name: item.fileName1 || null, data: item.fileData1 || null };
+      editFileObj2 = { name: item.fileName2 || null, data: item.fileData2 || null };
+
+      document.getElementById('edit-file-input-1').value = '';
+      document.getElementById('edit-file-input-2').value = '';
+
+      document.getElementById('edit-modal').classList.remove('hidden');
     };
 
     window.closeEditModal = function() {
-      const modal = document.getElementById('edit-modal');
-      if (modal) modal.classList.add('hidden');
+      document.getElementById('edit-modal').classList.add('hidden');
     };
 
     window.saveEdit = async function(event) {
       event.preventDefault();
-      const idElem = document.getElementById('edit-id');
-      if (!idElem) return;
-      const id = idElem.value;
-      const fileInput = document.getElementById('edit-file-input');
-      const numElem = document.getElementById('edit-numero');
+      const id = document.getElementById('edit-id').value;
+      if (!id) return;
 
-      let fileDataToSave = editSelectedFileData;
-      let fileNameToSave = `DOC_${numElem ? numElem.value : 'arquivo'}.pdf`;
+      const in1 = document.getElementById('edit-file-input-1');
+      const in2 = document.getElementById('edit-file-input-2');
 
-      if (fileInput && fileInput.files && fileInput.files[0]) {
-        const file = fileInput.files[0];
-        fileNameToSave = file.name;
+      const processEditFile = (file) => new Promise((resolve) => {
+        if (!file) return resolve(null);
         const reader = new FileReader();
-        reader.onload = async function(evt) {
-          fileDataToSave = evt.target.result;
-          await commitUpdate(id, fileDataToSave, fileNameToSave);
-        };
+        reader.onload = (e) => resolve({ name: file.name, data: e.target.result });
         reader.readAsDataURL(file);
-      } else {
-        await commitUpdate(id, fileDataToSave, fileNameToSave);
-      }
-    };
+      });
 
-    async function commitUpdate(id, fileData, fileName) {
-      const getVal = (id) => {
-        const el = document.getElementById(id);
+      const res1 = await processEditFile(in1.files[0]);
+      const res2 = await processEditFile(in2.files[0]);
+
+      const finalFile1 = res1 || editFileObj1;
+      const finalFile2 = res2 || editFileObj2;
+
+      const getVal = (elId) => {
+        const el = document.getElementById(elId);
         return el ? el.value.trim() : '';
       };
 
@@ -860,90 +918,75 @@
         valor: parseCurrencyToNumber(getVal('edit-valor')),
         emissao: getVal('edit-emissao'),
         categoria: getVal('edit-categoria'),
-        atuacao: getVal('edit-atuacao'),
-        formaPgto: getVal('edit-forma-pgto') || 'Transferência',
-        localPgto: getVal('edit-local-pgto') || 'BRAD - ER',
+        formaPgto: getVal('edit-forma-pgto'),
+        localPgto: getVal('edit-local-pgto'),
         observacoes: getVal('edit-observacoes'),
-        fileData: fileData,
-        fileName: fileName
+        fileName1: finalFile1.name,
+        fileData1: finalFile1.data,
+        fileName2: finalFile2.name,
+        fileData2: finalFile2.data
       };
 
       try {
-        const docRef = doc(db, "transacoes", id);
-        await updateDoc(docRef, updatedData);
+        await updateDoc(doc(db, "transacoes", id), updatedData);
         showToast('Registro atualizado com sucesso!', 'success');
         closeEditModal();
       } catch (err) {
         showToast('Erro ao atualizar: ' + err.message, 'warning');
       }
-    }
+    };
 
-    const nfeForm = document.getElementById('nfe-form');
-    if (nfeForm) {
-      nfeForm.onsubmit = async function(event) {
-        event.preventDefault();
+    document.getElementById('nfe-form').onsubmit = async function(event) {
+      event.preventDefault();
 
-        const tipoElem = document.getElementById('input-tipo-transacao-hidden');
-        const valorElem = document.getElementById('input-valor');
-        const numElem = document.getElementById('input-numero');
-        const cnpjElem = document.getElementById('input-cnpj');
-        const fornElem = document.getElementById('input-fornecedor');
-        const atuacaoElem = document.getElementById('input-atuacao');
-        const chaveElem = document.getElementById('input-chave');
-        const emissaoElem = document.getElementById('input-data-emissao');
-        const vencElem = document.getElementById('input-data-vencimento');
-        const formaElem = document.getElementById('input-forma-pgto');
-        const localElem = document.getElementById('input-local-pgto');
-        const catElem = document.getElementById('input-categoria');
-        const statusElem = document.getElementById('input-status');
-        const obsElem = document.getElementById('input-observacoes');
+      const tipo = document.getElementById('input-tipo-transacao-hidden').value;
+      const valor = parseCurrencyToNumber(document.getElementById('input-valor').value);
 
-        const tipoSelecionado = tipoElem ? tipoElem.value : 'SAIDA';
-        const valorNumerico = parseCurrencyToNumber(valorElem ? valorElem.value : '0');
+      if (valor <= 0) {
+        showToast('Informe um valor válido.', 'warning');
+        return;
+      }
 
-        if (valorNumerico <= 0) {
-          showToast('Informe um valor válido.', 'warning');
-          return;
-        }
+      const num = document.getElementById('input-numero').value.trim();
 
-        const newRecord = {
-          tipo: tipoSelecionado,
-          numero: numElem ? numElem.value.trim() : '',
-          cnpj: cnpjElem ? cnpjElem.value.trim() : '',
-          fornecedor: fornElem ? fornElem.value.trim() : '',
-          atuacao: atuacaoElem ? atuacaoElem.value.trim() : 'Geral',
-          chave: chaveElem ? chaveElem.value.trim() : 'N/A',
-          valor: valorNumerico,
-          emissao: emissaoElem ? emissaoElem.value : '',
-          vencimento: vencElem ? vencElem.value : null,
-          formaPgto: formaElem ? formaElem.value : 'Transferência',
-          localPgto: localElem ? localElem.value : 'BRAD - ER',
-          categoria: catElem ? catElem.value : '',
-          status: statusElem ? statusElem.value : 'Pendente',
-          fileName: currentSelectedFile || `DOC_${numElem ? numElem.value.replace(/\D/g, '') : 'arquivo'}.pdf`,
-          fileData: currentSelectedFileData || null,
-          observacoes: obsElem ? obsElem.value.trim() : '',
-          criadoEm: serverTimestamp()
-        };
-
-        const btnSubmit = document.getElementById('btn-submit');
-        if (btnSubmit) btnSubmit.disabled = true;
-
-        try {
-          await addDoc(collection(db, "transacoes"), newRecord);
-          showToast('Registro salvo com sucesso!', 'success');
-          resetForm();
-          backToCards();
-        } catch (err) {
-          showToast('Erro ao salvar: ' + err.message, 'warning');
-        } finally {
-          if (btnSubmit) btnSubmit.disabled = false;
-        }
+      const newRecord = {
+        tipo: tipo,
+        numero: num,
+        cnpj: document.getElementById('input-cnpj').value.trim(),
+        fornecedor: document.getElementById('input-fornecedor').value.trim(),
+        valor: valor,
+        emissao: document.getElementById('input-data-emissao').value,
+        vencimento: document.getElementById('input-data-vencimento').value || null,
+        formaPgto: document.getElementById('input-forma-pgto').value,
+        localPgto: document.getElementById('input-local-pgto').value,
+        categoria: document.getElementById('input-categoria').value,
+        status: document.getElementById('input-status').value,
+        atuacao: document.getElementById('input-atuacao')?.value || '',
+        observacoes: document.getElementById('input-observacoes').value.trim(),
+        fileName1: fileObj1.name || null,
+        fileData1: fileObj1.data || null,
+        fileName2: fileObj2.name || null,
+        fileData2: fileObj2.data || null,
+        criadoEm: serverTimestamp()
       };
-    }
+
+      const btnSubmit = document.getElementById('btn-submit');
+      btnSubmit.disabled = true;
+
+      try {
+        await addDoc(collection(db, "transacoes"), newRecord);
+        showToast('Lançamento salvo com sucesso!', 'success');
+        resetForm();
+        backToCards();
+      } catch (err) {
+        showToast('Erro ao salvar: ' + err.message, 'warning');
+      } finally {
+        btnSubmit.disabled = false;
+      }
+    };
 
     window.deleteNFe = async function(id) {
-      if (!confirm('Deseja realmente remover este registro?')) return;
+      if (!confirm('Deseja realmente remover esta transação?')) return;
       try {
         await deleteDoc(doc(db, "transacoes", id));
         showToast('Registro excluído com sucesso.', 'warning');
@@ -959,24 +1002,21 @@
       }
 
       let totalEntradas = 0;
-      let totalSaidasPrevistas = 0;
       let totalSaidasPagas = 0;
+      let totalSaidasPrevistas = 0;
 
       nfeList.forEach(item => {
-        const valor = parseFloat(item.valor || 0);
+        const val = parseFloat(item.valor || 0);
         if (item.tipo === 'ENTRADA') {
-          totalEntradas += valor;
+          totalEntradas += val;
         } else {
-          totalSaidasPrevistas += valor;
-          if (item.status === 'Pago') {
-            totalSaidasPagas += valor;
-          }
+          totalSaidasPrevistas += val;
+          if (item.status === 'Pago') totalSaidasPagas += val;
         }
       });
 
-      // Balanço Líquido Real (Entradas - Saídas efetivamente pagas)
-      const balancoLiquidoReal = totalEntradas - totalSaidasPagas;
-      const dataEmissaoRelatorio = new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+      const balancoReal = totalEntradas - totalSaidasPagas;
+      const dataEmissao = new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
 
       let linhasHtml = '';
 
@@ -988,132 +1028,84 @@
           diaSemana = dias[d.getDay()] || '';
         }
 
-        const valorItem = parseFloat(item.valor || 0);
-        const isEntrada = (item.tipo === 'ENTRADA');
-        const isPago = (item.status === 'Pago');
-        const statusText = item.status || 'Pendente';
-
-        let aPagar = isEntrada ? 0 : valorItem;
-        let pago = isPago ? valorItem : 0;
-
-        let statusStyle = 'background-color: #fef3c7; color: #d97706; border: 1px solid #f59e0b;';
-        if (isPago) {
-          statusStyle = 'background-color: #d1fae5; color: #059669; border: 1px solid #10b981;';
-        } else if (statusText === 'Recusado') {
-          statusStyle = 'background-color: #ffe4e6; color: #e11d48; border: 1px solid #f43f5e;';
-        } else if (statusText === 'Cancelada') {
-          statusStyle = 'background-color: #f1f5f9; color: #64748b; border: 1px solid #94a3b8;';
-        }
-
-        const tipoStyle = isEntrada ? 'color: #059669; font-weight: bold;' : 'color: #e11d48; font-weight: bold;';
+        const isEntrada = item.tipo === 'ENTRADA';
+        const isPago = item.status === 'Pago';
+        const val = parseFloat(item.valor || 0);
 
         linhasHtml += `
           <tr style="height: 28px;">
             <td style="text-align: center; border: 1px solid #cbd5e1;">${item.emissao ? formatDate(item.emissao) : ''}</td>
             <td style="text-align: center; border: 1px solid #cbd5e1; text-transform: capitalize;">${diaSemana}</td>
-            <td style="text-align: center; border: 1px solid #cbd5e1; ${tipoStyle}">${isEntrada ? 'ENTRADA' : 'SAIDA'}</td>
-            <td style="border: 1px solid #cbd5e1; background-color: #f8fafc;">${item.categoria || ''}</td>
+            <td style="text-align: center; border: 1px solid #cbd5e1; font-weight: bold; color: ${isEntrada ? '#059669' : '#dc2626'}">${item.tipo}</td>
+            <td style="border: 1px solid #cbd5e1;">${item.categoria || ''}</td>
             <td style="border: 1px solid #cbd5e1; font-weight: 600;">${item.fornecedor || ''}</td>
             <td style="border: 1px solid #cbd5e1;">${item.formaPgto || 'Transferência'}</td>
             <td style="text-align: center; border: 1px solid #cbd5e1;">GRUPO ER</td>
-            <td style="text-align: right; border: 1px solid #cbd5e1; font-weight: bold;">${isEntrada ? '-' : 'R$ ' + aPagar.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+            <td style="text-align: right; border: 1px solid #cbd5e1; font-weight: bold;">${isEntrada ? '-' : 'R$ ' + val.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
             <td style="text-align: center; border: 1px solid #cbd5e1;">${isPago && item.emissao ? formatDate(item.emissao) : '-'}</td>
-            <td style="text-align: right; border: 1px solid #cbd5e1; font-weight: bold; color: #059669;">${isEntrada ? '+ R$ ' + valorItem.toLocaleString('pt-BR', {minimumFractionDigits: 2}) : (isPago ? 'R$ ' + pago.toLocaleString('pt-BR', {minimumFractionDigits: 2}) : 'R$ 0,00')}</td>
-            <td style="text-align: right; border: 1px solid #cbd5e1; font-weight: bold; color: ${isEntrada ? '#059669' : '#1e293b'};">${isEntrada ? 'Receita' : (isPago ? 'Liquidado' : 'Pendente')}</td>
-            <td style="border: 1px solid #cbd5e1;">${item.localPgto || 'BRAD - ER'}</td>
-            <td style="border: 1px solid #cbd5e1; font-size: 11px; color: #475569;">${item.observacoes || ''}</td>
-            <td style="text-align: center; border: 1px solid #cbd5e1;">
-              <span style="padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; ${statusStyle}">${statusText}</span>
-            </td>
+            <td style="text-align: right; border: 1px solid #cbd5e1; font-weight: bold; color: #059669;">${isEntrada ? '+ R$ ' + val.toLocaleString('pt-BR', {minimumFractionDigits: 2}) : (isPago ? 'R$ ' + val.toLocaleString('pt-BR', {minimumFractionDigits: 2}) : 'R$ 0,00')}</td>
+            <td style="text-align: center; border: 1px solid #cbd5e1;">${item.localPgto || 'BRAD - ER'}</td>
+            <td style="border: 1px solid #cbd5e1; font-size: 11px;">${item.observacoes || ''}</td>
+            <td style="text-align: center; border: 1px solid #cbd5e1;">${item.status}</td>
           </tr>
         `;
       });
 
-      const excelTemplate = `
+      const template = `
         <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-        <head>
-          <meta charset="utf-8">
-          <!--[if gte mso 9]>
-          <xml>
-            <x:ExcelWorkbook>
-              <x:ExcelWorksheets>
-                <x:ExcelWorksheet>
-                  <x:Name>FLUXO E PROGRAMAÇÃO</x:Name>
-                  <x:WorksheetOptions>
-                    <x:DisplayGridlines/>
-                  </x:WorksheetOptions>
-                </x:ExcelWorksheet>
-              </x:ExcelWorksheets>
-            </x:ExcelWorkbook>
-          </xml>
-          <![endif]-->
-          <style>
-            body { font-family: 'Segoe UI', Arial, sans-serif; }
-            .header-title { background-color: #0f172a; color: #ffffff; font-size: 16px; font-weight: bold; text-align: center; height: 40px; vertical-align: middle; }
-            .header-subtitle { background-color: #1e293b; color: #38bdf8; font-size: 11px; text-align: center; height: 22px; vertical-align: middle; }
-            .kpi-card { background-color: #f1f5f9; border: 1px solid #cbd5e1; font-size: 11px; font-weight: bold; text-align: center; vertical-align: middle; }
-            th { background-color: #0f172a; color: #ffffff; font-size: 12px; font-weight: bold; text-transform: uppercase; border: 1px solid #334155; text-align: center; height: 32px; vertical-align: middle; }
-            .footer-total { background-color: #0f172a; color: #ffffff; font-size: 13px; font-weight: bold; border: 1px solid #334155; height: 32px; vertical-align: middle; }
-          </style>
+        <head><meta charset="utf-8">
+        <style>
+          body { font-family: 'Segoe UI', Arial, sans-serif; }
+          .header-title { background-color: #1e3a8a; color: #ffffff; font-size: 16px; font-weight: bold; text-align: center; height: 40px; }
+          .kpi-card { background-color: #f1f5f9; border: 1px solid #cbd5e1; font-size: 11px; font-weight: bold; text-align: center; }
+          th { background-color: #1e3a8a; color: #ffffff; font-size: 12px; font-weight: bold; border: 1px solid #334155; text-align: center; height: 30px; }
+        </style>
         </head>
         <body>
           <table>
-            <tr><th colspan="14" class="header-title">GRUPO ER SEGURANÇA — FLUXO FINANCEIRO E CONSOLIDADO</th></tr>
-            <tr><td colspan="14" class="header-subtitle">Emitido em: ${dataEmissaoRelatorio} | Total de Registros: ${nfeList.length}</td></tr>
-            <tr style="height: 10px;"><td colspan="14"></td></tr>
-            <tr style="height: 30px;">
-              <td colspan="4" class="kpi-card" style="background-color: #ecfdf5; color: #065f46;">TOTAL ENTRADAS (RECEITAS): R$ ${totalEntradas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-              <td colspan="4" class="kpi-card" style="background-color: #fff1f2; color: #9f1239;">TOTAL SAÍDAS (PAGAS): R$ ${totalSaidasPagas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-              <td colspan="6" class="kpi-card" style="background-color: ${balancoLiquidoReal < 0 ? '#fff1f2' : '#f0fdf4'}; color: ${balancoLiquidoReal < 0 ? '#9f1239' : '#166534'};">BALANÇO LÍQUIDO REAL: R$ ${balancoLiquidoReal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+            <tr><th colspan="13" class="header-title">GRUPO ER SEGURANÇA — RELATÓRIO EXECUTIVO FINANCEIRO</th></tr>
+            <tr><td colspan="13" style="text-align: center; font-size: 11px;">Emitido em: ${dataEmissao} | CNPJ: 13.506.821/0001-46</td></tr>
+            <tr style="height: 10px;"><td colspan="13"></td></tr>
+            <tr style="height: 28px;">
+              <td colspan="4" class="kpi-card" style="color: #065f46;">TOTAL ENTRADAS: R$ ${totalEntradas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+              <td colspan="4" class="kpi-card" style="color: #9f1239;">SAÍDAS PAGAS: R$ ${totalSaidasPagas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+              <td colspan="5" class="kpi-card" style="color: #1e40af;">BALANÇO LÍQUIDO REAL: R$ ${balancoReal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
             </tr>
-            <tr style="height: 15px;"><td colspan="14"></td></tr>
+            <tr style="height: 10px;"><td colspan="13"></td></tr>
             <thead>
               <tr>
-                <th style="width: 120px;">Data Venc.</th>
-                <th style="width: 110px;">Dia</th>
-                <th style="width: 90px;">Tipo</th>
-                <th style="width: 180px;">Plano Conta</th>
-                <th style="width: 240px;">Quem (Destino)</th>
-                <th style="width: 160px;">Como (Pgto)</th>
-                <th style="width: 120px;">Contrato</th>
-                <th style="width: 130px;">A Pagar</th>
-                <th style="width: 110px;">Data Pgto</th>
-                <th style="width: 130px;">Pago / Recebido</th>
-                <th style="width: 130px;">Situação</th>
-                <th style="width: 140px;">Local Pgto</th>
-                <th style="width: 260px;">Observações</th>
-                <th style="width: 110px;">Status</th>
+                <th>Data Evento</th>
+                <th>Dia</th>
+                <th>Tipo</th>
+                <th>Plano Conta</th>
+                <th>Quem (Favorecido)</th>
+                <th>Como (Pgto)</th>
+                <th>Contrato</th>
+                <th>A Pagar</th>
+                <th>Data Pgto</th>
+                <th>Pago / Recebido</th>
+                <th>Local Pgto</th>
+                <th>Observações</th>
+                <th>Status</th>
               </tr>
             </thead>
-            <tbody>
-              ${linhasHtml}
-            </tbody>
-            <tfoot>
-              <tr class="footer-total">
-                <td colspan="7" style="text-align: right; padding-right: 15px; border: 1px solid #334155;">CONSOLIDADO LÍQUIDO (ENTRADAS - SAÍDAS PAGAS):</td>
-                <td style="text-align: right; border: 1px solid #334155;">R$ ${totalSaidasPrevistas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-                <td style="border: 1px solid #334155;"></td>
-                <td style="text-align: right; border: 1px solid #334155; color: #34d399;">R$ ${totalEntradas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-                <td style="text-align: right; border: 1px solid #334155; color: ${balancoLiquidoReal < 0 ? '#f87171' : '#34d399'};">R$ ${balancoLiquidoReal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-                <td colspan="3" style="border: 1px solid #334155;"></td>
-              </tr>
-            </tfoot>
+            <tbody>${linhasHtml}</tbody>
           </table>
         </body>
         </html>
       `;
 
-      const blob = new Blob([excelTemplate], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+      const blob = new Blob([template], { type: 'application/vnd.ms-excel;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Fluxo_Financeiro_Real_${Date.now()}.xls`;
+      a.download = `Fluxo_Financeiro_ER_${Date.now()}.xls`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      showToast('Relatório de fluxo líquido gerado com sucesso!', 'success');
+      showToast('Relatório gerado com sucesso!', 'success');
     };
 
     window.renderDashboard = function() {
@@ -1131,51 +1123,29 @@
 
       const balanco = totalEntradas - totalSaidas;
 
-      const statEntradas = document.getElementById('stat-total-entradas');
-      const countEnt = document.getElementById('count-entradas');
-      const statSaidas = document.getElementById('stat-total-saidas');
-      const countSai = document.getElementById('count-saidas');
+      document.getElementById('stat-total-entradas').textContent = formatCurrency(totalEntradas);
+      document.getElementById('count-entradas').textContent = countEntradas;
+      document.getElementById('stat-total-saidas').textContent = formatCurrency(totalSaidas);
+      document.getElementById('count-saidas').textContent = countSaidas;
+      
       const balancoElem = document.getElementById('stat-balanco-liquido');
-      const subtext = document.getElementById('stat-balanco-subtext');
-      const totalCount = document.getElementById('stat-total-count');
-      const pendingCountElem = document.getElementById('stat-pending-count');
+      balancoElem.textContent = formatCurrency(balanco);
+      balancoElem.className = balanco >= 0 ? "text-2xl sm:text-3xl font-black text-emerald-600 font-mono" : "text-2xl sm:text-3xl font-black text-rose-600 font-mono";
 
-      if (statEntradas) statEntradas.textContent = formatCurrency(totalEntradas);
-      if (countEnt) countEnt.textContent = countEntradas;
-      if (statSaidas) statSaidas.textContent = formatCurrency(totalSaidas);
-      if (countSai) countSai.textContent = countSaidas;
-      if (balancoElem) balancoElem.textContent = formatCurrency(balanco);
-
-      if (balancoElem) {
-        if (balanco >= 0) {
-          balancoElem.className = "text-2xl sm:text-3xl font-black text-emerald-400 font-mono";
-          if (subtext) subtext.textContent = "Superávit / Balanço Positivo";
-        } else {
-          balancoElem.className = "text-2xl sm:text-3xl font-black text-rose-400 font-mono";
-          if (subtext) subtext.textContent = "Déficit / Balanço Negativo";
-        }
-      }
-
-      if (totalCount) totalCount.textContent = nfeList.length;
-      if (pendingCountElem) pendingCountElem.textContent = `${pendingCount} pendentes`;
+      document.getElementById('stat-total-count').textContent = nfeList.length;
+      document.getElementById('stat-pending-count').textContent = `${pendingCount} pendentes`;
     };
 
     window.renderTable = function() {
-      const searchElem = document.getElementById('filter-search');
-      const catElem = document.getElementById('filter-categoria');
-      const statusElem = document.getElementById('filter-status');
-      const tipoElem = document.getElementById('filter-tipo');
-
-      const search = searchElem ? searchElem.value.toLowerCase() : '';
-      const categoria = catElem ? catElem.value : 'ALL';
-      const status = statusElem ? statusElem.value : 'ALL';
-      const tipo = tipoElem ? tipoElem.value : 'ALL';
+      const search = document.getElementById('filter-search').value.toLowerCase();
+      const categoria = document.getElementById('filter-categoria').value;
+      const status = document.getElementById('filter-status').value;
+      const tipo = document.getElementById('filter-tipo').value;
 
       const filtrados = nfeList.filter(item => {
-        const num = (item.numero || '').toLowerCase();
-        const forn = (item.fornecedor || '').toLowerCase();
-        const cnpj = (item.cnpj || '');
-        const matchesSearch = num.includes(search) || forn.includes(search) || cnpj.includes(search);
+        const matchesSearch = (item.numero || '').toLowerCase().includes(search) || 
+                              (item.fornecedor || '').toLowerCase().includes(search) || 
+                              (item.cnpj || '').includes(search);
         const matchesCat = (categoria === 'ALL' || item.categoria === categoria);
         const matchesStatus = (status === 'ALL' || item.status === status);
         const matchesTipo = (tipo === 'ALL' || item.tipo === tipo);
@@ -1183,70 +1153,66 @@
       });
 
       const tbody = document.getElementById('nfe-table-body');
-      if (!tbody) return;
       tbody.innerHTML = '';
 
-      const summaryPill = document.getElementById('filter-summary-pill');
-      if (summaryPill) summaryPill.textContent = `Exibindo ${filtrados.length} registros`;
+      document.getElementById('filter-summary-pill').textContent = `Exibindo ${filtrados.length} registros`;
 
       if (filtrados.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="py-12 text-center text-slate-500">Nenhum registro encontrado.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="py-10 text-center text-slate-500">Nenhum registro encontrado.</td></tr>`;
         lucide.createIcons();
         return;
       }
 
       filtrados.forEach(item => {
         const tr = document.createElement('tr');
-        tr.className = 'hover:bg-slate-800/40 transition-colors';
+        tr.className = 'hover:bg-blue-50/50 transition-colors';
 
         const isEntrada = (item.tipo === 'ENTRADA');
-        const isSalario = (item.categoria === 'Salários e Encargos');
-
-        let tipoTag = isEntrada 
-          ? `<span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">ENTRADA</span>`
-          : (isSalario 
-              ? `<span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-amber-500/10 text-amber-400 border border-amber-500/30">SALÁRIO</span>`
-              : `<span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-rose-500/10 text-rose-400 border border-rose-500/30">SAÍDA</span>`);
+        const tipoTag = isEntrada 
+          ? `<span class="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">ENTRADA</span>`
+          : `<span class="px-2 py-0.5 rounded text-[10px] font-black bg-rose-100 text-rose-800 border border-rose-300">SAÍDA</span>`;
 
         const valorFormatted = isEntrada
-          ? `<span class="text-emerald-400 font-bold font-mono">+${formatCurrency(item.valor)}</span>`
-          : `<span class="text-rose-400 font-bold font-mono">-${formatCurrency(item.valor)}</span>`;
+          ? `<span class="text-emerald-700 font-bold font-mono">+${formatCurrency(item.valor)}</span>`
+          : `<span class="text-rose-700 font-bold font-mono">-${formatCurrency(item.valor)}</span>`;
 
-        let statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">Pendente</span>`;
+        let statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">Pendente</span>`;
         if (item.status === 'Pago') {
-          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">Pago</span>`;
+          statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">Pago</span>`;
         } else if (item.status === 'Recusado') {
-          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30">Recusado</span>`;
-        } else if (item.status === 'Cancelada') {
-          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/10 text-slate-400 border border-slate-500/30">Cancelada</span>`;
+          statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300">Recusado</span>`;
         }
 
-        const hasFileBtn = item.fileData 
-          ? `<button onclick="downloadFile('${item.id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-cyan-950 text-cyan-400 mr-1" title="Baixar Comprovante"><i data-lucide="download" class="w-4 h-4"></i></button>`
-          : `<span class="text-[10px] text-slate-600 mr-1">Sem Anexo</span>`;
+        // BOTOES DE ANEXO (VISUALIZAR E REMOVER)
+        let docBtns = '';
+        if (item.fileData1) {
+          docBtns += `<button onclick="openPreviewModal('${item.fileName1 || 'Anexo 1'}', '${item.fileData1}')" class="p-1 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-700 mr-1" title="Ver Anexo 1 (${item.fileName1})"><i data-lucide="file-text" class="w-4 h-4"></i></button>`;
+        }
+        if (item.fileData2) {
+          docBtns += `<button onclick="openPreviewModal('${item.fileName2 || 'Anexo 2'}', '${item.fileData2}')" class="p-1 rounded-lg bg-cyan-100 hover:bg-cyan-200 text-cyan-700 mr-1" title="Ver Anexo 2 (${item.fileName2})"><i data-lucide="file-check" class="w-4 h-4"></i></button>`;
+        }
+        if (!item.fileData1 && !item.fileData2) {
+          docBtns = `<span class="text-[10px] text-slate-400 mr-2">Sem Anexo</span>`;
+        }
 
         tr.innerHTML = `
-          <td class="py-3.5 px-4">${tipoTag}</td>
-          <td class="py-3.5 px-4 font-mono">
-            <div class="font-bold text-white">${item.numero || ''}</div>
-            <div class="text-[10px] text-slate-500">${item.chave && item.chave !== 'N/A' ? item.chave : ''}</div>
+          <td class="py-3 px-4">${tipoTag}</td>
+          <td class="py-3 px-4 font-mono font-bold text-slate-800">${item.numero || ''}</td>
+          <td class="py-3 px-4">
+            <div class="font-bold text-slate-800">${item.fornecedor || ''}</div>
+            <div class="text-[10px] text-slate-500 font-mono">${item.cnpj || ''}</div>
           </td>
-          <td class="py-3.5 px-4">
-            <div class="font-semibold text-slate-200">${item.fornecedor || ''}</div>
-            <div class="text-[10px] text-slate-400 font-mono">${item.cnpj || ''}</div>
+          <td class="py-3 px-4 text-slate-700">
+            <span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-[11px] font-semibold">${item.categoria || ''}</span>
+            <div class="text-[10px] text-slate-500 mt-0.5">Local: <strong>${item.localPgto || 'BRAD - ER'}</strong></div>
           </td>
-          <td class="py-3.5 px-4 text-slate-300">
-            <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700/60 text-[11px]">${item.categoria || ''}</span>
-            ${item.atuacao ? `<div class="text-[10px] text-cyan-400 mt-0.5">Atuação: ${item.atuacao}</div>` : ''}
-            <div class="text-[10px] text-slate-400 mt-0.5">Local: <strong class="text-slate-200">${item.localPgto || 'BRAD - ER'}</strong></div>
-          </td>
-          <td class="py-3.5 px-4 font-mono text-slate-400">${formatDate(item.emissao)}</td>
-          <td class="py-3.5 px-4">${valorFormatted}</td>
-          <td class="py-3.5 px-4 text-center">${statusBadge}</td>
-          <td class="py-3.5 px-4 text-right">
-            ${hasFileBtn}
-            <button onclick="openEditModal('${item.id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-amber-950 text-amber-400 mr-1" title="Editar Registro"><i data-lucide="pen-tool" class="w-4 h-4"></i></button>
-            <button onclick="deleteNFe('${item.id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-red-950 text-red-400" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+          <td class="py-3 px-4 font-mono text-slate-600">${formatDate(item.emissao)}</td>
+          <td class="py-3 px-4">${valorFormatted}</td>
+          <td class="py-3 px-4 text-center">${statusBadge}</td>
+          <td class="py-3 px-4 text-right">
+            ${docBtns}
+            <button onclick="openEditModal('${item.id}')" class="p-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-800 mr-1" title="Editar"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+            <button onclick="deleteNFe('${item.id}')" class="p-1 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -1256,34 +1222,25 @@
     };
 
     window.clearFilters = function() {
-      const s = document.getElementById('filter-search');
-      const c = document.getElementById('filter-categoria');
-      const st = document.getElementById('filter-status');
-      const t = document.getElementById('filter-tipo');
-      if (s) s.value = '';
-      if (c) c.value = 'ALL';
-      if (st) st.value = 'ALL';
-      if (t) t.value = 'ALL';
+      document.getElementById('filter-search').value = '';
+      document.getElementById('filter-categoria').value = 'ALL';
+      document.getElementById('filter-status').value = 'ALL';
+      document.getElementById('filter-tipo').value = 'ALL';
       renderTable();
     };
 
     window.resetForm = function() {
-      const form = document.getElementById('nfe-form');
-      if (form) form.reset();
-      currentSelectedFile = null;
-      currentSelectedFileData = null;
-      const placeholder = document.getElementById('upload-placeholder');
-      const preview = document.getElementById('upload-preview');
-      const emissao = document.getElementById('input-data-emissao');
-      if (placeholder) placeholder.classList.remove('hidden');
-      if (preview) preview.classList.add('hidden');
-      if (emissao) emissao.valueAsDate = new Date();
+      document.getElementById('nfe-form').reset();
+      removeFile(null, 1);
+      removeFile(null, 2);
+      document.getElementById('input-cnpj').value = '13.506.821/0001-46';
+      document.getElementById('input-data-emissao').valueAsDate = new Date();
     };
 
     function formatCurrency(val) {
-      let numericVal = parseFloat(val);
-      if (isNaN(numericVal)) numericVal = 0;
-      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(numericVal);
+      let n = parseFloat(val);
+      if (isNaN(n)) n = 0;
+      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(n);
     }
 
     function formatDate(dateStr) {
@@ -1311,9 +1268,7 @@
 
     function showToast(msg, type = 'info') {
       const toast = document.getElementById('toast');
-      const toastMsg = document.getElementById('toast-message');
-      if (!toast || !toastMsg) return;
-      toastMsg.textContent = msg;
+      document.getElementById('toast-message').textContent = msg;
       toast.className = `fixed bottom-6 right-6 z-50 max-w-md bg-slate-900 border ${type === 'success' ? 'border-emerald-500 text-emerald-200' : 'border-amber-500 text-amber-200'} text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 backdrop-blur-md`;
       toast.classList.remove('hidden');
       setTimeout(() => toast.classList.add('hidden'), 4000);
