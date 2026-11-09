@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Grupo ER Portaria e Seguranca</title>
+  <title>Grupo ER Portaria e Segurança</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Font Awesome Icons -->
@@ -19,125 +19,115 @@
       overflow-x: hidden;
     }
     .bg-control-room {
-      background-image: linear-gradient(to bottom, rgba(240, 247, 255, 0.75), rgba(224, 242, 254, 0.9)),
+      background-image: linear-gradient(to bottom, rgba(240, 247, 255, 0.85), rgba(224, 242, 254, 0.95)),
                         url('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=2000&auto=format&fit=crop');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
     }
     .glass-panel {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      box-shadow: 0 10px 30px -5px rgba(14, 165, 233, 0.15), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(14, 165, 233, 0.25);
+      box-shadow: 0 20px 40px -15px rgba(14, 165, 233, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.9);
     }
     .btn-neon {
-      background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+      background: linear-gradient(135deg, #0284c7 0%, #1d4ed8 100%);
       color: #ffffff;
-      box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4), 0 0 20px rgba(37, 99, 235, 0.3);
-      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(2, 132, 199, 0.35);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .btn-neon:hover {
-      box-shadow: 0 6px 22px rgba(14, 165, 233, 0.6), 0 0 30px rgba(37, 99, 235, 0.5);
+      box-shadow: 0 12px 28px rgba(2, 132, 199, 0.5);
       transform: translateY(-2px);
     }
     .input-field {
-      background: rgba(255, 255, 255, 0.95);
-      border: 1px solid rgba(56, 189, 248, 0.4);
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
       color: #0f172a;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
     }
     .input-field:focus-within {
       border-color: #0284c7;
-      box-shadow: 0 0 14px rgba(2, 132, 199, 0.25);
-      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15);
     }
-    .floor-reflection {
-      position: absolute;
-      bottom: 0; left: 0; right: 0; height: 120px;
-      background: linear-gradient(to top, rgba(240, 247, 255, 0.95), transparent);
-      pointer-events: none;
+    .blend-multiply {
+      mix-blend-mode: multiply;
     }
     .tech-grid {
-      background-size: 40px 40px;
-      background-image: linear-gradient(to right, rgba(14, 165, 233, 0.08) 1px, transparent 1px),
-                        linear-gradient(to bottom, rgba(14, 165, 233, 0.08) 1px, transparent 1px);
+      background-size: 32px 32px;
+      background-image: linear-gradient(to right, rgba(14, 165, 233, 0.05) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(14, 165, 233, 0.05) 1px, transparent 1px);
     }
   </style>
 </head>
-<body class="min-h-screen bg-control-room tech-grid flex items-center justify-center p-4 relative select-none">
+<body class="min-h-screen bg-control-room tech-grid flex items-center justify-center p-4 sm:p-6 relative select-none">
 
-  <!-- Ambient Light Effects -->
-  <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
-  <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
+  <!-- Glows suaves de fundo -->
+  <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-red-400/15 rounded-full blur-3xl pointer-events-none"></div>
 
-  <div class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center z-10 py-8">
+  <div class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center z-10 py-6">
     
-    <!-- LEFT SECTION: Branding -->
-    <div class="lg:col-span-7 flex flex-col items-center justify-center text-center p-6 space-y-6">
-      <div class="relative flex items-center justify-center mb-2">
-        <svg class="w-48 h-48 md:w-64 md:h-64" viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="blueNeon" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#3b82f6" /><stop offset="100%" stop-color="#1d4ed8" />
-            </linearGradient>
-            <linearGradient id="redNeon" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#ef4444" /><stop offset="100%" stop-color="#dc2626" />
-            </linearGradient>
-          </defs>
-          <path d="M 130 45 L 75 45 C 55 45 40 60 40 80 C 40 90 50 100 70 100 L 120 100 L 70 100 C 50 100 40 110 40 120 C 40 140 55 155 75 155 L 130 155" stroke="url(#blueNeon)" stroke-width="18" stroke-linecap="round" fill="none"/>
-          <path d="M 155 45 L 210 45 C 245 45 260 65 260 85 C 260 105 245 118 210 118 L 155 118 M 200 118 L 255 155" stroke="url(#redNeon)" stroke-width="18" stroke-linecap="round" fill="none"/>
-        </svg>
+    <!-- LADO ESQUERDO: Branding sem a caixa branca quadrada -->
+    <div class="lg:col-span-7 flex flex-col items-center justify-center text-center p-4 space-y-6">
+      
+      <!-- Logo limpa (com blend-multiply para mesclar fundo branco da imagem se for JPG/PNG) -->
+      <div class="relative flex items-center justify-center w-full max-w-md py-4">
+        <img src="image/logo.png" alt="Grupo ER Logo" class="w-full h-auto max-h-52 object-contain blend-multiply drop-shadow-md"/>
       </div>
 
-      <div class="space-y-1">
-        <!-- Títulos ajustados em Azul e Vermelho -->
-        <h1 class="text-3xl md:text-5xl font-black tracking-wider text-blue-600 uppercase drop-shadow-sm">GRUPO ER</h1>
-        <h2 class="text-2xl md:text-4xl font-extrabold tracking-widest text-red-600 uppercase drop-shadow-sm">PORTARIA E VIGILÂNCIA LTDA</h2>
+      <div class="space-y-2">
+        <h1 class="text-4xl sm:text-5xl font-black tracking-tight text-blue-700 uppercase drop-shadow-sm">
+          GRUPO ER
+        </h1>
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-wider text-red-600 uppercase drop-shadow-sm">
+          PORTARIA E VIGILÂNCIA LTDA
+        </h2>
       </div>
 
-      <div class="inline-flex items-center space-x-2 bg-blue-900/10 border border-blue-500/30 px-4 py-1.5 rounded-full text-xs text-blue-700 font-semibold">
-        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-        <span class="tracking-wider uppercase font-bold">Segurança 24 horas!</span>
+      <div class="inline-flex items-center space-x-2.5 bg-white/80 border border-blue-200 shadow-sm px-5 py-2 rounded-full text-xs text-blue-800 font-bold tracking-wide uppercase backdrop-blur-md">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span>Segurança 24 Horas!</span>
       </div>
     </div>
 
-    <!-- RIGHT SECTION: Login Card -->
+    <!-- LADO DIREITO: Card de Login mais elegante -->
     <div class="lg:col-span-5 flex justify-center">
-      <div class="glass-panel w-full max-w-md rounded-2xl p-8 sm:p-10 relative overflow-hidden">
+      <div class="glass-panel w-full max-w-md rounded-3xl p-8 sm:p-10 relative overflow-hidden">
         
-        <div class="mb-6">
-          <h3 class="text-2xl font-bold text-blue-600 tracking-tight">Acesso ao Portal</h3>
-          <p class="text-xs text-slate-600 font-medium">Entre com sua conta corporativa</p>
+        <div class="mb-8 text-center sm:text-left">
+          <h3 class="text-2xl font-black text-slate-800 tracking-tight">Acesso ao Portal</h3>
+          <p class="text-xs text-slate-500 font-medium mt-1">Entre com as suas credenciais corporativas</p>
         </div>
 
-        <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+        <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-5">
           
-          <div class="space-y-1">
+          <div class="space-y-1.5">
             <label class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">E-mail Corporativo</label>
-            <div class="input-field rounded-xl flex items-center px-4 py-3">
-              <i class="fa-regular fa-envelope text-blue-500 mr-3 text-sm"></i>
+            <div class="input-field rounded-2xl flex items-center px-4 py-3.5">
+              <i class="fa-regular fa-envelope text-blue-600 mr-3 text-sm"></i>
               <input type="email" id="email" required placeholder="ex: admin@erseguranca.com" class="w-full bg-transparent text-sm text-slate-900 placeholder-slate-400 font-medium focus:outline-none"/>
             </div>
           </div>
 
-          <div class="space-y-1">
+          <div class="space-y-1.5">
             <label class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">Senha</label>
-            <div class="input-field rounded-xl flex items-center px-4 py-3">
-              <i class="fa-solid fa-lock text-blue-500 mr-3 text-sm"></i>
+            <div class="input-field rounded-2xl flex items-center px-4 py-3.5">
+              <i class="fa-solid fa-lock text-blue-600 mr-3 text-sm"></i>
               <input type="password" id="password" required placeholder="••••••••••••" class="w-full bg-transparent text-sm text-slate-900 placeholder-slate-400 font-medium focus:outline-none"/>
             </div>
           </div>
 
-          <button type="submit" id="submit-btn" class="btn-neon w-full py-3.5 px-6 rounded-xl font-semibold text-white flex items-center justify-center space-x-3 mt-4">
+          <button type="submit" id="submit-btn" class="btn-neon w-full py-4 px-6 rounded-2xl font-bold text-white flex items-center justify-center space-x-3 mt-6 text-sm tracking-wide">
             <i class="fa-solid fa-right-to-bracket"></i>
-            <span class="text-base">Entrar no Sistema</span>
+            <span>ENTRAR NO SISTEMA</span>
           </button>
 
         </form>
 
-        <div id="toast" class="hidden absolute top-4 left-4 right-4 bg-slate-900/95 border border-cyan-500 text-cyan-200 text-xs py-3 px-4 rounded-xl shadow-2xl flex items-center justify-between z-20 backdrop-blur-md">
+        <div id="toast" class="hidden absolute top-4 left-4 right-4 bg-slate-900 border border-cyan-500 text-cyan-200 text-xs py-3 px-4 rounded-xl shadow-2xl flex items-center justify-between z-20">
           <span id="toastMessage">Processando...</span>
         </div>
 
@@ -145,6 +135,8 @@
     </div>
 
   </div>
+
+
 
   <div class="floor-reflection"></div>
 <!-- FIREBASE AUTH SCRIPT -->
