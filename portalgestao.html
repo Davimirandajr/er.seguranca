@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal Operacional - Gestão Financeira | ER Segurança</title>
+  <title>Portal Operacional v1.2 - Gestão Financeira | ER & Snyper</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -44,10 +44,6 @@
       box-shadow: 0 4px 15px rgba(2, 132, 199, 0.35); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .btn-neon-primary:hover { box-shadow: 0 6px 22px rgba(2, 132, 199, 0.5); transform: translateY(-1px); }
-    .drop-active {
-      border-color: #0284c7 !important;
-      background-color: rgba(2, 132, 199, 0.1) !important;
-    }
   </style>
 </head>
 <body class="bg-light-dashboard tech-grid flex flex-col min-h-screen text-slate-800 antialiased pb-12 select-none">
@@ -66,9 +62,9 @@
         </svg>
         <div>
           <div class="flex items-center space-x-2">
-            <span class="font-black text-lg sm:text-xl tracking-wider text-blue-700">GRUPO ER</span>
+            <span class="font-black text-lg sm:text-xl tracking-wider text-blue-700">GRUPO ER / SNYPER</span>
             <span class="hidden sm:inline-block px-2 py-0.5 text-[10px] font-bold uppercase bg-blue-100 text-blue-700 border border-blue-300 rounded-md">
-              Portal Operacional
+              v1.2
             </span>
           </div>
           <p class="text-[11px] font-extrabold text-red-600 tracking-widest uppercase">PORTARIA E VIGILÂNCIA LTDA</p>
@@ -76,9 +72,19 @@
       </div>
 
       <div class="flex items-center space-x-3 sm:space-x-4">
+        <!-- SELETOR GLOBAL DE EMPRESA -->
+        <div class="flex items-center space-x-2 bg-white px-3 py-1.5 rounded-xl border border-sky-200 shadow-sm">
+          <i data-lucide="building-2" class="w-4 h-4 text-blue-600"></i>
+          <select id="global-empresa-filter" onchange="renderDashboard(); renderTable();" class="bg-transparent text-xs font-bold text-slate-700 focus:outline-none">
+            <option value="ALL">Todas as Empresas</option>
+            <option value="GRUPO_ER">Grupo ER (13.506.821/0001-46)</option>
+            <option value="SNYPER">Snyper (58.392.104/0001-85)</option>
+          </select>
+        </div>
+
         <button onclick="exportToCSV()" class="btn-neon-primary px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 shadow-md">
           <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-200"></i>
-          <span class="hidden sm:inline">Baixar Relatório Executivo</span>
+          <span class="hidden sm:inline">Baixar Excel</span>
         </button>
 
         <button onclick="logout()" class="p-2.5 rounded-xl bg-white hover:bg-rose-50 border border-slate-200 text-slate-600 hover:text-red-600 transition-colors shadow-sm" title="Encerrar Sessão">
@@ -95,54 +101,55 @@
       <div>
         <h1 class="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
           <i data-lucide="arrow-left-right" class="w-8 h-8 text-blue-600"></i>
-          Gestão de Fluxo Financeiro
+          Gestão de Fluxo Financeiro & Caixa Real
         </h1>
-        <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">Lançamento de receitas, despesas operacionais, salários e boletins de medição.</p>
-      </div>
-      <div class="text-xs text-slate-500 font-bold bg-white/80 px-3 py-1.5 rounded-xl border border-sky-200 shadow-sm">
-        CNPJ Padrão: <span class="font-mono text-blue-700">13.506.821/0001-46</span>
+        <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">Lançamentos de faturamento, despesas operacionais e salários com separação por CNPJ.</p>
       </div>
     </div>
 
-    <!-- KPIS -->
+    <!-- CARDS DEMONSTRATIVOS (KPIS RECALCULADOS POR STATUS PAGO) -->
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <!-- CARD 1: FATURAMENTO EFETIVADO (ENTRADAS PAGAS) -->
       <div class="glass-card rounded-2xl p-5 relative overflow-hidden">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Entradas (Receitas)</span>
-          <div class="p-2.5 rounded-xl bg-emerald-100 text-emerald-700 border border-emerald-300"><i data-lucide="arrow-down-left" class="w-5 h-5"></i></div>
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Faturamento Liquidado</span>
+          <div class="p-2.5 rounded-xl bg-emerald-100 text-emerald-700 border border-emerald-300"><i data-lucide="check-circle-2" class="w-5 h-5"></i></div>
         </div>
-        <div class="mt-4"><span id="stat-total-entradas" class="text-2xl sm:text-3xl font-black text-emerald-600 font-mono">R$ 0,00</span></div>
-        <p class="text-[11px] text-slate-500 font-medium mt-2"><span id="count-entradas" class="text-emerald-700 font-bold">0</span> recebimentos</p>
+        <div class="mt-4"><span id="stat-faturamento-pago" class="text-2xl sm:text-3xl font-black text-emerald-600 font-mono">R$ 0,00</span></div>
+        <p class="text-[11px] text-slate-500 font-medium mt-2"><span id="count-faturamento-pago" class="text-emerald-700 font-bold">0</span> recebidos efetivamente</p>
       </div>
 
+      <!-- CARD 2: SAÍDAS EFETIVADAS (PAGAS) -->
       <div class="glass-card rounded-2xl p-5 relative overflow-hidden">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Saídas (Despesas)</span>
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Despesas / Saídas Pagas</span>
           <div class="p-2.5 rounded-xl bg-rose-100 text-rose-700 border border-rose-300"><i data-lucide="arrow-up-right" class="w-5 h-5"></i></div>
         </div>
-        <div class="mt-4"><span id="stat-total-saidas" class="text-2xl sm:text-3xl font-black text-rose-600 font-mono">R$ 0,00</span></div>
-        <p class="text-[11px] text-slate-500 font-medium mt-2"><span id="count-saidas" class="text-rose-700 font-bold">0</span> pagamentos</p>
+        <div class="mt-4"><span id="stat-saidas-pagas" class="text-2xl sm:text-3xl font-black text-rose-600 font-mono">R$ 0,00</span></div>
+        <p class="text-[11px] text-slate-500 font-medium mt-2"><span id="count-saidas-pagas" class="text-rose-700 font-bold">0</span> pagamentos liquidados</p>
       </div>
 
+      <!-- CARD 3: TOTAL DE ENTRADAS LÍQUIDAS (FATURAMENTO PAGO - SAÍDAS PAGAS) -->
       <div class="glass-card rounded-2xl p-5 relative overflow-hidden">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Balanço Líquido</span>
-          <div class="p-2.5 rounded-xl bg-blue-100 text-blue-700 border border-blue-300"><i data-lucide="scale" class="w-5 h-5"></i></div>
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Entradas Líquidas (Caixa Real)</span>
+          <div class="p-2.5 rounded-xl bg-blue-100 text-blue-700 border border-blue-300"><i data-lucide="wallet" class="w-5 h-5"></i></div>
         </div>
-        <div class="mt-4"><span id="stat-balanco-liquido" class="text-2xl sm:text-3xl font-black text-blue-700 font-mono">R$ 0,00</span></div>
-        <p id="stat-balanco-subtext" class="text-[11px] text-slate-500 font-medium mt-2">Diferença Entradas vs. Saídas</p>
+        <div class="mt-4"><span id="stat-entradas-liquidas" class="text-2xl sm:text-3xl font-black text-blue-700 font-mono">R$ 0,00</span></div>
+        <p id="stat-entradas-liquidas-subtext" class="text-[11px] text-slate-500 font-medium mt-2">Receitas Pagas - Saídas Pagas</p>
       </div>
 
+      <!-- CARD 4: PREVISÃO PENDENTE (NÃO ENTRA NO CÁLCULO LÍQUIDO) -->
       <div class="glass-card rounded-2xl p-5 relative overflow-hidden">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Registros</span>
-          <div class="p-2.5 rounded-xl bg-sky-100 text-sky-700 border border-sky-300"><i data-lucide="files" class="w-5 h-5"></i></div>
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Previsão Pendente (A Receber/Pagar)</span>
+          <div class="p-2.5 rounded-xl bg-amber-100 text-amber-700 border border-amber-300"><i data-lucide="clock" class="w-5 h-5"></i></div>
         </div>
         <div class="mt-4 flex items-baseline justify-between">
-          <span id="stat-total-count" class="text-3xl font-black text-slate-800 font-mono">0</span>
-          <span id="stat-pending-count" class="text-xs text-amber-600 font-bold">0 pendentes</span>
+          <span id="stat-total-pendente-valor" class="text-2xl font-black text-amber-600 font-mono">R$ 0,00</span>
+          <span id="stat-pending-count" class="text-xs text-amber-700 font-bold">0 itens</span>
         </div>
-        <p class="text-[11px] text-slate-500 font-medium mt-2">Cadastradas no sistema</p>
+        <p class="text-[11px] text-slate-500 font-medium mt-2">Aguardando liquidação no banco</p>
       </div>
     </section>
 
@@ -157,7 +164,7 @@
           <div>
             <span class="text-[10px] uppercase font-bold tracking-widest text-rose-700 bg-rose-100 px-2 py-0.5 rounded border border-rose-200">Saída Operacional</span>
             <h3 class="text-lg font-extrabold text-slate-800 mt-1">Despesa & Nota Fiscal</h3>
-            <p class="text-xs text-slate-500 mt-1">Registrar pagamentos (2 anexos: NF + Comprovante).</p>
+            <p class="text-xs text-slate-500 mt-1">Lançar custos (Nota Fiscal + Comprovante).</p>
           </div>
         </div>
       </div>
@@ -171,7 +178,7 @@
           <div>
             <span class="text-[10px] uppercase font-bold tracking-widest text-amber-800 bg-amber-100 px-2 py-0.5 rounded border border-amber-200">Folha / RH</span>
             <h3 class="text-lg font-extrabold text-slate-800 mt-1">Salários & Encargos</h3>
-            <p class="text-xs text-slate-500 mt-1">Holerites, rescisão e comprovantes de pagamentos.</p>
+            <p class="text-xs text-slate-500 mt-1">Holerites, rescisão e comprovantes de pagamento.</p>
           </div>
         </div>
       </div>
@@ -185,20 +192,20 @@
           <div>
             <span class="text-[10px] uppercase font-bold tracking-widest text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-200">Receita Corporativa</span>
             <h3 class="text-lg font-extrabold text-slate-800 mt-1">Registrar Entrada</h3>
-            <p class="text-xs text-slate-500 mt-1">Recebimentos (2 anexos: NF + Boletim de Medição).</p>
+            <p class="text-xs text-slate-500 mt-1">Recebimentos (Nota Fiscal / Comprovante + Boletim de Medição).</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- FORMULÁRIO CADASTRO -->
+    <!-- FORMULÁRIO DE CADASTRO -->
     <section id="new-nfe-form" class="glass-card rounded-2xl p-6 sm:p-8 relative hidden">
       <div class="flex items-center justify-between border-b border-sky-200 pb-4 mb-6">
         <div class="flex items-center space-x-3">
           <div id="form-icon-box" class="p-2 rounded-lg bg-blue-100 text-blue-700 border border-blue-200"><i data-lucide="file-plus-2" class="w-5 h-5"></i></div>
           <div>
             <h2 id="form-main-title" class="text-lg font-bold text-slate-800">Cadastrar Nova Transação</h2>
-            <p class="text-xs text-slate-500">Preencha os campos e anexe até 2 documentos comprobatórios</p>
+            <p class="text-xs text-slate-500">Selecione a empresa emissora e preencha os dados</p>
           </div>
         </div>
         
@@ -212,11 +219,21 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           
-          <div class="lg:col-span-3 bg-blue-50/80 p-3.5 rounded-xl border border-blue-200 flex items-center justify-between">
+          <div class="lg:col-span-3 bg-blue-50/80 p-3.5 rounded-xl border border-blue-200 flex items-center justify-between flex-wrap gap-3">
             <div class="flex items-center space-x-3">
               <span class="text-xs uppercase font-bold text-slate-600">Sessão Ativa:</span>
               <span id="badge-tipo-ativo" class="px-3 py-1 rounded-lg text-xs font-black bg-rose-100 text-rose-700 border border-rose-300">SAÍDA (Despesa / NF-e)</span>
             </div>
+            
+            <!-- SELETOR DE EMPRESA NO FORMULÁRIO -->
+            <div class="flex items-center space-x-2">
+              <label class="text-xs font-bold text-slate-700 uppercase">Empresa Emissora:</label>
+              <select id="input-empresa-emissora" onchange="updateCNPJByEmpresa(this.value)" class="bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold text-blue-800 focus:outline-none">
+                <option value="GRUPO_ER">Grupo ER (CNPJ 13.506.821/0001-46)</option>
+                <option value="SNYPER">Snyper (CNPJ 58.392.104/0001-85)</option>
+              </select>
+            </div>
+
             <button type="button" onclick="toggleActiveType()" class="px-3 py-1 rounded-lg text-xs font-bold bg-white text-blue-700 border border-blue-300 hover:bg-blue-50">Alternar Tipo</button>
           </div>
 
@@ -226,13 +243,13 @@
           </div>
 
           <div>
-            <label id="label-cnpj" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">CNPJ / CPF <span class="text-red-500">*</span></label>
+            <label id="label-cnpj" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">CNPJ do Emissor / Cliente <span class="text-red-500">*</span></label>
             <input type="text" id="input-cnpj" required value="13.506.821/0001-46" maxlength="18" oninput="maskCNPJ(this)" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 font-mono focus:outline-none focus:border-blue-600">
           </div>
 
           <div>
             <label id="label-fornecedor" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Fornecedor / Favorecido <span class="text-red-500">*</span></label>
-            <input type="text" id="input-fornecedor" required placeholder="Ex: Grupo ER ou Nome do Cliente" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-600">
+            <input type="text" id="input-fornecedor" required placeholder="Ex: Nome da empresa ou colaborador" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-600">
           </div>
 
           <div>
@@ -261,10 +278,14 @@
             </select>
           </div>
 
+          <!-- LOCAL DE PAGAMENTO / BANCOS ATUALIZADOS -->
           <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Local de Pagamento</label>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Local de Pagamento / Banco</label>
             <select id="input-local-pgto" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-600">
-              <option value="BRAD - ER">Bradesco - ER Segurança</option>
+              <option value="BRADESCO">Bradesco</option>
+              <option value="SANTANDER">Santander</option>
+              <option value="BANCO_INTER">Banco Inter</option>
+              <option value="BANCO_DO_BRASIL">Banco do Brasil</option>
               <option value="NUBANK">Nubank</option>
               <option value="ITAU">Itaú</option>
               <option value="CAIXA">Caixa Econômica</option>
@@ -302,10 +323,10 @@
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Status Inicial <span class="text-red-500">*</span></label>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Status do Pagamento <span class="text-red-500">*</span></label>
             <select id="input-status" required class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-600">
-              <option value="Pendente" selected>Pendente</option>
-              <option value="Pago">Pago / Liquidado</option>
+              <option value="Pendente" selected>Pendente (Aguardando)</option>
+              <option value="Pago">Pago / Liquidado (Baixa Automática)</option>
               <option value="Recusado">Recusado</option>
               <option value="Cancelada">Cancelada</option>
             </select>
@@ -316,11 +337,11 @@
             <input type="text" id="input-atuacao" placeholder="Ex: Vigilante, Supervisor" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-600">
           </div>
 
-          <!-- DOCK DE UPLOAD DUPLO (2 DOCUMENTOS POR REGISTRO) -->
+          <!-- DOCK DE UPLOAD DUPLO (NOMES ATUALIZADOS) -->
           <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
             <!-- ANEXO 1 -->
             <div>
-              <label id="lbl-anexo-1" class="block text-xs font-bold text-slate-700 uppercase mb-1">Anexo 1: Nota Fiscal / Comprovante Principal</label>
+              <label id="lbl-anexo-1" class="block text-xs font-bold text-slate-700 uppercase mb-1">Anexo 1: Nota Fiscal / Comprovante</label>
               <div id="drop-zone-1" class="border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-xl p-3 text-center cursor-pointer bg-white transition-all" onclick="document.getElementById('file-input-1').click()">
                 <input type="file" id="file-input-1" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.xml" onchange="handleFileSelect(event, 1)">
                 
@@ -344,7 +365,7 @@
 
             <!-- ANEXO 2 -->
             <div>
-              <label id="lbl-anexo-2" class="block text-xs font-bold text-slate-700 uppercase mb-1">Anexo 2: Boletim de Medição / Holerite / Comprovante</label>
+              <label id="lbl-anexo-2" class="block text-xs font-bold text-slate-700 uppercase mb-1">Anexo 2: Boletim de Medição</label>
               <div id="drop-zone-2" class="border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-xl p-3 text-center cursor-pointer bg-white transition-all" onclick="document.getElementById('file-input-2').click()">
                 <input type="file" id="file-input-2" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.xml" onchange="handleFileSelect(event, 2)">
                 
@@ -391,7 +412,7 @@
           <div class="p-2 rounded-lg bg-blue-100 text-blue-700 border border-blue-200"><i data-lucide="search" class="w-5 h-5"></i></div>
           <div>
             <h2 class="text-lg font-bold text-slate-800">Transações Registradas</h2>
-            <p class="text-xs text-slate-500">Histórico completo consolidado em tempo real</p>
+            <p class="text-xs text-slate-500">Histórico completo consolidado com status em tempo real</p>
           </div>
         </div>
         <div id="filter-summary-pill" class="text-xs font-mono bg-white border border-sky-200 text-blue-700 px-4 py-2 rounded-xl font-bold">Nenhum registro</div>
@@ -453,13 +474,13 @@
         <table class="w-full text-left text-xs">
           <thead class="bg-slate-100 text-slate-700 font-bold uppercase border-b border-slate-200">
             <tr>
-              <th class="py-3.5 px-4">Tipo</th>
+              <th class="py-3.5 px-4">Tipo / Empresa</th>
               <th class="py-3.5 px-4">Nº Ref / Doc</th>
               <th class="py-3.5 px-4">Favorecido / Fornecedor</th>
-              <th class="py-3.5 px-4">Categoria / Local</th>
+              <th class="py-3.5 px-4">Categoria / Banco</th>
               <th class="py-3.5 px-4">Emissão</th>
               <th class="py-3.5 px-4">Valor Total</th>
-              <th class="py-3.5 px-4 text-center">Status</th>
+              <th class="py-3.5 px-4 text-center">Status / Baixa</th>
               <th class="py-3.5 px-4 text-right">Anexos / Ações</th>
             </tr>
           </thead>
@@ -478,7 +499,7 @@
           <div class="p-2 rounded-lg bg-blue-100 text-blue-700 border border-blue-200"><i data-lucide="edit-3" class="w-5 h-5"></i></div>
           <div>
             <h3 class="text-lg font-bold text-slate-800">Editar Transação</h3>
-            <p class="text-xs text-slate-500">Atualize os valores, categoria ou substitua documentos anexados</p>
+            <p class="text-xs text-slate-500">Atualize dados, status de baixa ou substitua documentos</p>
           </div>
         </div>
         <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg bg-slate-100"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -489,6 +510,14 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Empresa Emissora</label>
+            <select id="edit-empresa" onchange="updateEditCNPJ(this.value)" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 font-bold focus:outline-none">
+              <option value="GRUPO_ER">Grupo ER</option>
+              <option value="SNYPER">Snyper</option>
+            </select>
+          </div>
+
+          <div>
             <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Tipo de Fluxo</label>
             <select id="edit-tipo" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
               <option value="SAIDA">Saída / Despesa / Salário</option>
@@ -497,10 +526,10 @@
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Status do Pagamento</label>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Status (Baixa Automática)</label>
             <select id="edit-status" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
-              <option value="Pendente">Pendente</option>
-              <option value="Pago">Pago</option>
+              <option value="Pendente">Pendente (Não entra no cálculo líquido)</option>
+              <option value="Pago">Pago (Liquidado)</option>
               <option value="Recusado">Recusado</option>
               <option value="Cancelada">Cancelada</option>
             </select>
@@ -550,19 +579,12 @@
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Forma de Pagamento</label>
-            <select id="edit-forma-pgto" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
-              <option value="Transferência">Transferência / PIX</option>
-              <option value="Boleto">Boleto Bancário</option>
-              <option value="Cartão de Crédito">Cartão de Crédito</option>
-              <option value="Dinheiro">Dinheiro</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Local de Pagamento</label>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Local de Pagamento / Banco</label>
             <select id="edit-local-pgto" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
-              <option value="BRAD - ER">Bradesco - ER Segurança</option>
+              <option value="BRADESCO">Bradesco</option>
+              <option value="SANTANDER">Santander</option>
+              <option value="BANCO_INTER">Banco Inter</option>
+              <option value="BANCO_DO_BRASIL">Banco do Brasil</option>
               <option value="NUBANK">Nubank</option>
               <option value="ITAU">Itaú</option>
               <option value="CAIXA">Caixa Econômica</option>
@@ -579,7 +601,7 @@
                 <input type="file" id="edit-file-input-1" accept=".pdf,.png,.jpg,.jpeg,.xml" class="w-full text-xs text-slate-600 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:bg-blue-100 file:text-blue-700">
               </div>
               <div>
-                <label class="block text-[10px] font-bold text-slate-500 uppercase">Anexo 2 (Medição / Holerite)</label>
+                <label class="block text-[10px] font-bold text-slate-500 uppercase">Anexo 2 (Boletim de Medição)</label>
                 <input type="file" id="edit-file-input-2" accept=".pdf,.png,.jpg,.jpeg,.xml" class="w-full text-xs text-slate-600 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:bg-blue-100 file:text-blue-700">
               </div>
             </div>
@@ -616,7 +638,7 @@
         </div>
       </div>
       <div id="preview-body" class="flex-grow bg-slate-100 flex items-center justify-center overflow-auto p-4">
-        <!-- Conteúdo dinâmico da imagem ou PDF -->
+        <!-- Conteúdo dinâmico -->
       </div>
     </div>
   </div>
@@ -627,7 +649,7 @@
     <span id="toast-message">Notificação</span>
   </div>
 
-  <!-- SCRIPT FIREBASE COMPLETO -->
+  <!-- SCRIPT FIREBASE COMPLETO (ATUALIZADO V1.2) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -652,7 +674,6 @@
 
     let nfeList = [];
     
-    // Suporte para 2 arquivos por registro
     let fileObj1 = { name: null, data: null };
     let fileObj2 = { name: null, data: null };
     let editFileObj1 = { name: null, data: null };
@@ -686,6 +707,24 @@
         renderTable();
       });
     }
+
+    window.updateCNPJByEmpresa = function(empresa) {
+      const cnpjInput = document.getElementById('input-cnpj');
+      if (empresa === 'SNYPER') {
+        cnpjInput.value = '58.392.104/0001-85';
+      } else {
+        cnpjInput.value = '13.506.821/0001-46';
+      }
+    };
+
+    window.updateEditCNPJ = function(empresa) {
+      const cnpjInput = document.getElementById('edit-cnpj');
+      if (empresa === 'SNYPER') {
+        cnpjInput.value = '58.392.104/0001-85';
+      } else {
+        cnpjInput.value = '13.506.821/0001-46';
+      }
+    };
 
     function setupDragAndDrop(index) {
       const dropZone = document.getElementById(`drop-zone-${index}`);
@@ -819,8 +858,8 @@
         if (title) title.textContent = "Registrar Nova Entrada (Receita)";
         if (containerAtuacao) containerAtuacao.classList.add('hidden');
 
-        if (lbl1) lbl1.textContent = "Anexo 1: Nota Fiscal de Serviços";
-        if (lbl2) lbl2.textContent = "Anexo 2: Boletim de Medição / Comprovante";
+        if (lbl1) lbl1.textContent = "Anexo 1: Nota Fiscal / Comprovante";
+        if (lbl2) lbl2.textContent = "Anexo 2: Boletim de Medição";
       } else {
         if (hiddenInput) hiddenInput.value = 'SAIDA';
         if (badge) {
@@ -858,6 +897,7 @@
       };
 
       setVal('edit-id', item.id);
+      setVal('edit-empresa', item.empresaEmissora || 'GRUPO_ER');
       setVal('edit-tipo', item.tipo || 'SAIDA');
       setVal('edit-status', item.status || 'Pendente');
       setVal('edit-numero', item.numero || '');
@@ -867,7 +907,7 @@
       setVal('edit-emissao', item.emissao || '');
       setVal('edit-categoria', item.categoria || '');
       setVal('edit-forma-pgto', item.formaPgto || 'Transferência');
-      setVal('edit-local-pgto', item.localPgto || 'BRAD - ER');
+      setVal('edit-local-pgto', item.localPgto || 'BRADESCO');
       setVal('edit-observacoes', item.observacoes || '');
 
       editFileObj1 = { name: item.fileName1 || null, data: item.fileData1 || null };
@@ -910,6 +950,7 @@
       };
 
       const updatedData = {
+        empresaEmissora: getVal('edit-empresa'),
         tipo: getVal('edit-tipo'),
         status: getVal('edit-status'),
         numero: getVal('edit-numero'),
@@ -929,7 +970,7 @@
 
       try {
         await updateDoc(doc(db, "transacoes", id), updatedData);
-        showToast('Registro atualizado com sucesso!', 'success');
+        showToast('Registro e status atualizados com sucesso!', 'success');
         closeEditModal();
       } catch (err) {
         showToast('Erro ao atualizar: ' + err.message, 'warning');
@@ -950,6 +991,7 @@
       const num = document.getElementById('input-numero').value.trim();
 
       const newRecord = {
+        empresaEmissora: document.getElementById('input-empresa-emissora').value,
         tipo: tipo,
         numero: num,
         cnpj: document.getElementById('input-cnpj').value.trim(),
@@ -975,7 +1017,7 @@
 
       try {
         await addDoc(collection(db, "transacoes"), newRecord);
-        showToast('Lançamento salvo com sucesso!', 'success');
+        showToast('Lançamento registrado com sucesso!', 'success');
         resetForm();
         backToCards();
       } catch (err) {
@@ -996,31 +1038,36 @@
     };
 
     window.exportToCSV = function() {
-      if (!nfeList || nfeList.length === 0) {
-        showToast('Não há registros para exportar.', 'warning');
+      const empresaFiltro = document.getElementById('global-empresa-filter').value;
+      const listaFiltrada = nfeList.filter(item => {
+        return (empresaFiltro === 'ALL' || item.empresaEmissora === empresaFiltro);
+      });
+
+      if (!listaFiltrada || listaFiltrada.length === 0) {
+        showToast('Não há registros para exportar com o filtro selecionado.', 'warning');
         return;
       }
 
-      let totalEntradas = 0;
+      let totalFaturamentoPago = 0;
       let totalSaidasPagas = 0;
-      let totalSaidasPrevistas = 0;
+      let totalPendentes = 0;
 
-      nfeList.forEach(item => {
+      listaFiltrada.forEach(item => {
         const val = parseFloat(item.valor || 0);
-        if (item.tipo === 'ENTRADA') {
-          totalEntradas += val;
+        if (item.status === 'Pago') {
+          if (item.tipo === 'ENTRADA') totalFaturamentoPago += val;
+          else totalSaidasPagas += val;
         } else {
-          totalSaidasPrevistas += val;
-          if (item.status === 'Pago') totalSaidasPagas += val;
+          totalPendentes += val;
         }
       });
 
-      const balancoReal = totalEntradas - totalSaidasPagas;
+      const entradasLiquidas = totalFaturamentoPago - totalSaidasPagas;
       const dataEmissao = new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
 
       let linhasHtml = '';
 
-      nfeList.forEach(item => {
+      listaFiltrada.forEach(item => {
         let diaSemana = 'N/A';
         if (item.emissao) {
           const d = new Date(item.emissao + 'T00:00:00');
@@ -1034,19 +1081,19 @@
 
         linhasHtml += `
           <tr style="height: 28px;">
+            <td style="text-align: center; border: 1px solid #cbd5e1;">${item.empresaEmissora === 'SNYPER' ? 'SNYPER' : 'GRUPO ER'}</td>
             <td style="text-align: center; border: 1px solid #cbd5e1;">${item.emissao ? formatDate(item.emissao) : ''}</td>
             <td style="text-align: center; border: 1px solid #cbd5e1; text-transform: capitalize;">${diaSemana}</td>
             <td style="text-align: center; border: 1px solid #cbd5e1; font-weight: bold; color: ${isEntrada ? '#059669' : '#dc2626'}">${item.tipo}</td>
             <td style="border: 1px solid #cbd5e1;">${item.categoria || ''}</td>
             <td style="border: 1px solid #cbd5e1; font-weight: 600;">${item.fornecedor || ''}</td>
             <td style="border: 1px solid #cbd5e1;">${item.formaPgto || 'Transferência'}</td>
-            <td style="text-align: center; border: 1px solid #cbd5e1;">GRUPO ER</td>
             <td style="text-align: right; border: 1px solid #cbd5e1; font-weight: bold;">${isEntrada ? '-' : 'R$ ' + val.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
             <td style="text-align: center; border: 1px solid #cbd5e1;">${isPago && item.emissao ? formatDate(item.emissao) : '-'}</td>
             <td style="text-align: right; border: 1px solid #cbd5e1; font-weight: bold; color: #059669;">${isEntrada ? '+ R$ ' + val.toLocaleString('pt-BR', {minimumFractionDigits: 2}) : (isPago ? 'R$ ' + val.toLocaleString('pt-BR', {minimumFractionDigits: 2}) : 'R$ 0,00')}</td>
-            <td style="text-align: center; border: 1px solid #cbd5e1;">${item.localPgto || 'BRAD - ER'}</td>
+            <td style="text-align: center; border: 1px solid #cbd5e1;">${item.localPgto || 'BRADESCO'}</td>
             <td style="border: 1px solid #cbd5e1; font-size: 11px;">${item.observacoes || ''}</td>
-            <td style="text-align: center; border: 1px solid #cbd5e1;">${item.status}</td>
+            <td style="text-align: center; border: 1px solid #cbd5e1; font-weight: bold;">${item.status}</td>
           </tr>
         `;
       });
@@ -1063,28 +1110,29 @@
         </head>
         <body>
           <table>
-            <tr><th colspan="13" class="header-title">GRUPO ER SEGURANÇA — RELATÓRIO EXECUTIVO FINANCEIRO</th></tr>
-            <tr><td colspan="13" style="text-align: center; font-size: 11px;">Emitido em: ${dataEmissao} | CNPJ: 13.506.821/0001-46</td></tr>
+            <tr><th colspan="13" class="header-title">GRUPO ER / SNYPER — RELATÓRIO EXECUTIVO DE CAIXA REAL (v1.2)</th></tr>
+            <tr><td colspan="13" style="text-align: center; font-size: 11px;">Emitido em: ${dataEmissao} | Empresa Selecionada: ${empresaFiltro}</td></tr>
             <tr style="height: 10px;"><td colspan="13"></td></tr>
             <tr style="height: 28px;">
-              <td colspan="4" class="kpi-card" style="color: #065f46;">TOTAL ENTRADAS: R$ ${totalEntradas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-              <td colspan="4" class="kpi-card" style="color: #9f1239;">SAÍDAS PAGAS: R$ ${totalSaidasPagas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-              <td colspan="5" class="kpi-card" style="color: #1e40af;">BALANÇO LÍQUIDO REAL: R$ ${balancoReal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+              <td colspan="3" class="kpi-card" style="color: #065f46;">FATURAMENTO LIQUIDADO: R$ ${totalFaturamentoPago.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+              <td colspan="3" class="kpi-card" style="color: #9f1239;">SAÍDAS PAGAS: R$ ${totalSaidasPagas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+              <td colspan="4" class="kpi-card" style="color: #1e40af;">ENTRADAS LÍQUIDAS REAL: R$ ${entradasLiquidas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+              <td colspan="3" class="kpi-card" style="color: #d97706;">PREVISÃO PENDENTE: R$ ${totalPendentes.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
             </tr>
             <tr style="height: 10px;"><td colspan="13"></td></tr>
             <thead>
               <tr>
+                <th>Empresa</th>
                 <th>Data Evento</th>
                 <th>Dia</th>
                 <th>Tipo</th>
                 <th>Plano Conta</th>
                 <th>Quem (Favorecido)</th>
                 <th>Como (Pgto)</th>
-                <th>Contrato</th>
                 <th>A Pagar</th>
                 <th>Data Pgto</th>
                 <th>Pago / Recebido</th>
-                <th>Local Pgto</th>
+                <th>Banco</th>
                 <th>Observações</th>
                 <th>Status</th>
               </tr>
@@ -1099,57 +1147,74 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Fluxo_Financeiro_ER_${Date.now()}.xls`;
+      a.download = `Fluxo_Financeiro_Liquidado_${Date.now()}.xls`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      showToast('Relatório gerado com sucesso!', 'success');
+      showToast('Relatório Excel de caixa real gerado!', 'success');
     };
 
     window.renderDashboard = function() {
-      let totalEntradas = 0, countEntradas = 0;
-      let totalSaidas = 0, countSaidas = 0;
-      let pendingCount = 0;
+      const empresaGlobal = document.getElementById('global-empresa-filter').value;
+
+      let faturamentoPago = 0, countFatPago = 0;
+      let saidasPagas = 0, countSaidasPagas = 0;
+      let valorPendenteTotal = 0, countPendente = 0;
 
       nfeList.forEach(item => {
-        const val = parseFloat(item.valor || 0);
-        if (item.tipo === 'ENTRADA') { totalEntradas += val; countEntradas++; }
-        else { totalSaidas += val; countSaidas++; }
+        if (empresaGlobal !== 'ALL' && item.empresaEmissora !== empresaGlobal) return;
 
-        if (item.status === 'Pendente') pendingCount++;
+        const val = parseFloat(item.valor || 0);
+        const isPago = item.status === 'Pago';
+
+        if (isPago) {
+          if (item.tipo === 'ENTRADA') {
+            faturamentoPago += val;
+            countFatPago++;
+          } else {
+            saidasPagas += val;
+            countSaidasPagas++;
+          }
+        } else {
+          valorPendenteTotal += val;
+          countPendente++;
+        }
       });
 
-      const balanco = totalEntradas - totalSaidas;
+      const entradasLiquidas = faturamentoPago - saidasPagas;
 
-      document.getElementById('stat-total-entradas').textContent = formatCurrency(totalEntradas);
-      document.getElementById('count-entradas').textContent = countEntradas;
-      document.getElementById('stat-total-saidas').textContent = formatCurrency(totalSaidas);
-      document.getElementById('count-saidas').textContent = countSaidas;
-      
-      const balancoElem = document.getElementById('stat-balanco-liquido');
-      balancoElem.textContent = formatCurrency(balanco);
-      balancoElem.className = balanco >= 0 ? "text-2xl sm:text-3xl font-black text-emerald-600 font-mono" : "text-2xl sm:text-3xl font-black text-rose-600 font-mono";
+      document.getElementById('stat-faturamento-pago').textContent = formatCurrency(faturamentoPago);
+      document.getElementById('count-faturamento-pago').textContent = countFatPago;
 
-      document.getElementById('stat-total-count').textContent = nfeList.length;
-      document.getElementById('stat-pending-count').textContent = `${pendingCount} pendentes`;
+      document.getElementById('stat-saidas-pagas').textContent = formatCurrency(saidasPagas);
+      document.getElementById('count-saidas-pagas').textContent = countSaidasPagas;
+
+      const elElem = document.getElementById('stat-entradas-liquidas');
+      elElem.textContent = formatCurrency(entradasLiquidas);
+      elElem.className = entradasLiquidas >= 0 ? "text-2xl sm:text-3xl font-black text-blue-700 font-mono" : "text-2xl sm:text-3xl font-black text-rose-600 font-mono";
+
+      document.getElementById('stat-total-pendente-valor').textContent = formatCurrency(valorPendenteTotal);
+      document.getElementById('stat-pending-count').textContent = `${countPendente} pendentes`;
     };
 
     window.renderTable = function() {
+      const empresaGlobal = document.getElementById('global-empresa-filter').value;
       const search = document.getElementById('filter-search').value.toLowerCase();
       const categoria = document.getElementById('filter-categoria').value;
       const status = document.getElementById('filter-status').value;
       const tipo = document.getElementById('filter-tipo').value;
 
       const filtrados = nfeList.filter(item => {
+        const matchesEmpresa = (empresaGlobal === 'ALL' || item.empresaEmissora === empresaGlobal);
         const matchesSearch = (item.numero || '').toLowerCase().includes(search) || 
                               (item.fornecedor || '').toLowerCase().includes(search) || 
                               (item.cnpj || '').includes(search);
         const matchesCat = (categoria === 'ALL' || item.categoria === categoria);
         const matchesStatus = (status === 'ALL' || item.status === status);
         const matchesTipo = (tipo === 'ALL' || item.tipo === tipo);
-        return matchesSearch && matchesCat && matchesStatus && matchesTipo;
+        return matchesEmpresa && matchesSearch && matchesCat && matchesStatus && matchesTipo;
       });
 
       const tbody = document.getElementById('nfe-table-body');
@@ -1168,6 +1233,12 @@
         tr.className = 'hover:bg-blue-50/50 transition-colors';
 
         const isEntrada = (item.tipo === 'ENTRADA');
+        const isSnyper = (item.empresaEmissora === 'SNYPER');
+
+        const badgeEmpresa = isSnyper
+          ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-black bg-purple-100 text-purple-800 border border-purple-300 mr-1">SNYPER</span>`
+          : `<span class="px-1.5 py-0.5 rounded text-[9px] font-black bg-blue-100 text-blue-800 border border-blue-300 mr-1">ER</span>`;
+
         const tipoTag = isEntrada 
           ? `<span class="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">ENTRADA</span>`
           : `<span class="px-2 py-0.5 rounded text-[10px] font-black bg-rose-100 text-rose-800 border border-rose-300">SAÍDA</span>`;
@@ -1178,12 +1249,11 @@
 
         let statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">Pendente</span>`;
         if (item.status === 'Pago') {
-          statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">Pago</span>`;
+          statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">Pago / Liquidado</span>`;
         } else if (item.status === 'Recusado') {
           statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300">Recusado</span>`;
         }
 
-        // BOTOES DE ANEXO (VISUALIZAR E REMOVER)
         let docBtns = '';
         if (item.fileData1) {
           docBtns += `<button onclick="openPreviewModal('${item.fileName1 || 'Anexo 1'}', '${item.fileData1}')" class="p-1 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-700 mr-1" title="Ver Anexo 1 (${item.fileName1})"><i data-lucide="file-text" class="w-4 h-4"></i></button>`;
@@ -1196,7 +1266,7 @@
         }
 
         tr.innerHTML = `
-          <td class="py-3 px-4">${tipoTag}</td>
+          <td class="py-3 px-4">${badgeEmpresa} ${tipoTag}</td>
           <td class="py-3 px-4 font-mono font-bold text-slate-800">${item.numero || ''}</td>
           <td class="py-3 px-4">
             <div class="font-bold text-slate-800">${item.fornecedor || ''}</div>
@@ -1204,7 +1274,7 @@
           </td>
           <td class="py-3 px-4 text-slate-700">
             <span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-[11px] font-semibold">${item.categoria || ''}</span>
-            <div class="text-[10px] text-slate-500 mt-0.5">Local: <strong>${item.localPgto || 'BRAD - ER'}</strong></div>
+            <div class="text-[10px] text-slate-500 mt-0.5">Banco: <strong>${item.localPgto || 'BRADESCO'}</strong></div>
           </td>
           <td class="py-3 px-4 font-mono text-slate-600">${formatDate(item.emissao)}</td>
           <td class="py-3 px-4">${valorFormatted}</td>
@@ -1222,10 +1292,12 @@
     };
 
     window.clearFilters = function() {
+      document.getElementById('global-empresa-filter').value = 'ALL';
       document.getElementById('filter-search').value = '';
       document.getElementById('filter-categoria').value = 'ALL';
       document.getElementById('filter-status').value = 'ALL';
       document.getElementById('filter-tipo').value = 'ALL';
+      renderDashboard();
       renderTable();
     };
 
@@ -1233,6 +1305,7 @@
       document.getElementById('nfe-form').reset();
       removeFile(null, 1);
       removeFile(null, 2);
+      document.getElementById('input-empresa-emissora').value = 'GRUPO_ER';
       document.getElementById('input-cnpj').value = '13.506.821/0001-46';
       document.getElementById('input-data-emissao').valueAsDate = new Date();
     };
