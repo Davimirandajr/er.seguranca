@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal Operacional v1.2 - Gestão Financeira | ER & Snyper</title>
+  <title>Portal Operacional v1.3 - Gestão Financeira | ER & Snyper</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -64,7 +64,7 @@
           <div class="flex items-center space-x-2">
             <span class="font-black text-lg sm:text-xl tracking-wider text-blue-700">GRUPO ER / SNYPER</span>
             <span class="hidden sm:inline-block px-2 py-0.5 text-[10px] font-bold uppercase bg-blue-100 text-blue-700 border border-blue-300 rounded-md">
-              v1.2
+              v1.3
             </span>
           </div>
           <p class="text-[11px] font-extrabold text-red-600 tracking-widest uppercase">PORTARIA E VIGILÂNCIA LTDA</p>
@@ -82,7 +82,7 @@
           </select>
         </div>
 
-        <button onclick="exportToCSV()" class="btn-neon-primary px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 shadow-md">
+        <button onclick="exportToExcel()" class="btn-neon-primary px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 shadow-md">
           <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-200"></i>
           <span class="hidden sm:inline">Baixar Excel</span>
         </button>
@@ -103,16 +103,16 @@
           <i data-lucide="arrow-left-right" class="w-8 h-8 text-blue-600"></i>
           Gestão de Fluxo Financeiro & Caixa Real
         </h1>
-        <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">Lançamentos de faturamento, despesas operacionais e salários com separação por CNPJ.</p>
+        <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">Lançamentos de faturamento (com baixa líquida), despesas operacionais e salários com separação por CNPJ.</p>
       </div>
     </div>
 
-    <!-- CARDS DEMONSTRATIVOS (KPIS RECALCULADOS POR STATUS PAGO) -->
+    <!-- CARDS DEMONSTRATIVOS (KPIS RECALCULADOS POR STATUS PAGO / VALOR LÍQUIDO RECEBIDO) -->
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-      <!-- CARD 1: FATURAMENTO EFETIVADO (ENTRADAS PAGAS) -->
+      <!-- CARD 1: FATURAMENTO EFETIVADO (VALOR LÍQUIDO RECEBIDO) -->
       <div class="glass-card rounded-2xl p-5 relative overflow-hidden">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Faturamento Liquidado</span>
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Faturamento Líquido Recebido</span>
           <div class="p-2.5 rounded-xl bg-emerald-100 text-emerald-700 border border-emerald-300"><i data-lucide="check-circle-2" class="w-5 h-5"></i></div>
         </div>
         <div class="mt-4"><span id="stat-faturamento-pago" class="text-2xl sm:text-3xl font-black text-emerald-600 font-mono">R$ 0,00</span></div>
@@ -129,14 +129,14 @@
         <p class="text-[11px] text-slate-500 font-medium mt-2"><span id="count-saidas-pagas" class="text-rose-700 font-bold">0</span> pagamentos liquidados</p>
       </div>
 
-      <!-- CARD 3: TOTAL DE ENTRADAS LÍQUIDAS (FATURAMENTO PAGO - SAÍDAS PAGAS) -->
+      <!-- CARD 3: TOTAL DE ENTRADAS LÍQUIDAS (FATURAMENTO LÍQUIDO RECEBIDO - SAÍDAS PAGAS) -->
       <div class="glass-card rounded-2xl p-5 relative overflow-hidden">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Entradas Líquidas (Caixa Real)</span>
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Saldo Líquido (Caixa Real)</span>
           <div class="p-2.5 rounded-xl bg-blue-100 text-blue-700 border border-blue-300"><i data-lucide="wallet" class="w-5 h-5"></i></div>
         </div>
         <div class="mt-4"><span id="stat-entradas-liquidas" class="text-2xl sm:text-3xl font-black text-blue-700 font-mono">R$ 0,00</span></div>
-        <p id="stat-entradas-liquidas-subtext" class="text-[11px] text-slate-500 font-medium mt-2">Receitas Pagas - Saídas Pagas</p>
+        <p id="stat-entradas-liquidas-subtext" class="text-[11px] text-slate-500 font-medium mt-2">Líquido Recebido - Saídas Pagas</p>
       </div>
 
       <!-- CARD 4: PREVISÃO PENDENTE (NÃO ENTRA NO CÁLCULO LÍQUIDO) -->
@@ -192,7 +192,7 @@
           <div>
             <span class="text-[10px] uppercase font-bold tracking-widest text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-200">Receita Corporativa</span>
             <h3 class="text-lg font-extrabold text-slate-800 mt-1">Registrar Entrada</h3>
-            <p class="text-xs text-slate-500 mt-1">Recebimentos (Nota Fiscal / Comprovante + Boletim de Medição).</p>
+            <p class="text-xs text-slate-500 mt-1">Recebimentos, valor líquido recebido e baixa de data.</p>
           </div>
         </div>
       </div>
@@ -253,8 +253,22 @@
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Valor Total (R$) <span class="text-red-500">*</span></label>
-            <input type="text" id="input-valor" required placeholder="R$ 0,00" oninput="maskCurrencyInput(this)" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-emerald-700 font-mono font-bold focus:outline-none focus:border-blue-600">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Valor Total / Bruto (R$) <span class="text-red-500">*</span></label>
+            <input type="text" id="input-valor" required placeholder="R$ 0,00" oninput="maskCurrencyInput(this)" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 font-mono font-bold focus:outline-none focus:border-blue-600">
+          </div>
+
+          <!-- BLOCO EXCLUSIVO DE ENTRADA: VALOR LÍQUIDO RECEBIDO & DATA DO RECEBIMENTO -->
+          <div id="container-entrada-liquida" class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 bg-emerald-50/90 p-3.5 rounded-xl border border-emerald-300 hidden">
+            <div>
+              <label class="block text-xs font-bold text-emerald-800 uppercase tracking-wider mb-1.5">Valor Líquido Recebido (R$)</label>
+              <input type="text" id="input-valor-liquido-recebido" placeholder="R$ 0,00" oninput="maskCurrencyInput(this); autoCheckBaixaEntrada()" class="w-full bg-white border border-emerald-400 rounded-xl px-4 py-2 text-sm text-emerald-700 font-mono font-bold focus:outline-none focus:border-emerald-600">
+              <p class="text-[10px] text-emerald-700 mt-1">Preencha para dar baixa líquida (após impostos/retenções).</p>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-emerald-800 uppercase tracking-wider mb-1.5">Data do Valor Líquido Recebido</label>
+              <input type="date" id="input-data-liquido-recebido" onchange="autoCheckBaixaEntrada()" class="w-full bg-white border border-emerald-400 rounded-xl px-4 py-2 text-sm text-slate-900 focus:outline-none focus:border-emerald-600">
+              <p class="text-[10px] text-emerald-700 mt-1">Data efetiva do crédito em conta bancária.</p>
+            </div>
           </div>
 
           <div>
@@ -278,18 +292,18 @@
             </select>
           </div>
 
-          <!-- LOCAL DE PAGAMENTO / BANCOS ATUALIZADOS -->
+          <!-- LOCAL DE PAGAMENTO / BANCOS (SEM BRAD - ER) -->
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Local de Pagamento / Banco</label>
             <select id="input-local-pgto" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-600">
-              <option value="BRADESCO">Bradesco</option>
-              <option value="SANTANDER">Santander</option>
-              <option value="BANCO_INTER">Banco Inter</option>
-              <option value="BANCO_DO_BRASIL">Banco do Brasil</option>
-              <option value="NUBANK">Nubank</option>
-              <option value="ITAU">Itaú</option>
-              <option value="CAIXA">Caixa Econômica</option>
-              <option value="DINHEIRO - CAIXA FÍSICO">Dinheiro (Caixa Físico)</option>
+              <option value="Bradesco">Bradesco</option>
+              <option value="Santander">Santander</option>
+              <option value="Banco Inter">Banco Inter</option>
+              <option value="Banco do Brasil">Banco do Brasil</option>
+              <option value="Nubank">Nubank</option>
+              <option value="Itaú">Itaú</option>
+              <option value="Caixa Econômica">Caixa Econômica</option>
+              <option value="Dinheiro (Caixa Físico)">Dinheiro (Caixa Físico)</option>
             </select>
           </div>
 
@@ -337,7 +351,7 @@
             <input type="text" id="input-atuacao" placeholder="Ex: Vigilante, Supervisor" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-600">
           </div>
 
-          <!-- DOCK DE UPLOAD DUPLO (NOMES ATUALIZADOS) -->
+          <!-- DOCK DE UPLOAD DUPLO -->
           <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
             <!-- ANEXO 1 -->
             <div>
@@ -412,7 +426,7 @@
           <div class="p-2 rounded-lg bg-blue-100 text-blue-700 border border-blue-200"><i data-lucide="search" class="w-5 h-5"></i></div>
           <div>
             <h2 class="text-lg font-bold text-slate-800">Transações Registradas</h2>
-            <p class="text-xs text-slate-500">Histórico completo consolidado com status em tempo real</p>
+            <p class="text-xs text-slate-500">Histórico completo consolidado com baixa líquida e status em tempo real</p>
           </div>
         </div>
         <div id="filter-summary-pill" class="text-xs font-mono bg-white border border-sky-200 text-blue-700 px-4 py-2 rounded-xl font-bold">Nenhum registro</div>
@@ -478,8 +492,8 @@
               <th class="py-3.5 px-4">Nº Ref / Doc</th>
               <th class="py-3.5 px-4">Favorecido / Fornecedor</th>
               <th class="py-3.5 px-4">Categoria / Banco</th>
-              <th class="py-3.5 px-4">Emissão</th>
-              <th class="py-3.5 px-4">Valor Total</th>
+              <th class="py-3.5 px-4">Datas (Emissão / Baixa)</th>
+              <th class="py-3.5 px-4">Valores (Bruto / Líq. Recebido)</th>
               <th class="py-3.5 px-4 text-center">Status / Baixa</th>
               <th class="py-3.5 px-4 text-right">Anexos / Ações</th>
             </tr>
@@ -491,15 +505,15 @@
 
   </main>
 
-  <!-- MODAL DE EDIÇÃO -->
+  <!-- MODAL DE EDIÇÃO / BAIXA -->
   <div id="edit-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
     <div class="glass-card rounded-2xl p-6 sm:p-8 max-w-2xl w-full border border-sky-300 shadow-2xl relative my-8 bg-white">
       <div class="flex items-center justify-between border-b border-slate-200 pb-4 mb-6">
         <div class="flex items-center space-x-3">
           <div class="p-2 rounded-lg bg-blue-100 text-blue-700 border border-blue-200"><i data-lucide="edit-3" class="w-5 h-5"></i></div>
           <div>
-            <h3 class="text-lg font-bold text-slate-800">Editar Transação</h3>
-            <p class="text-xs text-slate-500">Atualize dados, status de baixa ou substitua documentos</p>
+            <h3 class="text-lg font-bold text-slate-800">Editar Transação / Dar Baixa</h3>
+            <p class="text-xs text-slate-500">Atualize dados, informe o valor líquido recebido e a data de baixa</p>
           </div>
         </div>
         <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg bg-slate-100"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -512,14 +526,14 @@
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Empresa Emissora</label>
             <select id="edit-empresa" onchange="updateEditCNPJ(this.value)" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 font-bold focus:outline-none">
-              <option value="GRUPO_ER">Grupo ER</option>
-              <option value="SNYPER">Snyper</option>
+              <option value="GRUPO_ER">Grupo ER (13.506.821/0001-46)</option>
+              <option value="SNYPER">Snyper (19.956.281/0001-89)</option>
             </select>
           </div>
 
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Tipo de Fluxo</label>
-            <select id="edit-tipo" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
+            <select id="edit-tipo" onchange="toggleEditEntradaFields()" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
               <option value="SAIDA">Saída / Despesa / Salário</option>
               <option value="ENTRADA">Entrada / Receita</option>
             </select>
@@ -528,8 +542,8 @@
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Status (Baixa Automática)</label>
             <select id="edit-status" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
-              <option value="Pendente">Pendente (Não entra no cálculo líquido)</option>
-              <option value="Pago">Pago (Liquidado)</option>
+              <option value="Pendente">Pendente (Não entra no caixa real)</option>
+              <option value="Pago">Pago / Recebido (Liquidado)</option>
               <option value="Recusado">Recusado</option>
               <option value="Cancelada">Cancelada</option>
             </select>
@@ -551,13 +565,25 @@
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Valor Total (R$)</label>
-            <input type="text" id="edit-valor" required oninput="maskCurrencyInput(this)" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-emerald-700 font-mono font-bold focus:outline-none">
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Valor Bruto / Total (R$)</label>
+            <input type="text" id="edit-valor" required oninput="maskCurrencyInput(this)" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 font-mono font-bold focus:outline-none">
           </div>
 
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Data de Emissão</label>
             <input type="date" id="edit-emissao" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
+          </div>
+
+          <!-- BLOCO EXCLUSIVO DE ENTRADA NO MODAL DE EDIÇÃO / BAIXA -->
+          <div id="edit-container-entrada-liquida" class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3 bg-emerald-50 p-3 rounded-xl border border-emerald-300 hidden">
+            <div>
+              <label class="block text-xs font-bold text-emerald-800 uppercase mb-1">Valor Líquido Recebido (R$)</label>
+              <input type="text" id="edit-valor-liquido-recebido" placeholder="R$ 0,00" oninput="maskCurrencyInput(this); autoCheckEditBaixaEntrada()" class="w-full bg-white border border-emerald-400 rounded-xl px-3 py-2 text-xs text-emerald-700 font-mono font-bold focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-emerald-800 uppercase mb-1">Data do Valor Líquido Recebido</label>
+              <input type="date" id="edit-data-liquido-recebido" onchange="autoCheckEditBaixaEntrada()" class="w-full bg-white border border-emerald-400 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
+            </div>
           </div>
 
           <div>
@@ -581,14 +607,14 @@
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Local de Pagamento / Banco</label>
             <select id="edit-local-pgto" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
-              <option value="BRADESCO">Bradesco</option>
-              <option value="SANTANDER">Santander</option>
-              <option value="BANCO_INTER">Banco Inter</option>
-              <option value="BANCO_DO_BRASIL">Banco do Brasil</option>
-              <option value="NUBANK">Nubank</option>
-              <option value="ITAU">Itaú</option>
-              <option value="CAIXA">Caixa Econômica</option>
-              <option value="DINHEIRO - CAIXA FÍSICO">Dinheiro (Caixa Físico)</option>
+              <option value="Bradesco">Bradesco</option>
+              <option value="Santander">Santander</option>
+              <option value="Banco Inter">Banco Inter</option>
+              <option value="Banco do Brasil">Banco do Brasil</option>
+              <option value="Nubank">Nubank</option>
+              <option value="Itaú">Itaú</option>
+              <option value="Caixa Econômica">Caixa Econômica</option>
+              <option value="Dinheiro (Caixa Físico)">Dinheiro (Caixa Físico)</option>
             </select>
           </div>
 
@@ -649,7 +675,7 @@
     <span id="toast-message">Notificação</span>
   </div>
 
-  <!-- SCRIPT FIREBASE COMPLETO (ATUALIZADO V1.2) -->
+  <!-- SCRIPT FIREBASE COMPLETO (ATUALIZADO V1.3) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -725,6 +751,19 @@
         cnpjInput.value = '13.506.821/0001-46';
       }
     };
+
+    function normalizeBankName(bank) {
+      if (!bank) return 'Bradesco';
+      const upper = String(bank).toUpperCase().trim();
+      if (upper === 'BRADESCO' || upper === 'BRAD - ER' || upper === 'BRAD-ER') return 'Bradesco';
+      if (upper === 'SANTANDER') return 'Santander';
+      if (upper === 'BANCO_INTER') return 'Banco Inter';
+      if (upper === 'BANCO_DO_BRASIL') return 'Banco do Brasil';
+      if (upper === 'NUBANK') return 'Nubank';
+      if (upper === 'ITAU') return 'Itaú';
+      if (upper === 'CAIXA') return 'Caixa Econômica';
+      return bank;
+    }
 
     function setupDragAndDrop(index) {
       const dropZone = document.getElementById(`drop-zone-${index}`);
@@ -831,6 +870,7 @@
       const badge = document.getElementById('badge-tipo-ativo');
       const title = document.getElementById('form-main-title');
       const containerAtuacao = document.getElementById('container-atuacao');
+      const containerEntradaLiquida = document.getElementById('container-entrada-liquida');
       const inputCategoria = document.getElementById('input-categoria');
       const hiddenInput = document.getElementById('input-tipo-transacao-hidden');
 
@@ -845,6 +885,7 @@
         }
         if (title) title.textContent = "Lançamento de Salários e Encargos";
         if (containerAtuacao) containerAtuacao.classList.remove('hidden');
+        if (containerEntradaLiquida) containerEntradaLiquida.classList.add('hidden');
         if (inputCategoria) inputCategoria.value = "Salários e Encargos";
 
         if (lbl1) lbl1.textContent = "Anexo 1: Comprovante de Pagamento";
@@ -857,6 +898,7 @@
         }
         if (title) title.textContent = "Registrar Nova Entrada (Receita)";
         if (containerAtuacao) containerAtuacao.classList.add('hidden');
+        if (containerEntradaLiquida) containerEntradaLiquida.classList.remove('hidden');
 
         if (lbl1) lbl1.textContent = "Anexo 1: Nota Fiscal / Comprovante";
         if (lbl2) lbl2.textContent = "Anexo 2: Boletim de Medição";
@@ -868,11 +910,40 @@
         }
         if (title) title.textContent = "Anexar Nova Despesa / NF-e";
         if (containerAtuacao) containerAtuacao.classList.add('hidden');
+        if (containerEntradaLiquida) containerEntradaLiquida.classList.add('hidden');
 
         if (lbl1) lbl1.textContent = "Anexo 1: Nota Fiscal / Fatura";
         if (lbl2) lbl2.textContent = "Anexo 2: Comprovante de Pagamento";
       }
     }
+
+    window.autoCheckBaixaEntrada = function() {
+      const valLiq = parseCurrencyToNumber(document.getElementById('input-valor-liquido-recebido').value);
+      const dtLiq = document.getElementById('input-data-liquido-recebido').value;
+      const statusSel = document.getElementById('input-status');
+      if (valLiq > 0 && dtLiq) {
+        statusSel.value = 'Pago';
+      }
+    };
+
+    window.autoCheckEditBaixaEntrada = function() {
+      const valLiq = parseCurrencyToNumber(document.getElementById('edit-valor-liquido-recebido').value);
+      const dtLiq = document.getElementById('edit-data-liquido-recebido').value;
+      const statusSel = document.getElementById('edit-status');
+      if (valLiq > 0 && dtLiq) {
+        statusSel.value = 'Pago';
+      }
+    };
+
+    window.toggleEditEntradaFields = function() {
+      const tipo = document.getElementById('edit-tipo').value;
+      const box = document.getElementById('edit-container-entrada-liquida');
+      if (tipo === 'ENTRADA') {
+        box.classList.remove('hidden');
+      } else {
+        box.classList.add('hidden');
+      }
+    };
 
     window.maskCurrencyInput = function(input) {
       let value = input.value.replace(/\D/g, "");
@@ -903,12 +974,16 @@
       setVal('edit-numero', item.numero || '');
       setVal('edit-cnpj', item.cnpj || '13.506.821/0001-46');
       setVal('edit-fornecedor', item.fornecedor || '');
-      setVal('edit-valor', formatCurrency(item.valor || 0).replace('R$', '').trim());
+      setVal('edit-valor', formatCurrency(item.valor || 0));
       setVal('edit-emissao', item.emissao || '');
+      setVal('edit-valor-liquido-recebido', item.valorLiquidoRecebido ? formatCurrency(item.valorLiquidoRecebido) : '');
+      setVal('edit-data-liquido-recebido', item.dataLiquidoRecebido || '');
       setVal('edit-categoria', item.categoria || '');
       setVal('edit-forma-pgto', item.formaPgto || 'Transferência');
-      setVal('edit-local-pgto', item.localPgto || 'BRADESCO');
+      setVal('edit-local-pgto', normalizeBankName(item.localPgto));
       setVal('edit-observacoes', item.observacoes || '');
+
+      toggleEditEntradaFields();
 
       editFileObj1 = { name: item.fileName1 || null, data: item.fileData1 || null };
       editFileObj2 = { name: item.fileName2 || null, data: item.fileData2 || null };
@@ -949,18 +1024,31 @@
         return el ? el.value.trim() : '';
       };
 
+      const tipo = getVal('edit-tipo');
+      let status = getVal('edit-status');
+      const valorBruto = parseCurrencyToNumber(getVal('edit-valor'));
+      const valorLiquidoRecebido = tipo === 'ENTRADA' ? parseCurrencyToNumber(getVal('edit-valor-liquido-recebido')) : 0;
+      const dataLiquidoRecebido = tipo === 'ENTRADA' ? (getVal('edit-data-liquido-recebido') || null) : null;
+
+      // Baixa automática ao informar valor líquido e data na entrada
+      if (tipo === 'ENTRADA' && valorLiquidoRecebido > 0 && dataLiquidoRecebido && status === 'Pendente') {
+        status = 'Pago';
+      }
+
       const updatedData = {
         empresaEmissora: getVal('edit-empresa'),
-        tipo: getVal('edit-tipo'),
-        status: getVal('edit-status'),
+        tipo: tipo,
+        status: status,
         numero: getVal('edit-numero'),
         cnpj: getVal('edit-cnpj'),
         fornecedor: getVal('edit-fornecedor'),
-        valor: parseCurrencyToNumber(getVal('edit-valor')),
+        valor: valorBruto,
+        valorLiquidoRecebido: valorLiquidoRecebido,
+        dataLiquidoRecebido: dataLiquidoRecebido,
         emissao: getVal('edit-emissao'),
         categoria: getVal('edit-categoria'),
         formaPgto: getVal('edit-forma-pgto'),
-        localPgto: getVal('edit-local-pgto'),
+        localPgto: normalizeBankName(getVal('edit-local-pgto')),
         observacoes: getVal('edit-observacoes'),
         fileName1: finalFile1.name,
         fileData1: finalFile1.data,
@@ -970,7 +1058,7 @@
 
       try {
         await updateDoc(doc(db, "transacoes", id), updatedData);
-        showToast('Registro e status atualizados com sucesso!', 'success');
+        showToast('Registro e baixa atualizados com sucesso!', 'success');
         closeEditModal();
       } catch (err) {
         showToast('Erro ao atualizar: ' + err.message, 'warning');
@@ -988,6 +1076,14 @@
         return;
       }
 
+      const valorLiquidoRecebido = tipo === 'ENTRADA' ? parseCurrencyToNumber(document.getElementById('input-valor-liquido-recebido').value) : 0;
+      const dataLiquidoRecebido = tipo === 'ENTRADA' ? (document.getElementById('input-data-liquido-recebido').value || null) : null;
+      let status = document.getElementById('input-status').value;
+
+      if (tipo === 'ENTRADA' && valorLiquidoRecebido > 0 && dataLiquidoRecebido && status === 'Pendente') {
+        status = 'Pago';
+      }
+
       const num = document.getElementById('input-numero').value.trim();
 
       const newRecord = {
@@ -997,12 +1093,14 @@
         cnpj: document.getElementById('input-cnpj').value.trim(),
         fornecedor: document.getElementById('input-fornecedor').value.trim(),
         valor: valor,
+        valorLiquidoRecebido: valorLiquidoRecebido,
+        dataLiquidoRecebido: dataLiquidoRecebido,
         emissao: document.getElementById('input-data-emissao').value,
         vencimento: document.getElementById('input-data-vencimento').value || null,
         formaPgto: document.getElementById('input-forma-pgto').value,
-        localPgto: document.getElementById('input-local-pgto').value,
+        localPgto: normalizeBankName(document.getElementById('input-local-pgto').value),
         categoria: document.getElementById('input-categoria').value,
-        status: document.getElementById('input-status').value,
+        status: status,
         atuacao: document.getElementById('input-atuacao')?.value || '',
         observacoes: document.getElementById('input-observacoes').value.trim(),
         fileName1: fileObj1.name || null,
@@ -1037,155 +1135,292 @@
       }
     };
 
-    window.exportToCSV = function() {
+    // EXPORTAÇÃO EXCEL COM ABAS SEPARADAS: ENTRADAS, SAÍDAS, GRUPO ER, SNYPER E RESUMO GERAL
+    window.exportToExcel = function() {
       const empresaFiltro = document.getElementById('global-empresa-filter').value;
-      const listaFiltrada = nfeList.filter(item => {
+      const listaBase = nfeList.filter(item => {
         return (empresaFiltro === 'ALL' || item.empresaEmissora === empresaFiltro);
       });
 
-      if (!listaFiltrada || listaFiltrada.length === 0) {
+      if (!listaBase || listaBase.length === 0) {
         showToast('Não há registros para exportar com o filtro selecionado.', 'warning');
         return;
       }
 
-      let totalFaturamentoPago = 0;
-      let totalSaidasPagas = 0;
-      let totalPendentes = 0;
+      const fmtBRL = (v) => 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-      listaFiltrada.forEach(item => {
-        const val = parseFloat(item.valor || 0);
-        if (item.status === 'Pago') {
-          if (item.tipo === 'ENTRADA') totalFaturamentoPago += val;
-          else totalSaidasPagas += val;
+      function buildRowsHtml(items, modo) {
+        let html = '';
+        let sumBruto = 0;
+        let sumLiquido = 0;
+        let sumSaida = 0;
+
+        items.forEach(item => {
+          const isEntrada = item.tipo === 'ENTRADA';
+          const isPago = item.status === 'Pago';
+          const valBruto = parseFloat(item.valor || 0);
+          const valLiq = isEntrada ? (parseFloat(item.valorLiquidoRecebido || 0) || (isPago ? valBruto : 0)) : 0;
+          const dtBaixa = isEntrada ? (item.dataLiquidoRecebido || (isPago ? item.emissao : '')) : (isPago ? item.emissao : '');
+          const bancoLimpo = normalizeBankName(item.localPgto);
+
+          if (isEntrada) {
+            sumBruto += valBruto;
+            if (isPago || valLiq > 0) sumLiquido += valLiq;
+          } else {
+            sumSaida += valBruto;
+          }
+
+          if (modo === 'ENTRADAS') {
+            html += `
+              <tr>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${item.empresaEmissora === 'SNYPER' ? 'SNYPER' : 'GRUPO ER'}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${item.numero || ''}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${formatDate(item.emissao)}</td>
+                <td style="border:1px solid #cbd5e1;">${item.fornecedor || ''}</td>
+                <td style="border:1px solid #cbd5e1;">${item.categoria || ''}</td>
+                <td style="text-align:right;border:1px solid #cbd5e1;">${fmtBRL(valBruto)}</td>
+                <td style="text-align:right;border:1px solid #cbd5e1;font-weight:bold;color:#059669;">${valLiq > 0 ? fmtBRL(valLiq) : '-'}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${dtBaixa ? formatDate(dtBaixa) : '-'}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${bancoLimpo}</td>
+                <td style="border:1px solid #cbd5e1;">${item.observacoes || ''}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;font-weight:bold;">${item.status}</td>
+              </tr>`;
+          } else if (modo === 'SAIDAS') {
+            html += `
+              <tr>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${item.empresaEmissora === 'SNYPER' ? 'SNYPER' : 'GRUPO ER'}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${item.numero || ''}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${formatDate(item.emissao)}</td>
+                <td style="border:1px solid #cbd5e1;">${item.fornecedor || ''}</td>
+                <td style="border:1px solid #cbd5e1;">${item.categoria || ''}</td>
+                <td style="text-align:right;border:1px solid #cbd5e1;font-weight:bold;color:#dc2626;">${fmtBRL(valBruto)}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${dtBaixa ? formatDate(dtBaixa) : '-'}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${bancoLimpo}</td>
+                <td style="border:1px solid #cbd5e1;">${item.observacoes || ''}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;font-weight:bold;">${item.status}</td>
+              </tr>`;
+          } else {
+            // Modo Empresa (ER ou Snyper)
+            html += `
+              <tr>
+                <td style="text-align:center;border:1px solid #cbd5e1;font-weight:bold;color:${isEntrada ? '#059669' : '#dc2626'};">${item.tipo}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${item.numero || ''}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${formatDate(item.emissao)}</td>
+                <td style="border:1px solid #cbd5e1;">${item.fornecedor || ''}</td>
+                <td style="border:1px solid #cbd5e1;">${item.categoria || ''}</td>
+                <td style="text-align:right;border:1px solid #cbd5e1;">${!isEntrada ? fmtBRL(valBruto) : '-'}</td>
+                <td style="text-align:right;border:1px solid #cbd5e1;">${isEntrada ? fmtBRL(valBruto) : '-'}</td>
+                <td style="text-align:right;border:1px solid #cbd5e1;font-weight:bold;color:#059669;">${isEntrada && valLiq > 0 ? fmtBRL(valLiq) : '-'}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${dtBaixa ? formatDate(dtBaixa) : '-'}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${bancoLimpo}</td>
+                <td style="border:1px solid #cbd5e1;">${item.observacoes || ''}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;font-weight:bold;">${item.status}</td>
+              </tr>`;
+          }
+        });
+
+        if (modo === 'ENTRADAS') {
+          html += `
+            <tr style="background:#d9e2ec;font-weight:bold;">
+              <td colspan="5" style="border:1px solid #1b365d;">TOTAL ENTRADAS</td>
+              <td style="text-align:right;border:1px solid #1b365d;">${fmtBRL(sumBruto)}</td>
+              <td style="text-align:right;border:1px solid #1b365d;color:#059669;">${fmtBRL(sumLiquido)}</td>
+              <td colspan="4" style="border:1px solid #1b365d;"></td>
+            </tr>`;
+        } else if (modo === 'SAIDAS') {
+          html += `
+            <tr style="background:#d9e2ec;font-weight:bold;">
+              <td colspan="5" style="border:1px solid #1b365d;">TOTAL SAÍDAS</td>
+              <td style="text-align:right;border:1px solid #1b365d;color:#dc2626;">${fmtBRL(sumSaida)}</td>
+              <td colspan="4" style="border:1px solid #1b365d;"></td>
+            </tr>`;
         } else {
-          totalPendentes += val;
-        }
-      });
-
-      const entradasLiquidas = totalFaturamentoPago - totalSaidasPagas;
-      const dataEmissao = new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-
-      let linhasHtml = '';
-
-      listaFiltrada.forEach(item => {
-        let diaSemana = 'N/A';
-        if (item.emissao) {
-          const d = new Date(item.emissao + 'T00:00:00');
-          const dias = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'];
-          diaSemana = dias[d.getDay()] || '';
+          html += `
+            <tr style="background:#d9e2ec;font-weight:bold;">
+              <td colspan="5" style="border:1px solid #1b365d;">TOTAL DA EMPRESA</td>
+              <td style="text-align:right;border:1px solid #1b365d;color:#dc2626;">${fmtBRL(sumSaida)}</td>
+              <td style="text-align:right;border:1px solid #1b365d;">${fmtBRL(sumBruto)}</td>
+              <td style="text-align:right;border:1px solid #1b365d;color:#059669;">${fmtBRL(sumLiquido)}</td>
+              <td colspan="4" style="border:1px solid #1b365d;"></td>
+            </tr>`;
         }
 
-        const isEntrada = item.tipo === 'ENTRADA';
-        const isPago = item.status === 'Pago';
-        const val = parseFloat(item.valor || 0);
+        return { html, sumBruto, sumLiquido, sumSaida };
+      }
 
-        linhasHtml += `
-          <tr style="height: 28px;">
-            <td style="text-align: center; border: 1px solid #cbd5e1;">${item.empresaEmissora === 'SNYPER' ? 'SNYPER' : 'GRUPO ER'}</td>
-            <td style="text-align: center; border: 1px solid #cbd5e1;">${item.emissao ? formatDate(item.emissao) : ''}</td>
-            <td style="text-align: center; border: 1px solid #cbd5e1; text-transform: capitalize;">${diaSemana}</td>
-            <td style="text-align: center; border: 1px solid #cbd5e1; font-weight: bold; color: ${isEntrada ? '#059669' : '#dc2626'}">${item.tipo}</td>
-            <td style="border: 1px solid #cbd5e1;">${item.categoria || ''}</td>
-            <td style="border: 1px solid #cbd5e1; font-weight: 600;">${item.fornecedor || ''}</td>
-            <td style="border: 1px solid #cbd5e1;">${item.formaPgto || 'Transferência'}</td>
-            <td style="text-align: right; border: 1px solid #cbd5e1; font-weight: bold;">${isEntrada ? '-' : 'R$ ' + val.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-            <td style="text-align: center; border: 1px solid #cbd5e1;">${isPago && item.emissao ? formatDate(item.emissao) : '-'}</td>
-            <td style="text-align: right; border: 1px solid #cbd5e1; font-weight: bold; color: #059669;">${isEntrada ? '+ R$ ' + val.toLocaleString('pt-BR', {minimumFractionDigits: 2}) : (isPago ? 'R$ ' + val.toLocaleString('pt-BR', {minimumFractionDigits: 2}) : 'R$ 0,00')}</td>
-            <td style="text-align: center; border: 1px solid #cbd5e1;">${item.localPgto || 'Bradesco'}</td>
-            <td style="border: 1px solid #cbd5e1; font-size: 11px;">${item.observacoes || ''}</td>
-            <td style="text-align: center; border: 1px solid #cbd5e1; font-weight: bold;">${item.status}</td>
-          </tr>
-        `;
-      });
+      const entradasList = listaBase.filter(i => i.tipo === 'ENTRADA');
+      const saidasList = listaBase.filter(i => i.tipo !== 'ENTRADA');
+      const erList = listaBase.filter(i => i.empresaEmissora !== 'SNYPER');
+      const snyperList = listaBase.filter(i => i.empresaEmissora === 'SNYPER');
 
-      const template = `
-        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-        <head><meta charset="utf-8">
-        <style>
-          body { font-family: 'Segoe UI', Arial, sans-serif; }
-          .header-title { background-color: #1e3a8a; color: #ffffff; font-size: 16px; font-weight: bold; text-align: center; height: 40px; }
-          .kpi-card { background-color: #f1f5f9; border: 1px solid #cbd5e1; font-size: 11px; font-weight: bold; text-align: center; }
-          th { background-color: #1e3a8a; color: #ffffff; font-size: 12px; font-weight: bold; border: 1px solid #334155; text-align: center; height: 30px; }
-        </style>
+      const resEntradas = buildRowsHtml(entradasList, 'ENTRADAS');
+      const resSaidas = buildRowsHtml(saidasList, 'SAIDAS');
+      const resER = buildRowsHtml(erList, 'EMPRESA');
+      const resSnyper = buildRowsHtml(snyperList, 'EMPRESA');
+
+      const totalGeralSaidas = resER.sumSaida + resSnyper.sumSaida;
+      const totalGeralEntradasBruto = resER.sumBruto + resSnyper.sumBruto;
+      const totalGeralLiquidoRecebido = resER.sumLiquido + resSnyper.sumLiquido;
+      const saldoCaixaGeral = totalGeralLiquidoRecebido - totalGeralSaidas;
+
+      const workbookHtml = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office"
+              xmlns:x="urn:schemas-microsoft-com:office:excel"
+              xmlns="http://www.w3.org/TR/REC-html40">
+        <head>
+          <meta charset="utf-8">
+          <!--[if gte mso 9]>
+          <xml>
+            <x:ExcelWorkbook>
+              <x:ExcelWorksheets>
+                <x:ExcelWorksheet><x:Name>Resumo Geral</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>
+                <x:ExcelWorksheet><x:Name>Entradas</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>
+                <x:ExcelWorksheet><x:Name>Saidas</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>
+                <x:ExcelWorksheet><x:Name>Grupo ER</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>
+                <x:ExcelWorksheet><x:Name>Snyper</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>
+              </x:ExcelWorksheets>
+            </x:ExcelWorkbook>
+          </xml>
+          <![endif]-->
+          <style>
+            body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; }
+            th { background-color: #1b365d; color: #ffffff; font-weight: bold; border: 1px solid #1b365d; padding: 6px; }
+            td { padding: 5px; }
+          </style>
         </head>
         <body>
+          <!-- SEÇÃO 1: RESUMO GERAL -->
           <table>
-            <tr><th colspan="13" class="header-title">GRUPO ER / SNYPER — RELATÓRIO EXECUTIVO DE CAIXA REAL (v1.2)</th></tr>
-            <tr><td colspan="13" style="text-align: center; font-size: 11px;">Emitido em: ${dataEmissao} | Empresa Selecionada: ${empresaFiltro}</td></tr>
-            <tr style="height: 10px;"><td colspan="13"></td></tr>
-            <tr style="height: 28px;">
-              <td colspan="3" class="kpi-card" style="color: #065f46;">FATURAMENTO LIQUIDADO: R$ ${totalFaturamentoPago.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-              <td colspan="3" class="kpi-card" style="color: #9f1239;">SAÍDAS PAGAS: R$ ${totalSaidasPagas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-              <td colspan="4" class="kpi-card" style="color: #1e40af;">ENTRADAS LÍQUIDAS REAL: R$ ${entradasLiquidas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-              <td colspan="3" class="kpi-card" style="color: #d97706;">PREVISÃO PENDENTE: R$ ${totalPendentes.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+            <tr><th colspan="6" style="font-size:14pt;">RESUMO CONSOLIDADO POR EMPRESA E FLUXO (v1.3)</th></tr>
+            <tr>
+              <th>Empresa</th>
+              <th>CNPJ</th>
+              <th>Total Saídas</th>
+              <th>Entradas (Bruto)</th>
+              <th>Valor Líquido Recebido</th>
+              <th>Saldo Líquido Caixa</th>
             </tr>
-            <tr style="height: 10px;"><td colspan="13"></td></tr>
-            <thead>
-              <tr>
-                <th>Empresa</th>
-                <th>Data Evento</th>
-                <th>Dia</th>
-                <th>Tipo</th>
-                <th>Plano Conta</th>
-                <th>Quem (Favorecido)</th>
-                <th>Como (Pgto)</th>
-                <th>A Pagar</th>
-                <th>Data Pgto</th>
-                <th>Pago / Recebido</th>
-                <th>Banco</th>
-                <th>Observações</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>${linhasHtml}</tbody>
+            <tr>
+              <td style="border:1px solid #cbd5e1;font-weight:bold;">Grupo ER Portaria e Segurança LTDA</td>
+              <td style="border:1px solid #cbd5e1;">13.506.821/0001-46</td>
+              <td style="text-align:right;border:1px solid #cbd5e1;">${fmtBRL(resER.sumSaida)}</td>
+              <td style="text-align:right;border:1px solid #cbd5e1;">${fmtBRL(resER.sumBruto)}</td>
+              <td style="text-align:right;border:1px solid #cbd5e1;color:#059669;font-weight:bold;">${fmtBRL(resER.sumLiquido)}</td>
+              <td style="text-align:right;border:1px solid #cbd5e1;font-weight:bold;">${fmtBRL(resER.sumLiquido - resER.sumSaida)}</td>
+            </tr>
+            <tr>
+              <td style="border:1px solid #cbd5e1;font-weight:bold;">Snyper</td>
+              <td style="border:1px solid #cbd5e1;">19.956.281/0001-89</td>
+              <td style="text-align:right;border:1px solid #cbd5e1;">${fmtBRL(resSnyper.sumSaida)}</td>
+              <td style="text-align:right;border:1px solid #cbd5e1;">${fmtBRL(resSnyper.sumBruto)}</td>
+              <td style="text-align:right;border:1px solid #cbd5e1;color:#059669;font-weight:bold;">${fmtBRL(resSnyper.sumLiquido)}</td>
+              <td style="text-align:right;border:1px solid #cbd5e1;font-weight:bold;">${fmtBRL(resSnyper.sumLiquido - resSnyper.sumSaida)}</td>
+            </tr>
+            <tr style="background:#1b365d;color:#ffffff;font-weight:bold;">
+              <td colspan="2" style="border:1px solid #1b365d;">TOTAL GERAL (GRUPO ER + SNYPER)</td>
+              <td style="text-align:right;border:1px solid #1b365d;">${fmtBRL(totalGeralSaidas)}</td>
+              <td style="text-align:right;border:1px solid #1b365d;">${fmtBRL(totalGeralEntradasBruto)}</td>
+              <td style="text-align:right;border:1px solid #1b365d;">${fmtBRL(totalGeralLiquidoRecebido)}</td>
+              <td style="text-align:right;border:1px solid #1b365d;">${fmtBRL(saldoCaixaGeral)}</td>
+            </tr>
+          </table>
+          <br><br>
+
+          <!-- SEÇÃO 2: ENTRADAS SEPARADAS -->
+          <table>
+            <tr><th colspan="11" style="font-size:13pt;background:#065f46;">PLANILHA DE ENTRADAS (COM VALOR LÍQUIDO RECEBIDO E DATA DE BAIXA)</th></tr>
+            <tr>
+              <th>Empresa</th><th>Nº Doc</th><th>Data Emissão</th><th>Cliente</th><th>Categoria</th>
+              <th>Valor Bruto</th><th>Valor Líquido Recebido</th><th>Data Líq. Recebido</th><th>Banco</th><th>Observações</th><th>Status</th>
+            </tr>
+            ${resEntradas.html}
+          </table>
+          <br><br>
+
+          <!-- SEÇÃO 3: SAÍDAS SEPARADAS -->
+          <table>
+            <tr><th colspan="10" style="font-size:13pt;background:#9f1239;">PLANILHA DE SAÍDAS (DESPESAS E FOLHA)</th></tr>
+            <tr>
+              <th>Empresa</th><th>Nº Doc</th><th>Data Emissão</th><th>Fornecedor / Favorecido</th><th>Categoria</th>
+              <th>Valor Saída</th><th>Data Pgto / Baixa</th><th>Banco</th><th>Observações</th><th>Status</th>
+            </tr>
+            ${resSaidas.html}
+          </table>
+          <br><br>
+
+          <!-- SEÇÃO 4: GRUPO ER -->
+          <table>
+            <tr><th colspan="12" style="font-size:13pt;">GRUPO ER PORTARIA E SEGURANÇA LTDA — CNPJ: 13.506.821/0001-46</th></tr>
+            <tr>
+              <th>Fluxo</th><th>Nº Doc</th><th>Emissão</th><th>Fornecedor / Cliente</th><th>Categoria</th>
+              <th>Saída</th><th>Entrada Bruta</th><th>Vlr Líq. Recebido</th><th>Data Baixa</th><th>Banco</th><th>Observações</th><th>Status</th>
+            </tr>
+            ${resER.html}
+          </table>
+          <br><br>
+
+          <!-- SEÇÃO 5: SNYPER -->
+          <table>
+            <tr><th colspan="12" style="font-size:13pt;">SNYPER — CNPJ: 19.956.281/0001-89</th></tr>
+            <tr>
+              <th>Fluxo</th><th>Nº Doc</th><th>Emissão</th><th>Fornecedor / Cliente</th><th>Categoria</th>
+              <th>Saída</th><th>Entrada Bruta</th><th>Vlr Líq. Recebido</th><th>Data Baixa</th><th>Banco</th><th>Observações</th><th>Status</th>
+            </tr>
+            ${resSnyper.html}
           </table>
         </body>
         </html>
       `;
 
-      const blob = new Blob([template], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+      const blob = new Blob([workbookHtml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Fluxo_Financeiro_Liquidado_${Date.now()}.xls`;
+      a.download = `Controle_Financeiro_v1.3_${Date.now()}.xls`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      showToast('Relatório Excel de caixa real gerado!', 'success');
+      showToast('Planilha Excel v1.3 gerada com Entradas, Saídas e Empresas separadas!', 'success');
     };
 
     window.renderDashboard = function() {
       const empresaGlobal = document.getElementById('global-empresa-filter').value;
 
-      let faturamentoPago = 0, countFatPago = 0;
+      let faturamentoLiquidoRecebido = 0, countFatPago = 0;
       let saidasPagas = 0, countSaidasPagas = 0;
       let valorPendenteTotal = 0, countPendente = 0;
 
       nfeList.forEach(item => {
         if (empresaGlobal !== 'ALL' && item.empresaEmissora !== empresaGlobal) return;
 
-        const val = parseFloat(item.valor || 0);
+        const valBruto = parseFloat(item.valor || 0);
+        const valLiq = parseFloat(item.valorLiquidoRecebido || 0);
         const isPago = item.status === 'Pago';
 
-        if (isPago) {
-          if (item.tipo === 'ENTRADA') {
-            faturamentoPago += val;
+        if (item.tipo === 'ENTRADA') {
+          if (isPago || valLiq > 0) {
+            faturamentoLiquidoRecebido += (valLiq > 0 ? valLiq : valBruto);
             countFatPago++;
-          } else {
-            saidasPagas += val;
-            countSaidasPagas++;
+          } else if (item.status === 'Pendente') {
+            valorPendenteTotal += valBruto;
+            countPendente++;
           }
         } else {
-          valorPendenteTotal += val;
-          countPendente++;
+          if (isPago) {
+            saidasPagas += valBruto;
+            countSaidasPagas++;
+          } else if (item.status === 'Pendente') {
+            valorPendenteTotal += valBruto;
+            countPendente++;
+          }
         }
       });
 
-      const entradasLiquidas = faturamentoPago - saidasPagas;
+      const entradasLiquidas = faturamentoLiquidoRecebido - saidasPagas;
 
-      document.getElementById('stat-faturamento-pago').textContent = formatCurrency(faturamentoPago);
+      document.getElementById('stat-faturamento-pago').textContent = formatCurrency(faturamentoLiquidoRecebido);
       document.getElementById('count-faturamento-pago').textContent = countFatPago;
 
       document.getElementById('stat-saidas-pagas').textContent = formatCurrency(saidasPagas);
@@ -1234,6 +1469,7 @@
 
         const isEntrada = (item.tipo === 'ENTRADA');
         const isSnyper = (item.empresaEmissora === 'SNYPER');
+        const bancoExibicao = normalizeBankName(item.localPgto);
 
         const badgeEmpresa = isSnyper
           ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-black bg-purple-100 text-purple-800 border border-purple-300 mr-1">SNYPER</span>`
@@ -1243,13 +1479,27 @@
           ? `<span class="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">ENTRADA</span>`
           : `<span class="px-2 py-0.5 rounded text-[10px] font-black bg-rose-100 text-rose-800 border border-rose-300">SAÍDA</span>`;
 
-        const valorFormatted = isEntrada
-          ? `<span class="text-emerald-700 font-bold font-mono">+${formatCurrency(item.valor)}</span>`
-          : `<span class="text-rose-700 font-bold font-mono">-${formatCurrency(item.valor)}</span>`;
+        let valorFormatted = '';
+        if (isEntrada) {
+          const valLiq = parseFloat(item.valorLiquidoRecebido || 0);
+          valorFormatted = `<div class="text-slate-600 font-mono text-[11px]">Bruto: +${formatCurrency(item.valor)}</div>`;
+          if (valLiq > 0) {
+            valorFormatted += `<div class="text-emerald-700 font-bold font-mono">Líq. Recebido: +${formatCurrency(valLiq)}</div>`;
+          } else {
+            valorFormatted += `<div class="text-amber-600 text-[10px] font-semibold">Aguardando baixa líquida</div>`;
+          }
+        } else {
+          valorFormatted = `<span class="text-rose-700 font-bold font-mono">-${formatCurrency(item.valor)}</span>`;
+        }
+
+        let datasHtml = `<div class="font-mono text-slate-600">Emissão: ${formatDate(item.emissao)}</div>`;
+        if (isEntrada && item.dataLiquidoRecebido) {
+          datasHtml += `<div class="font-mono text-emerald-700 font-bold text-[10px] mt-0.5">Baixa Líq.: ${formatDate(item.dataLiquidoRecebido)}</div>`;
+        }
 
         let statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">Pendente</span>`;
         if (item.status === 'Pago') {
-          statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">Pago / Liquidado</span>`;
+          statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">${isEntrada ? 'Recebido / Baixado' : 'Pago / Liquidado'}</span>`;
         } else if (item.status === 'Recusado') {
           statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300">Recusado</span>`;
         }
@@ -1274,14 +1524,14 @@
           </td>
           <td class="py-3 px-4 text-slate-700">
             <span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-[11px] font-semibold">${item.categoria || ''}</span>
-            <div class="text-[10px] text-slate-500 mt-0.5">Banco: <strong>${item.localPgto || 'Bradesco'}</strong></div>
+            <div class="text-[10px] text-slate-500 mt-0.5">Banco: <strong>${bancoExibicao}</strong></div>
           </td>
-          <td class="py-3 px-4 font-mono text-slate-600">${formatDate(item.emissao)}</td>
+          <td class="py-3 px-4">${datasHtml}</td>
           <td class="py-3 px-4">${valorFormatted}</td>
           <td class="py-3 px-4 text-center">${statusBadge}</td>
           <td class="py-3 px-4 text-right">
             ${docBtns}
-            <button onclick="openEditModal('${item.id}')" class="p-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-800 mr-1" title="Editar"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+            <button onclick="openEditModal('${item.id}')" class="p-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-800 mr-1" title="Editar / Dar Baixa"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
             <button onclick="deleteNFe('${item.id}')" class="p-1 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
           </td>
         `;
@@ -1308,6 +1558,8 @@
       document.getElementById('input-empresa-emissora').value = 'GRUPO_ER';
       document.getElementById('input-cnpj').value = '13.506.821/0001-46';
       document.getElementById('input-data-emissao').valueAsDate = new Date();
+      document.getElementById('input-valor-liquido-recebido').value = '';
+      document.getElementById('input-data-liquido-recebido').value = '';
     };
 
     function formatCurrency(val) {
