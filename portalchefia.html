@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal da Chefia v1.4 - Diretoria & Auditoria | ER & Snyper</title>
+  <title>Portal da Chefia - Diretoria & Auditoria | ER & Snyper</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Biblioteca SheetJS para geração real de .xlsx com abas separadas -->
+  <!-- SheetJS para exportação real de .xlsx com múltiplas abas -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
@@ -25,20 +25,24 @@
   </script>
 
   <style>
-    body { font-family: 'Inter', sans-serif; background-color: #f0f7ff; color: #0f172a; min-height: 100vh; }
+    body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; min-height: 100vh; }
     .bg-light-dashboard {
-      background-image: linear-gradient(to bottom, rgba(240, 247, 255, 0.90), rgba(224, 242, 254, 0.97)),
+      background-image: linear-gradient(to bottom, rgba(241, 245, 249, 0.92), rgba(226, 232, 240, 0.98)),
                         url('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=2000&auto=format&fit=crop');
       background-size: cover; background-position: center; background-attachment: fixed;
     }
     .tech-grid {
       background-size: 32px 32px;
-      background-image: linear-gradient(to right, rgba(14, 165, 233, 0.05) 1px, transparent 1px), 
-                        linear-gradient(to bottom, rgba(14, 165, 233, 0.05) 1px, transparent 1px);
+      background-image: linear-gradient(to right, rgba(14, 165, 233, 0.04) 1px, transparent 1px), 
+                        linear-gradient(to bottom, rgba(14, 165, 233, 0.04) 1px, transparent 1px);
     }
     .glass-card {
-      background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(56, 189, 248, 0.3); box-shadow: 0 10px 30px -5px rgba(14, 165, 233, 0.12), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(203, 213, 225, 0.6); box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.08);
+      transition: all 0.2s ease;
+    }
+    .glass-card:hover {
+      box-shadow: 0 20px 30px -10px rgba(15, 23, 42, 0.12);
     }
     .btn-emerald {
       background: linear-gradient(135deg, #059669 0%, #10b981 100%);
@@ -57,7 +61,7 @@
 <body class="bg-light-dashboard tech-grid flex flex-col min-h-screen text-slate-800 antialiased pb-12 select-none">
 
   <!-- HEADER DA CHEFIA -->
-  <header class="sticky top-0 z-40 glass-card border-b border-sky-200/60 bg-white/90 backdrop-blur-xl">
+  <header class="sticky top-0 z-40 glass-card border-b border-slate-200 bg-white/90 backdrop-blur-xl">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-3">
       <div class="flex items-center space-x-3">
         <svg class="w-10 h-10 shrink-0" viewBox="0 0 300 200" fill="none">
@@ -71,7 +75,7 @@
         <div>
           <div class="flex items-center space-x-2">
             <span class="font-black text-base sm:text-xl tracking-wider text-slate-900">PORTAL DA CHEFIA</span>
-            <span class="hidden sm:inline-block px-2 py-0.5 text-[10px] font-bold uppercase bg-amber-100 text-amber-800 border border-amber-300 rounded-md">
+            <span class="hidden sm:inline-block px-2.5 py-0.5 text-[10px] font-black uppercase bg-slate-900 text-white rounded-md shadow-sm">
               DIRETORIA
             </span>
           </div>
@@ -80,24 +84,24 @@
       </div>
 
       <div class="flex items-center space-x-2 sm:space-x-3">
-        <!-- FILTRO DE MÊS/PERÍODO -->
-        <div class="hidden md:flex items-center space-x-2 bg-white px-3 py-1.5 rounded-xl border border-sky-200 shadow-sm">
+        <!-- FILTRO DE MÊS/PERÍODO REVISADO -->
+        <div class="flex items-center space-x-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-300 shadow-sm">
           <i data-lucide="calendar" class="w-4 h-4 text-blue-600"></i>
-          <input type="month" id="global-month-filter" onchange="refreshAll()" title="Filtrar por Mês/Ano" class="bg-transparent text-xs font-bold text-slate-700 focus:outline-none">
-          <button onclick="document.getElementById('global-month-filter').value=''; refreshAll();" class="text-[10px] text-slate-400 hover:text-red-500 font-bold" title="Limpar Mês">Todos</button>
+          <input type="month" id="global-month-filter" onchange="refreshAll()" title="Filtrar por Mês/Ano" class="bg-transparent text-xs font-bold text-slate-700 focus:outline-none cursor-pointer">
+          <button onclick="clearMonthFilter()" class="text-[10px] bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded text-slate-700 font-bold transition-colors" title="Ver todos os períodos">Todos</button>
         </div>
 
         <!-- SELETOR GLOBAL DE EMPRESA -->
-        <div class="flex items-center space-x-2 bg-white px-3 py-1.5 rounded-xl border border-sky-200 shadow-sm">
+        <div class="flex items-center space-x-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-300 shadow-sm">
           <i data-lucide="building-2" class="w-4 h-4 text-blue-600"></i>
-          <select id="global-empresa-filter" onchange="refreshAll()" class="bg-transparent text-xs font-bold text-slate-700 focus:outline-none">
+          <select id="global-empresa-filter" onchange="refreshAll()" class="bg-transparent text-xs font-bold text-slate-700 focus:outline-none cursor-pointer">
             <option value="ALL">Todas as Empresas</option>
             <option value="GRUPO_ER">Grupo ER (13.506.821/0001-46)</option>
             <option value="SNYPER">Snyper (19.956.281/0001-89)</option>
           </select>
         </div>
 
-        <button onclick="exportToExcel()" class="btn-emerald px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 shadow-md">
+        <button onclick="exportToExcel()" class="btn-emerald px-4 py-2.5 rounded-xl text-xs font-bold flex items-center space-x-2 shadow-md">
           <i data-lucide="file-spreadsheet" class="w-4 h-4 text-white"></i>
           <span class="hidden sm:inline">Baixar Excel (.xlsx)</span>
         </button>
@@ -112,144 +116,152 @@
   <!-- MAIN -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-7 flex-grow w-full">
     
-    <!-- TÍTULO E FILTRO MOBILE -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-sky-200/80 pb-5">
+    <!-- TÍTULO -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-5">
       <div>
-        <h1 class="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
+        <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
           <i data-lucide="shield-check" class="w-8 h-8 text-blue-600"></i>
           Supervisão Executiva & Aprovação de Caixa
         </h1>
-        <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">Conferência individual de despesas, folha e baixa líquida de faturamento enviada pela gestão.</p>
-      </div>
-
-      <div class="flex md:hidden items-center space-x-2 bg-white px-3 py-2 rounded-xl border border-sky-200 shadow-sm w-fit">
-        <i data-lucide="calendar" class="w-4 h-4 text-blue-600"></i>
-        <input type="month" id="mobile-month-filter" onchange="document.getElementById('global-month-filter').value=this.value; refreshAll();" class="bg-transparent text-xs font-bold text-slate-700 focus:outline-none">
+        <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">Conferência individual de despesas, folha e baixa líquida de faturamento.</p>
       </div>
     </div>
 
-    <!-- KPIS PRINCIPAIS -->
+    <!-- CARDS SUPERIORES REDESENHADOS E ELEGANTES -->
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-      <!-- CARD 1: FATURAMENTO EFETIVADO -->
-      <div class="glass-card rounded-2xl p-5 relative overflow-hidden border-l-4 border-l-emerald-500">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Faturamento Líquido Recebido</span>
-          <div class="p-2.5 rounded-xl bg-emerald-100 text-emerald-700 border border-emerald-300"><i data-lucide="check-circle-2" class="w-5 h-5"></i></div>
+      
+      <!-- CARD 1: FATURAMENTO LÍQUIDO -->
+      <div class="glass-card rounded-2xl p-6 relative overflow-hidden border-t-4 border-t-emerald-500 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider">Faturamento Líquido</span>
+            <div class="p-2 rounded-xl bg-emerald-100 text-emerald-700"><i data-lucide="check-circle-2" class="w-5 h-5"></i></div>
+          </div>
+          <div class="text-2xl sm:text-3xl font-black text-emerald-600 font-mono tracking-tight" id="stat-faturamento-pago">R$ 0,00</div>
         </div>
-        <div class="mt-4"><span id="stat-faturamento-pago" class="text-2xl sm:text-3xl font-black text-emerald-600 font-mono">R$ 0,00</span></div>
-        <p class="text-[11px] text-slate-500 font-medium mt-2">
-          <span id="count-faturamento-pago" class="text-emerald-700 font-bold">0</span> recebidos • Bruto: <span id="stat-faturamento-bruto" class="font-mono font-semibold text-slate-700">R$ 0,00</span>
-        </p>
+        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-medium">
+          <span><strong id="count-faturamento-pago" class="text-emerald-700">0</strong> recebidos</span>
+          <span class="font-mono text-[11px]">Bruto: <strong id="stat-faturamento-bruto" class="text-slate-700">R$ 0,00</strong></span>
+        </div>
       </div>
 
-      <!-- CARD 2: SAÍDAS EFETIVADAS -->
-      <div class="glass-card rounded-2xl p-5 relative overflow-hidden border-l-4 border-l-rose-500">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Despesas / Saídas Pagas</span>
-          <div class="p-2.5 rounded-xl bg-rose-100 text-rose-700 border border-rose-300"><i data-lucide="arrow-up-right" class="w-5 h-5"></i></div>
+      <!-- CARD 2: SAÍDAS PAGAS -->
+      <div class="glass-card rounded-2xl p-6 relative overflow-hidden border-t-4 border-t-rose-500 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider">Despesas / Saídas</span>
+            <div class="p-2 rounded-xl bg-rose-100 text-rose-700"><i data-lucide="arrow-up-right" class="w-5 h-5"></i></div>
+          </div>
+          <div class="text-2xl sm:text-3xl font-black text-rose-600 font-mono tracking-tight" id="stat-saidas-pagas">R$ 0,00</div>
         </div>
-        <div class="mt-4"><span id="stat-saidas-pagas" class="text-2xl sm:text-3xl font-black text-rose-600 font-mono">R$ 0,00</span></div>
-        <p class="text-[11px] text-slate-500 font-medium mt-2"><span id="count-saidas-pagas" class="text-rose-700 font-bold">0</span> pagamentos aprovados</p>
+        <div class="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-500 font-medium">
+          <strong id="count-saidas-pagas" class="text-rose-700">0</strong> pagamentos liquidados no período
+        </div>
       </div>
 
       <!-- CARD 3: SALDO LÍQUIDO CAIXA REAL -->
-      <div class="glass-card rounded-2xl p-5 relative overflow-hidden border-l-4 border-l-blue-600">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Saldo Líquido (Caixa Real)</span>
-          <div class="p-2.5 rounded-xl bg-blue-100 text-blue-700 border border-blue-300"><i data-lucide="wallet" class="w-5 h-5"></i></div>
+      <div class="glass-card rounded-2xl p-6 relative overflow-hidden border-t-4 border-t-blue-600 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider">Saldo Caixa Real</span>
+            <div class="p-2 rounded-xl bg-blue-100 text-blue-700"><i data-lucide="wallet" class="w-5 h-5"></i></div>
+          </div>
+          <div class="text-2xl sm:text-3xl font-black text-blue-700 font-mono tracking-tight" id="stat-entradas-liquidas">R$ 0,00</div>
         </div>
-        <div class="mt-4"><span id="stat-entradas-liquidas" class="text-2xl sm:text-3xl font-black text-blue-700 font-mono">R$ 0,00</span></div>
-        <p class="text-[11px] text-slate-500 font-medium mt-2">Líquido Recebido - Saídas Pagas</p>
+        <div class="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-500 font-medium">
+          Líquido Recebido menos Saídas Pagas
+        </div>
       </div>
 
-      <!-- CARD 4: PENDENTES DE APROVAÇÃO -->
-      <div onclick="filtrarApenasPendentes()" class="glass-card rounded-2xl p-5 relative overflow-hidden border-l-4 border-l-amber-500 cursor-pointer hover:border-amber-400 transition-all" title="Clique para filtrar os itens aguardando aprovação">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Aguardando Aprovação</span>
-          <div class="p-2.5 rounded-xl bg-amber-100 text-amber-700 border border-amber-300"><i data-lucide="clock" class="w-5 h-5"></i></div>
+      <!-- CARD 4: AGUARDANDO APROVAÇÃO -->
+      <div onclick="filtrarApenasPendentes()" class="glass-card rounded-2xl p-6 relative overflow-hidden border-t-4 border-t-amber-500 cursor-pointer hover:border-amber-400 transition-all flex flex-col justify-between group" title="Clique para filtrar pendências">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-black text-amber-700 uppercase tracking-wider">Pendentes Chefia</span>
+            <div class="p-2 rounded-xl bg-amber-100 text-amber-700 group-hover:scale-110 transition-transform"><i data-lucide="clock" class="w-5 h-5"></i></div>
+          </div>
+          <div class="text-2xl sm:text-3xl font-black text-amber-600 font-mono tracking-tight" id="stat-total-pendente-valor">R$ 0,00</div>
         </div>
-        <div class="mt-4 flex items-baseline justify-between">
-          <span id="stat-total-pendente-valor" class="text-2xl font-black text-amber-600 font-mono">R$ 0,00</span>
-          <span id="stat-pending-count" class="text-xs bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-full font-bold">0 itens</span>
+        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+          <span class="text-amber-800 font-bold" id="stat-pending-count">0 itens</span>
+          <span class="text-[11px] text-amber-700 font-bold flex items-center gap-1">Filtrar <i data-lucide="arrow-right" class="w-3 h-3"></i></span>
         </div>
-        <p class="text-[11px] text-amber-700 font-semibold mt-2 flex items-center gap-1">
-          <i data-lucide="mouse-pointer-click" class="w-3 h-3"></i> Clique para filtrar pendências
-        </p>
       </div>
+
     </section>
 
-    <!-- RESUMO COMPARATIVO POR EMPRESA (GRUPO ER vs SNYPER) -->
+    <!-- CARDS COMPARATIVOS POR EMPRESA (BLINDADOS) -->
     <section class="grid grid-cols-1 md:grid-cols-2 gap-5">
       <!-- GRUPO ER -->
-      <div class="glass-card rounded-2xl p-5 border border-blue-200 space-y-3">
-        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+      <div class="glass-card rounded-2xl p-5 border-l-4 border-l-blue-600 space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
           <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-black text-sm border border-blue-200">ER</div>
+            <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-black text-xs shadow-sm">ER</div>
             <div>
-              <h4 class="text-xs font-black text-slate-800 uppercase">Grupo ER Portaria e Segurança LTDA</h4>
-              <p class="text-[11px] text-slate-500 font-mono">CNPJ: 13.506.821/0001-46</p>
+              <h4 class="text-xs font-black text-slate-900 uppercase">Grupo ER Portaria e Segurança</h4>
+              <p class="text-[10px] text-slate-500 font-mono">CNPJ: 13.506.821/0001-46</p>
             </div>
           </div>
           <div class="text-right">
-            <div class="text-[10px] font-bold text-slate-400 uppercase">Saldo Caixa ER</div>
-            <div id="mini-saldo-er" class="text-lg font-black font-mono text-blue-700">R$ 0,00</div>
+            <span class="text-[10px] font-bold text-slate-400 uppercase block">Saldo Caixa ER</span>
+            <span id="mini-saldo-er" class="text-lg font-black font-mono text-blue-700">R$ 0,00</span>
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-2 text-xs">
-          <div class="bg-emerald-50/70 px-3 py-2 rounded-lg border border-emerald-200">
-            <span class="text-[10px] font-bold text-emerald-800 uppercase block">Recebido Líq.</span>
-            <span id="mini-ent-er" class="font-mono font-bold text-emerald-700">R$ 0,00</span>
+        <div class="grid grid-cols-2 gap-3 text-xs pt-1">
+          <div class="bg-emerald-50/80 px-3 py-2 rounded-xl border border-emerald-200">
+            <span class="text-[10px] font-extrabold text-emerald-800 uppercase block">Recebido Líquido</span>
+            <span id="mini-ent-er" class="font-mono font-bold text-emerald-700 text-sm">R$ 0,00</span>
           </div>
-          <div class="bg-rose-50/70 px-3 py-2 rounded-lg border border-rose-200">
-            <span class="text-[10px] font-bold text-rose-800 uppercase block">Saídas Pagas</span>
-            <span id="mini-sai-er" class="font-mono font-bold text-rose-700">R$ 0,00</span>
+          <div class="bg-rose-50/80 px-3 py-2 rounded-xl border border-rose-200">
+            <span class="text-[10px] font-extrabold text-rose-800 uppercase block">Saídas Pagas</span>
+            <span id="mini-sai-er" class="font-mono font-bold text-rose-700 text-sm">R$ 0,00</span>
           </div>
         </div>
       </div>
 
       <!-- SNYPER -->
-      <div class="glass-card rounded-2xl p-5 border border-purple-200 space-y-3">
-        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+      <div class="glass-card rounded-2xl p-5 border-l-4 border-l-purple-600 space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
           <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-black text-sm border border-purple-200">SN</div>
+            <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-black text-xs shadow-sm">SN</div>
             <div>
-              <h4 class="text-xs font-black text-slate-800 uppercase">Snyper Vigilância e Segurança</h4>
-              <p class="text-[11px] text-slate-500 font-mono">CNPJ: 19.956.281/0001-89</p>
+              <h4 class="text-xs font-black text-slate-900 uppercase">Snyper Vigilância e Segurança</h4>
+              <p class="text-[10px] text-slate-500 font-mono">CNPJ: 19.956.281/0001-89</p>
             </div>
           </div>
           <div class="text-right">
-            <div class="text-[10px] font-bold text-slate-400 uppercase">Saldo Caixa Snyper</div>
-            <div id="mini-saldo-snyper" class="text-lg font-black font-mono text-purple-700">R$ 0,00</div>
+            <span class="text-[10px] font-bold text-slate-400 uppercase block">Saldo Caixa Snyper</span>
+            <span id="mini-saldo-snyper" class="text-lg font-black font-mono text-purple-700">R$ 0,00</span>
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-2 text-xs">
-          <div class="bg-emerald-50/70 px-3 py-2 rounded-lg border border-emerald-200">
-            <span class="text-[10px] font-bold text-emerald-800 uppercase block">Recebido Líq.</span>
-            <span id="mini-ent-snyper" class="font-mono font-bold text-emerald-700">R$ 0,00</span>
+        <div class="grid grid-cols-2 gap-3 text-xs pt-1">
+          <div class="bg-emerald-50/80 px-3 py-2 rounded-xl border border-emerald-200">
+            <span class="text-[10px] font-extrabold text-emerald-800 uppercase block">Recebido Líquido</span>
+            <span id="mini-ent-snyper" class="font-mono font-bold text-emerald-700 text-sm">R$ 0,00</span>
           </div>
-          <div class="bg-rose-50/70 px-3 py-2 rounded-lg border border-rose-200">
-            <span class="text-[10px] font-bold text-rose-800 uppercase block">Saídas Pagas</span>
-            <span id="mini-sai-snyper" class="font-mono font-bold text-rose-700">R$ 0,00</span>
+          <div class="bg-rose-50/80 px-3 py-2 rounded-xl border border-rose-200">
+            <span class="text-[10px] font-extrabold text-rose-800 uppercase block">Saídas Pagas</span>
+            <span id="mini-sai-snyper" class="font-mono font-bold text-rose-700 text-sm">R$ 0,00</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- TABELA DE CONFERÊNCIA E APROVAÇÃO INDIVIDUAL -->
+    <!-- TABELA DE CONFERÊNCIA E APROVAÇÃO -->
     <section class="glass-card rounded-2xl p-6 sm:p-8 space-y-6">
-      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-sky-200 pb-5">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-200 pb-5">
         <div class="flex items-center space-x-3">
           <div class="p-2.5 rounded-xl bg-blue-100 text-blue-700 border border-blue-200"><i data-lucide="list-checks" class="w-5 h-5"></i></div>
           <div>
-            <h2 class="text-lg font-bold text-slate-800">Conferência & Aprovação Individual</h2>
-            <p class="text-xs text-slate-500">Verifique os documentos anexados e aprove ou recuse cada lançamento individualmente</p>
+            <h2 class="text-lg font-bold text-slate-900">Conferência & Aprovação Individual</h2>
+            <p class="text-xs text-slate-500">Verifique os documentos anexados e aprove ou recuse cada lançamento</p>
           </div>
         </div>
-        <div id="filter-summary-pill" class="text-xs font-mono bg-white border border-sky-200 text-blue-700 px-4 py-2 rounded-xl font-bold">Nenhum registro</div>
+        <div id="filter-summary-pill" class="text-xs font-mono bg-slate-50 border border-slate-200 text-blue-700 px-4 py-2 rounded-xl font-bold">Nenhum registro</div>
       </div>
 
       <!-- FILTROS -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 bg-blue-50/60 p-4 rounded-xl border border-sky-200">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
         <div>
           <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Tipo de Fluxo</label>
           <select id="filter-tipo" onchange="renderTable()" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none">
@@ -329,7 +341,7 @@
         <div class="flex items-center space-x-3">
           <div class="p-2 rounded-lg bg-blue-100 text-blue-700 border border-blue-200"><i data-lucide="check-square" class="w-5 h-5"></i></div>
           <div>
-            <h3 class="text-lg font-bold text-slate-800">Conferência & Baixa da Chefia</h3>
+            <h3 class="text-lg font-bold text-slate-900">Conferência & Baixa da Chefia</h3>
             <p class="text-xs text-slate-500">Valide os valores, informe o líquido recebido (para entradas) e defina o status</p>
           </div>
         </div>
@@ -391,7 +403,6 @@
             <input type="date" id="edit-emissao" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
           </div>
 
-          <!-- BLOCO EXCLUSIVO DE ENTRADA NO MODAL DE BAIXA -->
           <div id="edit-container-entrada-liquida" class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3 bg-emerald-50 p-3.5 rounded-xl border border-emerald-300 hidden">
             <div>
               <label class="block text-xs font-bold text-emerald-800 uppercase mb-1">Valor Líquido Recebido (R$)</label>
@@ -455,7 +466,7 @@
       <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
         <div class="flex items-center space-x-2">
           <i data-lucide="file-text" class="w-5 h-5 text-blue-600"></i>
-          <span id="preview-title" class="font-bold text-slate-800 text-sm">Visualizar Anexo</span>
+          <span id="preview-title" class="font-bold text-slate-900 text-sm">Visualizar Anexo</span>
         </div>
         <div class="flex items-center space-x-2">
           <a id="preview-download-btn" href="#" download class="px-3 py-1.5 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-bold flex items-center space-x-1">
@@ -501,6 +512,15 @@
     let nfeList = [];
 
     window.onload = function() {
+      // Define o mês atual automaticamente no input de mês para evitar visual quebrado
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const monthInput = document.getElementById('global-month-filter');
+      if (monthInput && !monthInput.value) {
+        monthInput.value = `${year}-${month}`;
+      }
+
       lucide.createIcons();
       listenFirestore();
     };
@@ -512,6 +532,11 @@
       }
     };
 
+    window.clearMonthFilter = function() {
+      document.getElementById('global-month-filter').value = '';
+      refreshAll();
+    };
+
     function listenFirestore() {
       onSnapshot(collection(db, "transacoes"), (snapshot) => {
         nfeList = [];
@@ -519,7 +544,6 @@
           nfeList.push({ id: docSnap.id, ...docSnap.data() });
         });
 
-        // Prioriza itens Pendentes no topo para conferência da chefia, seguidos pelos mais recentes
         nfeList.sort((a, b) => {
           if (a.status === 'Pendente' && b.status !== 'Pendente') return -1;
           if (a.status !== 'Pendente' && b.status === 'Pendente') return 1;
@@ -541,12 +565,10 @@
       document.getElementById('nfe-table-body').scrollIntoView({ behavior: 'smooth' });
     };
 
-    // APROVAÇÃO / DECISÃO INDIVIDUAL DA CHEFIA (SEM BOTÃO DE APROVAR TODAS)
     window.decisaoIndividualChefia = async function(id, acao) {
       const item = nfeList.find(x => x.id === id);
       if (!item) return;
 
-      // Se for ENTRADA e a chefia clicar em Dar Baixa, abre o modal para conferir o Valor Líquido Recebido
       if (acao === 'APROVAR' && item.tipo === 'ENTRADA') {
         openEditModal(id);
         showToast('Informe o Valor Líquido Recebido e a Data para concluir a baixa.', 'info');
@@ -725,9 +747,7 @@
       }
     };
 
-    // =========================================================================
-    // EXPORTAÇÃO EXCEL NATIVA (.XLSX) VIA SHEETJS COM 5 ABAS SEPARADAS E CORRETAS
-    // =========================================================================
+    // EXPORTAÇÃO EXCEL (.XLSX) COM 5 ABAS SEPARADAS
     window.exportToExcel = function() {
       if (typeof XLSX === 'undefined') {
         showToast('Biblioteca Excel carregando, tente novamente em 2 segundos.', 'warning');
@@ -788,7 +808,6 @@
       const totER = calcTotals(erList);
       const totSnyper = calcTotals(snyperList);
 
-      // 1. ABA: RESUMO GERAL
       const resumoRows = [
         ["RELATÓRIO EXECUTIVO FINANCEIRO — GRUPO ER & SNYPER", "", "", "", "", "", ""],
         [`Período: ${mesFiltro || 'Todos os períodos'}`, `Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, "", "", "", "", ""],
@@ -802,7 +821,6 @@
       wsResumo['!cols'] = [{ wch: 38 }, { wch: 22 }, { wch: 18 }, { wch: 20 }, { wch: 22 }, { wch: 18 }, { wch: 22 }];
       XLSX.utils.book_append_sheet(wb, wsResumo, "Resumo Geral");
 
-      // 2. ABA: ENTRADAS
       const entradasHeader = ["Empresa", "Nº Doc", "Data Emissão", "Cliente / Tomador", "CNPJ/CPF", "Categoria", "Valor Bruto (R$)", "Valor Líq. Recebido (R$)", "Data Baixa Líquida", "Banco", "Status", "Observações"];
       let sumEntBruto = 0, sumEntLiq = 0;
       const entradasData = entradasList.map(i => {
@@ -810,53 +828,25 @@
         const vLiq = getValLiq(i);
         sumEntBruto += vBruto;
         sumEntLiq += vLiq;
-        return [
-          getEmpresaLabel(i.empresaEmissora),
-          i.numero || '',
-          formatDate(i.emissao),
-          i.fornecedor || '',
-          i.cnpj || '',
-          i.categoria || '',
-          vBruto,
-          vLiq,
-          getDtBaixa(i),
-          normalizeBankName(i.localPgto),
-          i.status || '',
-          i.observacoes || ''
-        ];
+        return [getEmpresaLabel(i.empresaEmissora), i.numero || '', formatDate(i.emissao), i.fornecedor || '', i.cnpj || '', i.categoria || '', vBruto, vLiq, getDtBaixa(i), normalizeBankName(i.localPgto), i.status || '', i.observacoes || ''];
       });
       entradasData.push(["TOTAL ENTRADAS", "", "", "", "", "", sumEntBruto, sumEntLiq, "", "", "", ""]);
       const wsEntradas = XLSX.utils.aoa_to_sheet([entradasHeader, ...entradasData]);
       wsEntradas['!cols'] = [{ wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 30 }, { wch: 20 }, { wch: 28 }, { wch: 18 }, { wch: 22 }, { wch: 18 }, { wch: 16 }, { wch: 14 }, { wch: 35 }];
       XLSX.utils.book_append_sheet(wb, wsEntradas, "Entradas");
 
-      // 3. ABA: SAÍDAS
       const saidasHeader = ["Empresa", "Nº Doc", "Data Emissão", "Fornecedor / Favorecido", "CNPJ/CPF", "Categoria", "Valor Saída (R$)", "Data Pagamento", "Forma Pgto", "Banco", "Status", "Observações"];
       let sumSaidaTotal = 0;
       const saidasData = saidasList.map(i => {
         const vSaida = parseFloat(i.valor || 0);
         sumSaidaTotal += vSaida;
-        return [
-          getEmpresaLabel(i.empresaEmissora),
-          i.numero || '',
-          formatDate(i.emissao),
-          i.fornecedor || '',
-          i.cnpj || '',
-          i.categoria || '',
-          vSaida,
-          getDtBaixa(i),
-          i.formaPgto || '',
-          normalizeBankName(i.localPgto),
-          i.status || '',
-          i.observacoes || ''
-        ];
+        return [getEmpresaLabel(i.empresaEmissora), i.numero || '', formatDate(i.emissao), i.fornecedor || '', i.cnpj || '', i.categoria || '', vSaida, getDtBaixa(i), i.formaPgto || '', normalizeBankName(i.localPgto), i.status || '', i.observacoes || ''];
       });
       saidasData.push(["TOTAL SAÍDAS", "", "", "", "", "", sumSaidaTotal, "", "", "", "", ""]);
       const wsSaidas = XLSX.utils.aoa_to_sheet([saidasHeader, ...saidasData]);
       wsSaidas['!cols'] = [{ wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 30 }, { wch: 20 }, { wch: 28 }, { wch: 18 }, { wch: 16 }, { wch: 16 }, { wch: 16 }, { wch: 14 }, { wch: 35 }];
       XLSX.utils.book_append_sheet(wb, wsSaidas, "Saidas");
 
-      // 4 e 5. ABAS INDIVIDUAIS: GRUPO ER & SNYPER
       const buildEmpresaSheet = (items) => {
         const header = ["Fluxo", "Nº Doc", "Emissão", "Fornecedor / Cliente", "CNPJ/CPF", "Categoria", "Saída (R$)", "Entrada Bruta (R$)", "Líquido Recebido (R$)", "Data Baixa", "Banco", "Status", "Observações"];
         let sSaida = 0, sBruto = 0, sLiq = 0;
@@ -866,21 +856,7 @@
           const vLiq = getValLiq(i);
           if (isEnt) { sBruto += val; sLiq += vLiq; }
           else { sSaida += val; }
-          return [
-            i.tipo,
-            i.numero || '',
-            formatDate(i.emissao),
-            i.fornecedor || '',
-            i.cnpj || '',
-            i.categoria || '',
-            !isEnt ? val : 0,
-            isEnt ? val : 0,
-            isEnt ? vLiq : 0,
-            getDtBaixa(i),
-            normalizeBankName(i.localPgto),
-            i.status || '',
-            i.observacoes || ''
-          ];
+          return [i.tipo, i.numero || '', formatDate(i.emissao), i.fornecedor || '', i.cnpj || '', i.categoria || '', !isEnt ? val : 0, isEnt ? val : 0, isEnt ? vLiq : 0, getDtBaixa(i), normalizeBankName(i.localPgto), i.status || '', i.observacoes || ''];
         });
         rows.push(["TOTAL EMPRESA", "", "", "", "", "", sSaida, sBruto, sLiq, "", "", "", ""]);
         const ws = XLSX.utils.aoa_to_sheet([header, ...rows]);
@@ -891,7 +867,6 @@
       XLSX.utils.book_append_sheet(wb, buildEmpresaSheet(erList), "Grupo ER");
       XLSX.utils.book_append_sheet(wb, buildEmpresaSheet(snyperList), "Snyper");
 
-      // Formata células numéricas em R$ em todas as abas
       wb.SheetNames.forEach(sheetName => {
         const ws = wb.Sheets[sheetName];
         for (let cellRef in ws) {
@@ -904,7 +879,6 @@
 
       const fileName = `Relatorio_Chefia_ER_Snyper_${mesFiltro || 'Geral'}_${new Date().toISOString().slice(0,10)}.xlsx`;
       XLSX.writeFile(wb, fileName);
-
       showToast('Planilha Excel (.xlsx) gerada com 5 abas separadas!', 'success');
     };
 
@@ -920,14 +894,15 @@
       let entSnyper = 0, saiSnyper = 0;
 
       nfeList.forEach(item => {
+        // Blindagem rigorosa de data (se houver filtro de mês)
         if (mesGlobal && (!item.emissao || !item.emissao.startsWith(mesGlobal))) return;
 
         const valBruto = parseFloat(item.valor || 0);
         const valLiq = parseFloat(item.valorLiquidoRecebido || 0);
         const isPago = item.status === 'Pago';
-        const isSnyper = item.empresaEmissora === 'SNYPER';
+        const isSnyper = (item.empresaEmissora === 'SNYPER');
 
-        // Totais individuais por empresa
+        // Cálculo isolado e estrito por CNPJ / Empresa
         if (item.tipo === 'ENTRADA' && (isPago || valLiq > 0)) {
           const efetivo = valLiq > 0 ? valLiq : valBruto;
           if (isSnyper) entSnyper += efetivo;
@@ -937,7 +912,7 @@
           else saiER += valBruto;
         }
 
-        // Filtro global de empresa para os 4 cards principais
+        // Filtro global para os 4 cards superiores
         if (empresaGlobal !== 'ALL' && item.empresaEmissora !== empresaGlobal) return;
 
         if (item.tipo === 'ENTRADA') {
@@ -973,12 +948,12 @@
 
       const elElem = document.getElementById('stat-entradas-liquidas');
       elElem.textContent = formatCurrency(entradasLiquidas);
-      elElem.className = entradasLiquidas >= 0 ? "text-2xl sm:text-3xl font-black text-blue-700 font-mono" : "text-2xl sm:text-3xl font-black text-rose-600 font-mono";
+      elElem.className = entradasLiquidas >= 0 ? "text-2xl sm:text-3xl font-black text-blue-700 font-mono tracking-tight" : "text-2xl sm:text-3xl font-black text-rose-600 font-mono tracking-tight";
 
       document.getElementById('stat-total-pendente-valor').textContent = formatCurrency(valorPendenteTotal);
       document.getElementById('stat-pending-count').textContent = `${countPendente} itens`;
 
-      // Cards Comparativos ER & Snyper
+      // Atualiza os cards das duas empresas de forma estrita
       document.getElementById('mini-ent-er').textContent = formatCurrency(entER);
       document.getElementById('mini-sai-er').textContent = formatCurrency(saiER);
       const elER = document.getElementById('mini-saldo-er');
@@ -1018,7 +993,7 @@
       document.getElementById('filter-summary-pill').textContent = `Exibindo ${filtrados.length} registros`;
 
       if (filtrados.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="py-10 text-center text-slate-500">Nenhum registro encontrado para os filtros aplicados.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="py-10 text-center text-slate-500 font-semibold">Nenhum registro encontrado para os filtros aplicados.</td></tr>`;
         lucide.createIcons();
         return;
       }
@@ -1026,7 +1001,7 @@
       filtrados.forEach(item => {
         const tr = document.createElement('tr');
         const isPendente = item.status === 'Pendente';
-        tr.className = isPendente ? 'bg-amber-50/40 hover:bg-amber-50/80 transition-colors' : 'hover:bg-blue-50/50 transition-colors';
+        tr.className = isPendente ? 'bg-amber-50/40 hover:bg-amber-50/80 transition-colors' : 'hover:bg-slate-50 transition-colors';
 
         const isEntrada = (item.tipo === 'ENTRADA');
         const isSnyper = (item.empresaEmissora === 'SNYPER');
@@ -1058,25 +1033,24 @@
           datasHtml += `<div class="font-mono text-emerald-700 font-bold text-[10px] mt-0.5">Baixa: ${formatDate(item.dataLiquidoRecebido)}</div>`;
         }
 
-        let statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">Pendente</span>`;
+        let statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">Pendente</span>`;
         if (item.status === 'Pago') {
-          statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">${isEntrada ? 'Recebido' : 'Aprovado / Pago'}</span>`;
+          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">${isEntrada ? 'Recebido' : 'Aprovado / Pago'}</span>`;
         } else if (item.status === 'Recusado') {
-          statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300">Recusado</span>`;
+          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300">Recusado</span>`;
         } else if (item.status === 'Cancelada') {
-          statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 text-slate-700">Cancelada</span>`;
+          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 text-slate-700">Cancelada</span>`;
         }
 
-        // Botões individuais de decisão da chefia (sem botão de aprovar todas)
         let decisaoChefiaHtml = `<span class="text-[10px] text-slate-400 font-semibold">Conferido</span>`;
         if (isPendente) {
           decisaoChefiaHtml = `
             <div class="flex items-center justify-center space-x-1.5">
-              <button onclick="decisaoIndividualChefia('${item.id}', 'APROVAR')" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold flex items-center gap-1 shadow-sm" title="${isEntrada ? 'Informar Valor Líquido e Baixar' : 'Aprovar e Liquidar'}">
+              <button onclick="decisaoIndividualChefia('${item.id}', 'APROVAR')" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold flex items-center gap-1 shadow-sm transition-transform active:scale-95" title="${isEntrada ? 'Informar Valor Líquido e Baixar' : 'Aprovar e Liquidar'}">
                 <i data-lucide="check" class="w-3 h-3"></i>
-                <span>${isEntrada ? 'Dar Baixa' : 'Aprovar'}</span>
+                <span>${isEntrada ? 'Baixar' : 'Aprovar'}</span>
               </button>
-              <button onclick="decisaoIndividualChefia('${item.id}', 'RECUSAR')" class="px-2 py-1 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700 border border-rose-300 text-[10px] font-bold" title="Recusar Lançamento">
+              <button onclick="decisaoIndividualChefia('${item.id}', 'RECUSAR')" class="px-2 py-1 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700 border border-rose-300 text-[10px] font-bold transition-transform active:scale-95" title="Recusar Lançamento">
                 <i data-lucide="x" class="w-3 h-3"></i>
               </button>
             </div>
@@ -1085,10 +1059,10 @@
 
         let docBtns = '';
         if (item.fileData1) {
-          docBtns += `<button onclick="openPreviewModal('${item.fileName1 || 'Anexo 1'}', '${item.fileData1}')" class="p-1 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-700 mr-1" title="Ver Anexo 1 (${item.fileName1})"><i data-lucide="file-text" class="w-4 h-4"></i></button>`;
+          docBtns += `<button onclick="openPreviewModal('${item.fileName1 || 'Anexo 1'}', '${item.fileData1}')" class="p-1.5 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-700 mr-1 transition-colors" title="Ver Anexo 1"><i data-lucide="file-text" class="w-4 h-4"></i></button>`;
         }
         if (item.fileData2) {
-          docBtns += `<button onclick="openPreviewModal('${item.fileName2 || 'Anexo 2'}', '${item.fileData2}')" class="p-1 rounded-lg bg-cyan-100 hover:bg-cyan-200 text-cyan-700 mr-1" title="Ver Anexo 2 (${item.fileName2})"><i data-lucide="file-check" class="w-4 h-4"></i></button>`;
+          docBtns += `<button onclick="openPreviewModal('${item.fileName2 || 'Anexo 2'}', '${item.fileData2}')" class="p-1.5 rounded-lg bg-cyan-100 hover:bg-cyan-200 text-cyan-700 mr-1 transition-colors" title="Ver Anexo 2"><i data-lucide="file-check" class="w-4 h-4"></i></button>`;
         }
         if (!item.fileData1 && !item.fileData2) {
           docBtns = `<span class="text-[10px] text-slate-400 mr-2">S/ Anexo</span>`;
@@ -1096,9 +1070,9 @@
 
         tr.innerHTML = `
           <td class="py-3 px-4">${badgeEmpresa} ${tipoTag}</td>
-          <td class="py-3 px-4 font-mono font-bold text-slate-800">${item.numero || ''}</td>
+          <td class="py-3 px-4 font-mono font-bold text-slate-900">${item.numero || ''}</td>
           <td class="py-3 px-4">
-            <div class="font-bold text-slate-800">${item.fornecedor || ''}</div>
+            <div class="font-bold text-slate-900">${item.fornecedor || ''}</div>
             <div class="text-[10px] text-slate-500 font-mono">${item.cnpj || ''}</div>
           </td>
           <td class="py-3 px-4 text-slate-700">
@@ -1111,8 +1085,8 @@
           <td class="py-3 px-4 text-center">${decisaoChefiaHtml}</td>
           <td class="py-3 px-4 text-right whitespace-nowrap">
             ${docBtns}
-            <button onclick="openEditModal('${item.id}')" class="p-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-800 mr-1" title="Conferir / Editar"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-            <button onclick="deleteNFe('${item.id}')" class="p-1 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+            <button onclick="openEditModal('${item.id}')" class="p-1.5 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-800 mr-1 transition-colors" title="Conferir / Detalhes"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+            <button onclick="deleteNFe('${item.id}')" class="p-1.5 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700 transition-colors" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -1123,8 +1097,8 @@
 
     window.clearFilters = function() {
       document.getElementById('global-empresa-filter').value = 'ALL';
-      document.getElementById('global-month-filter').value = '';
-      if (document.getElementById('mobile-month-filter')) document.getElementById('mobile-month-filter').value = '';
+      const now = new Date();
+      document.getElementById('global-month-filter').value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
       document.getElementById('filter-search').value = '';
       document.getElementById('filter-categoria').value = 'ALL';
       document.getElementById('filter-status').value = 'ALL';
