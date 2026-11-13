@@ -3,12 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal da Chefia - Diretoria & Auditoria | ER & Snyper</title>
+  <title>Portal Executivo - Diretoria & Auditoria | ER & Snyper</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- SheetJS para exportação real de .xlsx com múltiplas abas -->
-  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <script>
@@ -60,7 +58,7 @@
 </head>
 <body class="bg-light-dashboard tech-grid flex flex-col min-h-screen text-slate-800 antialiased pb-12 select-none">
 
-  <!-- HEADER DA CHEFIA -->
+  <!-- HEADER DO PORTAL EXECUTIVO -->
   <header class="sticky top-0 z-40 glass-card border-b border-slate-200 bg-white/90 backdrop-blur-xl">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-3">
       <div class="flex items-center space-x-3">
@@ -74,7 +72,7 @@
         </svg>
         <div>
           <div class="flex items-center space-x-2">
-            <span class="font-black text-base sm:text-xl tracking-wider text-slate-900">Dashboard Executivo</span>
+            <span class="font-black text-base sm:text-xl tracking-wider text-slate-900">PORTAL EXECUTIVO</span>
             <span class="hidden sm:inline-block px-2.5 py-0.5 text-[10px] font-black uppercase bg-slate-900 text-white rounded-md shadow-sm">
               DIRETORIA
             </span>
@@ -84,7 +82,7 @@
       </div>
 
       <div class="flex items-center space-x-2 sm:space-x-3">
-        <!-- FILTRO DE MÊS/PERÍODO REVISADO -->
+        <!-- FILTRO DE MÊS/PERÍODO AUTOMÁTICO -->
         <div class="flex items-center space-x-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-300 shadow-sm">
           <i data-lucide="calendar" class="w-4 h-4 text-blue-600"></i>
           <input type="month" id="global-month-filter" onchange="refreshAll()" title="Filtrar por Mês/Ano" class="bg-transparent text-xs font-bold text-slate-700 focus:outline-none cursor-pointer">
@@ -103,7 +101,7 @@
 
         <button onclick="exportToExcel()" class="btn-emerald px-4 py-2.5 rounded-xl text-xs font-bold flex items-center space-x-2 shadow-md">
           <i data-lucide="file-spreadsheet" class="w-4 h-4 text-white"></i>
-          <span class="hidden sm:inline">Baixar Excel (.xlsx)</span>
+          <span class="hidden sm:inline">Baixar Excel</span>
         </button>
 
         <button onclick="logout()" class="p-2.5 rounded-xl bg-white hover:bg-rose-50 border border-slate-200 text-slate-600 hover:text-red-600 transition-colors shadow-sm" title="Encerrar Sessão">
@@ -116,7 +114,6 @@
   <!-- MAIN -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-7 flex-grow w-full">
     
-    <!-- TÍTULO -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-5">
       <div>
         <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
@@ -127,9 +124,8 @@
       </div>
     </div>
 
-    <!-- CARDS SUPERIORES REDESENHADOS E ELEGANTES -->
+    <!-- CARDS SUPERIORES REDESENHADOS -->
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-      
       <!-- CARD 1: FATURAMENTO LÍQUIDO -->
       <div class="glass-card rounded-2xl p-6 relative overflow-hidden border-t-4 border-t-emerald-500 flex flex-col justify-between">
         <div>
@@ -187,7 +183,6 @@
           <span class="text-[11px] text-amber-700 font-bold flex items-center gap-1">Filtrar <i data-lucide="arrow-right" class="w-3 h-3"></i></span>
         </div>
       </div>
-
     </section>
 
     <!-- CARDS COMPARATIVOS POR EMPRESA (BLINDADOS) -->
@@ -486,7 +481,7 @@
     <span id="toast-message">Notificação</span>
   </div>
 
-  <!-- SCRIPT FIREBASE & EXCEL REAL (.XLSX) -->
+  <!-- SCRIPT FIREBASE & EXCEL SIMPLIFICADO IDÊNTICO À GESTÃO -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, updateDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -512,7 +507,6 @@
     let nfeList = [];
 
     window.onload = function() {
-      // Define o mês atual automaticamente no input de mês para evitar visual quebrado
       const now = new Date();
       const year = now.getFullYear();
       const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -587,7 +581,7 @@
         const motivo = prompt(`Informe o motivo da recusa para ${item.numero} (opcional):`);
         if (motivo === null) return;
         const obsAtual = item.observacoes ? `${item.observacoes} | ` : '';
-        const novaObs = motivo.trim() ? `${obsAtual}[RECUSADO CHEFIA]: ${motivo.trim()}` : item.observacoes;
+        const novaObs = motivo.trim() ? `${obsAtual}[RECUSADO EXECUTIVO]: ${motivo.trim()}` : item.observacoes;
         try {
           await updateDoc(doc(db, "transacoes", id), { 
             status: 'Recusado',
@@ -747,13 +741,10 @@
       }
     };
 
-    // EXPORTAÇÃO EXCEL (.XLSX) COM 5 ABAS SEPARADAS
+    // =========================================================================
+    // EXPORTAÇÃO EXCEL NATIVA (MESMO FORMATO DA GESTÃO QUE ABRE PERFEITAMENTE)
+    // =========================================================================
     window.exportToExcel = function() {
-      if (typeof XLSX === 'undefined') {
-        showToast('Biblioteca Excel carregando, tente novamente em 2 segundos.', 'warning');
-        return;
-      }
-
       const empresaFiltro = document.getElementById('global-empresa-filter').value;
       const mesFiltro = document.getElementById('global-month-filter').value;
 
@@ -764,122 +755,199 @@
       });
 
       if (!listaBase || listaBase.length === 0) {
-        showToast('Não há registros para exportar com os filtros selecionados.', 'warning');
+        showToast('Não há registros para exportar com o filtro selecionado.', 'warning');
         return;
       }
 
-      const wb = XLSX.utils.book_new();
+      const fmtBRL = (v) => 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-      const getEmpresaLabel = (emp) => emp === 'SNYPER' ? 'SNYPER' : 'GRUPO ER';
-      const getValLiq = (item) => {
-        if (item.tipo !== 'ENTRADA') return 0;
-        const vLiq = parseFloat(item.valorLiquidoRecebido || 0);
-        if (vLiq > 0) return vLiq;
-        return item.status === 'Pago' ? parseFloat(item.valor || 0) : 0;
-      };
-      const getDtBaixa = (item) => {
-        if (item.tipo === 'ENTRADA') {
-          return item.dataLiquidoRecebido ? formatDate(item.dataLiquidoRecebido) : (item.status === 'Pago' ? formatDate(item.emissao) : '-');
+      function buildRowsHtml(items, modo) {
+        let html = '';
+        let sumBruto = 0, sumLiquido = 0, sumSaida = 0;
+
+        items.forEach(item => {
+          const isEntrada = item.tipo === 'ENTRADA';
+          const isPago = item.status === 'Pago';
+          const valBruto = parseFloat(item.valor || 0);
+          const valLiq = isEntrada ? (parseFloat(item.valorLiquidoRecebido || 0) || (isPago ? valBruto : 0)) : 0;
+          const dtBaixa = isEntrada ? (item.dataLiquidoRecebido || (isPago ? item.emissao : '')) : (isPago ? item.emissao : '');
+          const bancoLimpo = normalizeBankName(item.localPgto);
+
+          if (isEntrada) {
+            sumBruto += valBruto;
+            if (isPago || valLiq > 0) sumLiquido += valLiq;
+          } else {
+            sumSaida += valBruto;
+          }
+
+          if (modo === 'ENTRADAS') {
+            html += `
+              <tr>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${item.empresaEmissora === 'SNYPER' ? 'SNYPER' : 'GRUPO ER'}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${item.numero || ''}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${formatDate(item.emissao)}</td>
+                <td style="border:1px solid #cbd5e1;">${item.fornecedor || ''}</td>
+                <td style="border:1px solid #cbd5e1;">${item.categoria || ''}</td>
+                <td style="text-align:right;border:1px solid #cbd5e1;">${fmtBRL(valBruto)}</td>
+                <td style="text-align:right;border:1px solid #cbd5e1;font-weight:bold;color:#059669;">${valLiq > 0 ? fmtBRL(valLiq) : '-'}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${dtBaixa ? formatDate(dtBaixa) : '-'}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${bancoLimpo}</td>
+                <td style="border:1px solid #cbd5e1;">${item.observacoes || ''}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;font-weight:bold;">${item.status}</td>
+              </tr>`;
+          } else if (modo === 'SAIDAS') {
+            html += `
+              <tr>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${item.empresaEmissora === 'SNYPER' ? 'SNYPER' : 'GRUPO ER'}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${item.numero || ''}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${formatDate(item.emissao)}</td>
+                <td style="border:1px solid #cbd5e1;">${item.fornecedor || ''}</td>
+                <td style="border:1px solid #cbd5e1;">${item.categoria || ''}</td>
+                <td style="text-align:right;border:1px solid #cbd5e1;font-weight:bold;color:#dc2626;">${fmtBRL(valBruto)}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${dtBaixa ? formatDate(dtBaixa) : '-'}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${bancoLimpo}</td>
+                <td style="border:1px solid #cbd5e1;">${item.observacoes || ''}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;font-weight:bold;">${item.status}</td>
+              </tr>`;
+          } else {
+            html += `
+              <tr>
+                <td style="text-align:center;border:1px solid #cbd5e1;font-weight:bold;color:${isEntrada ? '#059669' : '#dc2626'};">${item.tipo}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${item.numero || ''}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${formatDate(item.emissao)}</td>
+                <td style="border:1px solid #cbd5e1;">${item.fornecedor || ''}</td>
+                <td style="border:1px solid #cbd5e1;">${item.categoria || ''}</td>
+                <td style="text-align:right;border:1px solid #cbd5e1;">${!isEntrada ? fmtBRL(valBruto) : '-'}</td>
+                <td style="text-align:right;border:1px solid #cbd5e1;">${isEntrada ? fmtBRL(valBruto) : '-'}</td>
+                <td style="text-align:right;border:1px solid #cbd5e1;font-weight:bold;color:#059669;">${isEntrada && valLiq > 0 ? fmtBRL(valLiq) : '-'}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${dtBaixa ? formatDate(dtBaixa) : '-'}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;">${bancoLimpo}</td>
+                <td style="border:1px solid #cbd5e1;">${item.observacoes || ''}</td>
+                <td style="text-align:center;border:1px solid #cbd5e1;font-weight:bold;">${item.status}</td>
+              </tr>`;
+          }
+        });
+
+        if (modo === 'ENTRADAS') {
+          html += `<tr style="background:#d9e2ec;font-weight:bold;"><td colspan="5" style="border:1px solid #1b365d;">TOTAL ENTRADAS</td><td style="text-align:right;border:1px solid #1b365d;">${fmtBRL(sumBruto)}</td><td style="text-align:right;border:1px solid #1b365d;color:#059669;">${fmtBRL(sumLiquido)}</td><td colspan="4" style="border:1px solid #1b365d;"></td></tr>`;
+        } else if (modo === 'SAIDAS') {
+          html += `<tr style="background:#d9e2ec;font-weight:bold;"><td colspan="5" style="border:1px solid #1b365d;">TOTAL SAÍDAS</td><td style="text-align:right;border:1px solid #1b365d;color:#dc2626;">${fmtBRL(sumSaida)}</td><td colspan="4" style="border:1px solid #1b365d;"></td></tr>`;
+        } else {
+          html += `<tr style="background:#d9e2ec;font-weight:bold;"><td colspan="5" style="border:1px solid #1b365d;">TOTAL DA EMPRESA</td><td style="text-align:right;border:1px solid #1b365d;color:#dc2626;">${fmtBRL(sumSaida)}</td><td style="text-align:right;border:1px solid #1b365d;">${fmtBRL(sumBruto)}</td><td style="text-align:right;border:1px solid #1b365d;color:#059669;">${fmtBRL(sumLiquido)}</td><td colspan="4" style="border:1px solid #1b365d;"></td></tr>`;
         }
-        return item.status === 'Pago' ? formatDate(item.emissao) : '-';
-      };
+
+        return { html, sumBruto, sumLiquido, sumSaida };
+      }
 
       const entradasList = listaBase.filter(i => i.tipo === 'ENTRADA');
       const saidasList = listaBase.filter(i => i.tipo !== 'ENTRADA');
       const erList = listaBase.filter(i => i.empresaEmissora !== 'SNYPER');
       const snyperList = listaBase.filter(i => i.empresaEmissora === 'SNYPER');
 
-      const calcTotals = (arr) => {
-        let brutoEnt = 0, liqEnt = 0, saida = 0, pendente = 0;
-        arr.forEach(i => {
-          const val = parseFloat(i.valor || 0);
-          if (i.tipo === 'ENTRADA') {
-            brutoEnt += val;
-            liqEnt += getValLiq(i);
-            if (i.status === 'Pendente') pendente += val;
-          } else {
-            if (i.status === 'Pago') saida += val;
-            else if (i.status === 'Pendente') pendente += val;
-          }
-        });
-        return { brutoEnt, liqEnt, saida, pendente, saldo: liqEnt - saida };
-      };
+      const resEntradas = buildRowsHtml(entradasList, 'ENTRADAS');
+      const resSaidas = buildRowsHtml(saidasList, 'SAIDAS');
+      const resER = buildRowsHtml(erList, 'EMPRESA');
+      const resSnyper = buildRowsHtml(snyperList, 'EMPRESA');
 
-      const totER = calcTotals(erList);
-      const totSnyper = calcTotals(snyperList);
+      const totalGeralSaidas = resER.sumSaida + resSnyper.sumSaida;
+      const totalGeralEntradasBruto = resER.sumBruto + resSnyper.sumBruto;
+      const totalGeralLiquidoRecebido = resER.sumLiquido + resSnyper.sumLiquido;
+      const saldoCaixaGeral = totalGeralLiquidoRecebido - totalGeralSaidas;
 
-      const resumoRows = [
-        ["RELATÓRIO EXECUTIVO FINANCEIRO — GRUPO ER & SNYPER", "", "", "", "", "", ""],
-        [`Período: ${mesFiltro || 'Todos os períodos'}`, `Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, "", "", "", "", ""],
-        [],
-        ["Empresa", "CNPJ", "Saídas Pagas (R$)", "Entradas Brutas (R$)", "Líquido Recebido (R$)", "Pendente (R$)", "Saldo Caixa Real (R$)"],
-        ["Grupo ER Portaria e Segurança LTDA", "13.506.821/0001-46", totER.saida, totER.brutoEnt, totER.liqEnt, totER.pendente, totER.saldo],
-        ["Snyper Vigilância e Segurança", "19.956.281/0001-89", totSnyper.saida, totSnyper.brutoEnt, totSnyper.liqEnt, totSnyper.pendente, totSnyper.saldo],
-        ["TOTAL CONSOLIDADO", "-", totER.saida + totSnyper.saida, totER.brutoEnt + totSnyper.brutoEnt, totER.liqEnt + totSnyper.liqEnt, totER.pendente + totSnyper.pendente, totER.saldo + totSnyper.saldo]
-      ];
-      const wsResumo = XLSX.utils.aoa_to_sheet(resumoRows);
-      wsResumo['!cols'] = [{ wch: 38 }, { wch: 22 }, { wch: 18 }, { wch: 20 }, { wch: 22 }, { wch: 18 }, { wch: 22 }];
-      XLSX.utils.book_append_sheet(wb, wsResumo, "Resumo Geral");
+      const workbookHtml = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office"
+              xmlns:x="urn:schemas-microsoft-com:office:excel"
+              xmlns="http://www.w3.org/TR/REC-html40">
+        <head>
+          <meta charset="utf-8">
+          <!--[if gte mso 9]>
+          <xml>
+            <x:ExcelWorkbook>
+              <x:ExcelWorksheets>
+                <x:ExcelWorksheet><x:Name>Resumo Geral</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>
+                <x:ExcelWorksheet><x:Name>Entradas</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>
+                <x:ExcelWorksheet><x:Name>Saidas</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>
+                <x:ExcelWorksheet><x:Name>Grupo ER</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>
+                <x:ExcelWorksheet><x:Name>Snyper</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>
+              </x:ExcelWorksheets>
+            </x:ExcelWorkbook>
+          </xml>
+          <![endif]-->
+          <style>
+            body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; }
+            th { background-color: #1b365d; color: #ffffff; font-weight: bold; border: 1px solid #1b365d; padding: 6px; }
+            td { padding: 5px; }
+          </style>
+        </head>
+        <body>
+          <table>
+            <tr><th colspan="6" style="font-size:14pt;">RESUMO EXECUTIVO CONSOLIDADO (PORTAL EXECUTIVO)</th></tr>
+            <tr>
+              <th>Empresa</th><th>CNPJ</th><th>Total Saídas</th><th>Entradas (Bruto)</th><th>Líquido Recebido</th><th>Saldo Líquido Caixa</th>
+            </tr>
+            <tr>
+              <td style="border:1px solid #cbd5e1;font-weight:bold;">Grupo ER Portaria e Segurança LTDA</td>
+              <td style="border:1px solid #cbd5e1;">13.506.821/0001-46</td>
+              <td style="text-align:right;border:1px solid #cbd5e1;">${fmtBRL(resER.sumSaida)}</td>
+              <td style="text-align:right;border:1px solid #cbd5e1;">${fmtBRL(resER.sumBruto)}</td>
+              <td style="text-align:right;border:1px solid #cbd5e1;color:#059669;font-weight:bold;">${fmtBRL(resER.sumLiquido)}</td>
+              <td style="text-align:right;border:1px solid #cbd5e1;font-weight:bold;">${fmtBRL(resER.sumLiquido - resER.sumSaida)}</td>
+            </tr>
+            <tr>
+              <td style="border:1px solid #cbd5e1;font-weight:bold;">Snyper</td>
+              <td style="border:1px solid #cbd5e1;">19.956.281/0001-89</td>
+              <td style="text-align:right;border:1px solid #cbd5e1;">${fmtBRL(resSnyper.sumSaida)}</td>
+              <td style="text-align:right;border:1px solid #cbd5e1;">${fmtBRL(resSnyper.sumBruto)}</td>
+              <td style="text-align:right;border:1px solid #cbd5e1;color:#059669;font-weight:bold;">${fmtBRL(resSnyper.sumLiquido)}</td>
+              <td style="text-align:right;border:1px solid #cbd5e1;font-weight:bold;">${fmtBRL(resSnyper.sumLiquido - resSnyper.sumSaida)}</td>
+            </tr>
+            <tr style="background:#1b365d;color:#ffffff;font-weight:bold;">
+              <td colspan="2" style="border:1px solid #1b365d;">TOTAL GERAL</td>
+              <td style="text-align:right;border:1px solid #1b365d;">${fmtBRL(totalGeralSaidas)}</td>
+              <td style="text-align:right;border:1px solid #cbd5e1;">${fmtBRL(totalGeralEntradasBruto)}</td>
+              <td style="text-align:right;border:1px solid #cbd5e1;">${fmtBRL(totalGeralLiquidoRecebido)}</td>
+              <td style="text-align:right;border:1px solid #cbd5e1;">${fmtBRL(saldoCaixaGeral)}</td>
+            </tr>
+          </table>
+          <br><br>
+          <table>
+            <tr><th colspan="11" style="font-size:13pt;background:#065f46;">ENTRADAS</th></tr>
+            <tr><th>Empresa</th><th>Nº Doc</th><th>Emissão</th><th>Cliente</th><th>Categoria</th><th>Valor Bruto</th><th>Valor Líquido</th><th>Data Baixa</th><th>Banco</th><th>Obs</th><th>Status</th></tr>
+            ${resEntradas.html}
+          </table>
+          <br><br>
+          <table>
+            <tr><th colspan="10" style="font-size:13pt;background:#9f1239;">SAÍDAS</th></tr>
+            <tr><th>Empresa</th><th>Nº Doc</th><th>Emissão</th><th>Fornecedor</th><th>Categoria</th><th>Valor Saída</th><th>Data Baixa</th><th>Banco</th><th>Obs</th><th>Status</th></tr>
+            ${resSaidas.html}
+          </table>
+          <br><br>
+          <table>
+            <tr><th colspan="12" style="font-size:13pt;">GRUPO ER</th></tr>
+            <tr><th>Fluxo</th><th>Nº Doc</th><th>Emissão</th><th>Fornecedor/Cliente</th><th>Categoria</th><th>Saída</th><th>Entrada Bruta</th><th>Líquido</th><th>Data Baixa</th><th>Banco</th><th>Obs</th><th>Status</th></tr>
+            ${resER.html}
+          </table>
+          <br><br>
+          <table>
+            <tr><th colspan="12" style="font-size:13pt;">SNYPER</th></tr>
+            <tr><th>Fluxo</th><th>Nº Doc</th><th>Emissão</th><th>Fornecedor/Cliente</th><th>Categoria</th><th>Saída</th><th>Entrada Bruta</th><th>Líquido</th><th>Data Baixa</th><th>Banco</th><th>Obs</th><th>Status</th></tr>
+            ${resSnyper.html}
+          </table>
+        </body>
+        </html>
+      `;
 
-      const entradasHeader = ["Empresa", "Nº Doc", "Data Emissão", "Cliente / Tomador", "CNPJ/CPF", "Categoria", "Valor Bruto (R$)", "Valor Líq. Recebido (R$)", "Data Baixa Líquida", "Banco", "Status", "Observações"];
-      let sumEntBruto = 0, sumEntLiq = 0;
-      const entradasData = entradasList.map(i => {
-        const vBruto = parseFloat(i.valor || 0);
-        const vLiq = getValLiq(i);
-        sumEntBruto += vBruto;
-        sumEntLiq += vLiq;
-        return [getEmpresaLabel(i.empresaEmissora), i.numero || '', formatDate(i.emissao), i.fornecedor || '', i.cnpj || '', i.categoria || '', vBruto, vLiq, getDtBaixa(i), normalizeBankName(i.localPgto), i.status || '', i.observacoes || ''];
-      });
-      entradasData.push(["TOTAL ENTRADAS", "", "", "", "", "", sumEntBruto, sumEntLiq, "", "", "", ""]);
-      const wsEntradas = XLSX.utils.aoa_to_sheet([entradasHeader, ...entradasData]);
-      wsEntradas['!cols'] = [{ wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 30 }, { wch: 20 }, { wch: 28 }, { wch: 18 }, { wch: 22 }, { wch: 18 }, { wch: 16 }, { wch: 14 }, { wch: 35 }];
-      XLSX.utils.book_append_sheet(wb, wsEntradas, "Entradas");
+      const blob = new Blob([workbookHtml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Portal_Executivo_${mesFiltro || 'Geral'}_${Date.now()}.xls`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
 
-      const saidasHeader = ["Empresa", "Nº Doc", "Data Emissão", "Fornecedor / Favorecido", "CNPJ/CPF", "Categoria", "Valor Saída (R$)", "Data Pagamento", "Forma Pgto", "Banco", "Status", "Observações"];
-      let sumSaidaTotal = 0;
-      const saidasData = saidasList.map(i => {
-        const vSaida = parseFloat(i.valor || 0);
-        sumSaidaTotal += vSaida;
-        return [getEmpresaLabel(i.empresaEmissora), i.numero || '', formatDate(i.emissao), i.fornecedor || '', i.cnpj || '', i.categoria || '', vSaida, getDtBaixa(i), i.formaPgto || '', normalizeBankName(i.localPgto), i.status || '', i.observacoes || ''];
-      });
-      saidasData.push(["TOTAL SAÍDAS", "", "", "", "", "", sumSaidaTotal, "", "", "", "", ""]);
-      const wsSaidas = XLSX.utils.aoa_to_sheet([saidasHeader, ...saidasData]);
-      wsSaidas['!cols'] = [{ wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 30 }, { wch: 20 }, { wch: 28 }, { wch: 18 }, { wch: 16 }, { wch: 16 }, { wch: 16 }, { wch: 14 }, { wch: 35 }];
-      XLSX.utils.book_append_sheet(wb, wsSaidas, "Saidas");
-
-      const buildEmpresaSheet = (items) => {
-        const header = ["Fluxo", "Nº Doc", "Emissão", "Fornecedor / Cliente", "CNPJ/CPF", "Categoria", "Saída (R$)", "Entrada Bruta (R$)", "Líquido Recebido (R$)", "Data Baixa", "Banco", "Status", "Observações"];
-        let sSaida = 0, sBruto = 0, sLiq = 0;
-        const rows = items.map(i => {
-          const isEnt = i.tipo === 'ENTRADA';
-          const val = parseFloat(i.valor || 0);
-          const vLiq = getValLiq(i);
-          if (isEnt) { sBruto += val; sLiq += vLiq; }
-          else { sSaida += val; }
-          return [i.tipo, i.numero || '', formatDate(i.emissao), i.fornecedor || '', i.cnpj || '', i.categoria || '', !isEnt ? val : 0, isEnt ? val : 0, isEnt ? vLiq : 0, getDtBaixa(i), normalizeBankName(i.localPgto), i.status || '', i.observacoes || ''];
-        });
-        rows.push(["TOTAL EMPRESA", "", "", "", "", "", sSaida, sBruto, sLiq, "", "", "", ""]);
-        const ws = XLSX.utils.aoa_to_sheet([header, ...rows]);
-        ws['!cols'] = [{ wch: 12 }, { wch: 14 }, { wch: 14 }, { wch: 30 }, { wch: 20 }, { wch: 26 }, { wch: 16 }, { wch: 18 }, { wch: 20 }, { wch: 15 }, { wch: 16 }, { wch: 14 }, { wch: 35 }];
-        return ws;
-      };
-
-      XLSX.utils.book_append_sheet(wb, buildEmpresaSheet(erList), "Grupo ER");
-      XLSX.utils.book_append_sheet(wb, buildEmpresaSheet(snyperList), "Snyper");
-
-      wb.SheetNames.forEach(sheetName => {
-        const ws = wb.Sheets[sheetName];
-        for (let cellRef in ws) {
-          if (cellRef[0] === '!') continue;
-          if (typeof ws[cellRef].v === 'number') {
-            ws[cellRef].z = 'R$ #,##0.00';
-          }
-        }
-      });
-
-      const fileName = `Relatorio_Chefia_ER_Snyper_${mesFiltro || 'Geral'}_${new Date().toISOString().slice(0,10)}.xlsx`;
-      XLSX.writeFile(wb, fileName);
-      showToast('Planilha Excel (.xlsx) gerada com 5 abas separadas!', 'success');
+      showToast('Planilha Excel gerada com sucesso!', 'success');
     };
 
     window.renderDashboard = function() {
@@ -894,7 +962,6 @@
       let entSnyper = 0, saiSnyper = 0;
 
       nfeList.forEach(item => {
-        // Blindagem rigorosa de data (se houver filtro de mês)
         if (mesGlobal && (!item.emissao || !item.emissao.startsWith(mesGlobal))) return;
 
         const valBruto = parseFloat(item.valor || 0);
@@ -902,7 +969,6 @@
         const isPago = item.status === 'Pago';
         const isSnyper = (item.empresaEmissora === 'SNYPER');
 
-        // Cálculo isolado e estrito por CNPJ / Empresa
         if (item.tipo === 'ENTRADA' && (isPago || valLiq > 0)) {
           const efetivo = valLiq > 0 ? valLiq : valBruto;
           if (isSnyper) entSnyper += efetivo;
@@ -912,7 +978,6 @@
           else saiER += valBruto;
         }
 
-        // Filtro global para os 4 cards superiores
         if (empresaGlobal !== 'ALL' && item.empresaEmissora !== empresaGlobal) return;
 
         if (item.tipo === 'ENTRADA') {
@@ -953,7 +1018,6 @@
       document.getElementById('stat-total-pendente-valor').textContent = formatCurrency(valorPendenteTotal);
       document.getElementById('stat-pending-count').textContent = `${countPendente} itens`;
 
-      // Atualiza os cards das duas empresas de forma estrita
       document.getElementById('mini-ent-er').textContent = formatCurrency(entER);
       document.getElementById('mini-sai-er').textContent = formatCurrency(saiER);
       const elER = document.getElementById('mini-saldo-er');
