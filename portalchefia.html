@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal Executivo & Diretoria | ER & Snyper</title>
+  <title>Portal da Chefia v1.4 - Diretoria & Auditoria | ER & Snyper</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Biblioteca SheetJS para geração real de .xlsx com abas separadas -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <script>
@@ -15,7 +16,9 @@
       theme: {
         extend: {
           fontFamily: { sans: ['Inter', 'sans-serif'] },
-          colors: { brand: { blue: '#2563eb', red: '#dc2626', cyan: '#0284c7', emerald: '#059669', lightBg: '#f0f7ff' } }
+          colors: { 
+            brand: { blue: '#2563eb', red: '#dc2626', cyan: '#0284c7', emerald: '#059669', lightBg: '#f0f7ff' } 
+          }
         }
       }
     }
@@ -24,8 +27,8 @@
   <style>
     body { font-family: 'Inter', sans-serif; background-color: #f0f7ff; color: #0f172a; min-height: 100vh; }
     .bg-light-dashboard {
-      background-image: linear-gradient(to bottom, rgba(240, 247, 255, 0.85), rgba(224, 242, 254, 0.95)),
-                        url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2000&auto=format&fit=crop');
+      background-image: linear-gradient(to bottom, rgba(240, 247, 255, 0.90), rgba(224, 242, 254, 0.97)),
+                        url('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=2000&auto=format&fit=crop');
       background-size: cover; background-position: center; background-attachment: fixed;
     }
     .tech-grid {
@@ -34,182 +37,219 @@
                         linear-gradient(to bottom, rgba(14, 165, 233, 0.05) 1px, transparent 1px);
     }
     .glass-card {
-      background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(56, 189, 248, 0.3); box-shadow: 0 10px 30px -5px rgba(14, 165, 233, 0.12), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
     }
+    .btn-emerald {
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3); transition: all 0.2s ease;
+    }
+    .btn-emerald:hover { box-shadow: 0 6px 20px rgba(5, 150, 105, 0.45); transform: translateY(-1px); }
     .btn-neon-primary {
       background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
       color: #ffffff;
-      box-shadow: 0 4px 15px rgba(2, 132, 199, 0.35); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 15px rgba(2, 132, 199, 0.35); transition: all 0.2s ease;
     }
     .btn-neon-primary:hover { box-shadow: 0 6px 22px rgba(2, 132, 199, 0.5); transform: translateY(-1px); }
   </style>
 </head>
 <body class="bg-light-dashboard tech-grid flex flex-col min-h-screen text-slate-800 antialiased pb-12 select-none">
 
-  <!-- HEADER EXECUTIVE -->
-  <header class="sticky top-0 z-40 glass-card border-b border-sky-200/60 bg-white/80 backdrop-blur-xl">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-      <div class="flex items-center space-x-3.5">
-        <svg class="w-10 h-10" viewBox="0 0 300 200" fill="none">
+  <!-- HEADER DA CHEFIA -->
+  <header class="sticky top-0 z-40 glass-card border-b border-sky-200/60 bg-white/90 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-3">
+      <div class="flex items-center space-x-3">
+        <svg class="w-10 h-10 shrink-0" viewBox="0 0 300 200" fill="none">
           <defs>
-            <linearGradient id="ownerBlue" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3b82f6" /><stop offset="100%" stop-color="#1d4ed8" /></linearGradient>
-            <linearGradient id="ownerRed" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f87171" /><stop offset="100%" stop-color="#dc2626" /></linearGradient>
+            <linearGradient id="headerBlue" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3b82f6" /><stop offset="100%" stop-color="#1d4ed8" /></linearGradient>
+            <linearGradient id="headerRed" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ef4444" /><stop offset="100%" stop-color="#dc2626" /></linearGradient>
           </defs>
-          <path d="M 130 45 L 75 45 C 55 45 40 60 40 80 C 40 90 50 100 70 100 L 120 100 L 70 100 C 50 100 40 110 40 120 C 40 140 55 155 75 155 L 130 155" stroke="url(#ownerBlue)" stroke-width="22" stroke-linecap="round" fill="none" />
-          <path d="M 155 45 L 210 45 C 245 45 260 65 260 85 C 260 105 245 118 210 118 L 155 118 M 200 118 L 255 155" stroke="url(#ownerRed)" stroke-width="22" stroke-linecap="round" fill="none" />
+          <path d="M 130 45 L 75 45 C 55 45 40 60 40 80 C 40 90 50 100 70 100 L 120 100 L 70 100 C 50 100 40 110 40 120 C 40 140 55 155 75 155 L 130 155" stroke="url(#headerBlue)" stroke-width="22" stroke-linecap="round" fill="none" />
+          <path d="M 155 45 L 210 45 C 245 45 260 65 260 85 C 260 105 245 118 210 118 L 155 118 M 200 118 L 255 155" stroke="url(#headerRed)" stroke-width="22" stroke-linecap="round" fill="none" />
         </svg>
         <div>
           <div class="flex items-center space-x-2">
-            <span class="font-black text-lg sm:text-xl tracking-wider text-blue-700">GRUPO ER / SNYPER</span>
-            <span class="px-2 py-0.5 text-[10px] font-bold uppercase bg-blue-100 text-blue-700 border border-blue-300 rounded-md">Portal Diretoria</span>
+            <span class="font-black text-base sm:text-xl tracking-wider text-slate-900">PORTAL DA CHEFIA</span>
+            <span class="hidden sm:inline-block px-2 py-0.5 text-[10px] font-bold uppercase bg-amber-100 text-amber-800 border border-amber-300 rounded-md">
+              DIRETORIA
+            </span>
           </div>
-          <p class="text-[10px] font-extrabold text-red-600 tracking-widest uppercase">DRE Executivo & Controle do Proprietário</p>
+          <p class="text-[10px] sm:text-[11px] font-extrabold text-red-600 tracking-widest uppercase">GRUPO ER & SNYPER • AUDITORIA FINANCEIRA</p>
         </div>
       </div>
 
-      <div class="flex items-center space-x-3 sm:space-x-5">
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <!-- FILTRO DE MÊS/PERÍODO -->
+        <div class="hidden md:flex items-center space-x-2 bg-white px-3 py-1.5 rounded-xl border border-sky-200 shadow-sm">
+          <i data-lucide="calendar" class="w-4 h-4 text-blue-600"></i>
+          <input type="month" id="global-month-filter" onchange="refreshAll()" title="Filtrar por Mês/Ano" class="bg-transparent text-xs font-bold text-slate-700 focus:outline-none">
+          <button onclick="document.getElementById('global-month-filter').value=''; refreshAll();" class="text-[10px] text-slate-400 hover:text-red-500 font-bold" title="Limpar Mês">Todos</button>
+        </div>
+
         <!-- SELETOR GLOBAL DE EMPRESA -->
         <div class="flex items-center space-x-2 bg-white px-3 py-1.5 rounded-xl border border-sky-200 shadow-sm">
           <i data-lucide="building-2" class="w-4 h-4 text-blue-600"></i>
-          <select id="global-empresa-filter" onchange="renderDashboardKPIs(); renderCharts(); renderTable();" class="bg-transparent text-xs font-bold text-slate-700 focus:outline-none">
+          <select id="global-empresa-filter" onchange="refreshAll()" class="bg-transparent text-xs font-bold text-slate-700 focus:outline-none">
             <option value="ALL">Todas as Empresas</option>
-            <option value="GRUPO_ER">Grupo ER</option>
-            <option value="SNYPER">Snyper</option>
+            <option value="GRUPO_ER">Grupo ER (13.506.821/0001-46)</option>
+            <option value="SNYPER">Snyper (19.956.281/0001-89)</option>
           </select>
         </div>
 
-        <button onclick="exportToCSV()" class="btn-neon-primary px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 shadow-md">
-          <i data-lucide="download" class="w-4 h-4 text-emerald-200"></i>
-          <span class="hidden sm:inline">Exportar Relatório</span>
+        <button onclick="exportToExcel()" class="btn-emerald px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 shadow-md">
+          <i data-lucide="file-spreadsheet" class="w-4 h-4 text-white"></i>
+          <span class="hidden sm:inline">Baixar Excel (.xlsx)</span>
         </button>
 
-        <div class="flex items-center space-x-3 pl-3 border-l border-slate-300">
-          <div class="w-10 h-10 rounded-xl bg-blue-700 text-white flex items-center justify-center font-black text-xs shadow-md">CEO</div>
-          <button onclick="logout()" class="p-2.5 rounded-xl bg-white hover:bg-rose-50 border border-slate-200 text-slate-600 hover:text-red-600 transition-colors shadow-sm" title="Encerrar Sessão">
-            <i data-lucide="log-out" class="w-4 h-4"></i>
-          </button>
-        </div>
+        <button onclick="logout()" class="p-2.5 rounded-xl bg-white hover:bg-rose-50 border border-slate-200 text-slate-600 hover:text-red-600 transition-colors shadow-sm" title="Encerrar Sessão">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- MAIN WRAPPER -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-8 flex-grow w-full">
-
-    <!-- PAGE HEADER -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-sky-200 pb-6">
+  <!-- MAIN -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-7 flex-grow w-full">
+    
+    <!-- TÍTULO E FILTRO MOBILE -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-sky-200/80 pb-5">
       <div>
         <h1 class="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
           <i data-lucide="shield-check" class="w-8 h-8 text-blue-600"></i>
-          Painel Executivo de Resultado Financeiro (DRE)
+          Supervisão Executiva & Aprovação de Caixa
         </h1>
-        <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">Acompanhamento de caixa real e aprovação gerencial de documentos.</p>
+        <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">Conferência individual de despesas, folha e baixa líquida de faturamento enviada pela gestão.</p>
       </div>
 
-      <div class="flex items-center space-x-3">
-        <button onclick="bulkApprove()" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 border border-emerald-300 px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 transition-all">
-          <i data-lucide="check-check" class="w-4 h-4"></i>
-          <span>Aprovar Selecionadas</span>
-        </button>
+      <div class="flex md:hidden items-center space-x-2 bg-white px-3 py-2 rounded-xl border border-sky-200 shadow-sm w-fit">
+        <i data-lucide="calendar" class="w-4 h-4 text-blue-600"></i>
+        <input type="month" id="mobile-month-filter" onchange="document.getElementById('global-month-filter').value=this.value; refreshAll();" class="bg-transparent text-xs font-bold text-slate-700 focus:outline-none">
       </div>
     </div>
 
-    <!-- KPIS -->
-    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-      <div class="glass-card rounded-2xl p-4 sm:p-5 relative overflow-hidden">
+    <!-- KPIS PRINCIPAIS -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <!-- CARD 1: FATURAMENTO EFETIVADO -->
+      <div class="glass-card rounded-2xl p-5 relative overflow-hidden border-l-4 border-l-emerald-500">
         <div class="flex items-center justify-between">
-          <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Faturamento Liquidado</span>
-          <div class="p-2 rounded-xl bg-emerald-100 text-emerald-700 border border-emerald-300"><i data-lucide="arrow-down-left" class="w-5 h-5"></i></div>
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Faturamento Líquido Recebido</span>
+          <div class="p-2.5 rounded-xl bg-emerald-100 text-emerald-700 border border-emerald-300"><i data-lucide="check-circle-2" class="w-5 h-5"></i></div>
         </div>
-        <div class="mt-3"><span id="kpi-entradas-val" class="text-xl sm:text-2xl font-black text-emerald-600 font-mono">R$ 0,00</span></div>
-        <div class="mt-2 text-[10px] text-slate-500 font-medium">Entradas pagas</div>
+        <div class="mt-4"><span id="stat-faturamento-pago" class="text-2xl sm:text-3xl font-black text-emerald-600 font-mono">R$ 0,00</span></div>
+        <p class="text-[11px] text-slate-500 font-medium mt-2">
+          <span id="count-faturamento-pago" class="text-emerald-700 font-bold">0</span> recebidos • Bruto: <span id="stat-faturamento-bruto" class="font-mono font-semibold text-slate-700">R$ 0,00</span>
+        </p>
       </div>
 
-      <div class="glass-card rounded-2xl p-4 sm:p-5 relative overflow-hidden">
+      <!-- CARD 2: SAÍDAS EFETIVADAS -->
+      <div class="glass-card rounded-2xl p-5 relative overflow-hidden border-l-4 border-l-rose-500">
         <div class="flex items-center justify-between">
-          <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Despesas / Saídas Pagas</span>
-          <div class="p-2 rounded-xl bg-rose-100 text-rose-700 border border-rose-300"><i data-lucide="arrow-up-right" class="w-5 h-5"></i></div>
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Despesas / Saídas Pagas</span>
+          <div class="p-2.5 rounded-xl bg-rose-100 text-rose-700 border border-rose-300"><i data-lucide="arrow-up-right" class="w-5 h-5"></i></div>
         </div>
-        <div class="mt-3"><span id="kpi-saidas-val" class="text-xl sm:text-2xl font-black text-rose-600 font-mono">R$ 0,00</span></div>
-        <div class="mt-2 text-[10px] text-slate-500 font-medium">Saídas liquidadas</div>
+        <div class="mt-4"><span id="stat-saidas-pagas" class="text-2xl sm:text-3xl font-black text-rose-600 font-mono">R$ 0,00</span></div>
+        <p class="text-[11px] text-slate-500 font-medium mt-2"><span id="count-saidas-pagas" class="text-rose-700 font-bold">0</span> pagamentos aprovados</p>
       </div>
 
-      <div class="glass-card rounded-2xl p-4 sm:p-5 relative overflow-hidden">
+      <!-- CARD 3: SALDO LÍQUIDO CAIXA REAL -->
+      <div class="glass-card rounded-2xl p-5 relative overflow-hidden border-l-4 border-l-blue-600">
         <div class="flex items-center justify-between">
-          <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Resultado Líquido</span>
-          <div class="p-2 rounded-xl bg-blue-100 text-blue-700 border border-blue-300"><i data-lucide="scale" class="w-5 h-5"></i></div>
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Saldo Líquido (Caixa Real)</span>
+          <div class="p-2.5 rounded-xl bg-blue-100 text-blue-700 border border-blue-300"><i data-lucide="wallet" class="w-5 h-5"></i></div>
         </div>
-        <div class="mt-3"><span id="kpi-balanco-val" class="text-xl sm:text-2xl font-black text-blue-700 font-mono">R$ 0,00</span></div>
-        <div id="kpi-balanco-sub" class="mt-2 text-[10px] text-slate-500 font-medium">Caixa Real</div>
+        <div class="mt-4"><span id="stat-entradas-liquidas" class="text-2xl sm:text-3xl font-black text-blue-700 font-mono">R$ 0,00</span></div>
+        <p class="text-[11px] text-slate-500 font-medium mt-2">Líquido Recebido - Saídas Pagas</p>
       </div>
 
-      <div class="glass-card rounded-2xl p-4 sm:p-5 relative overflow-hidden">
+      <!-- CARD 4: PENDENTES DE APROVAÇÃO -->
+      <div onclick="filtrarApenasPendentes()" class="glass-card rounded-2xl p-5 relative overflow-hidden border-l-4 border-l-amber-500 cursor-pointer hover:border-amber-400 transition-all" title="Clique para filtrar os itens aguardando aprovação">
         <div class="flex items-center justify-between">
-          <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Pendentes Diretoria</span>
-          <div class="p-2 rounded-xl bg-amber-100 text-amber-700 border border-amber-300"><i data-lucide="clock" class="w-5 h-5"></i></div>
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Aguardando Aprovação</span>
+          <div class="p-2.5 rounded-xl bg-amber-100 text-amber-700 border border-amber-300"><i data-lucide="clock" class="w-5 h-5"></i></div>
         </div>
-        <div class="mt-3 flex items-baseline justify-between">
-          <span id="kpi-pending-count" class="text-2xl font-black text-amber-600 font-mono">0</span>
-          <span id="kpi-pending-val" class="text-xs text-amber-700 font-mono font-bold">R$ 0</span>
+        <div class="mt-4 flex items-baseline justify-between">
+          <span id="stat-total-pendente-valor" class="text-2xl font-black text-amber-600 font-mono">R$ 0,00</span>
+          <span id="stat-pending-count" class="text-xs bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-full font-bold">0 itens</span>
         </div>
-        <div class="mt-2 text-[10px] text-amber-800 font-bold">Aguardando aprovação</div>
-      </div>
-
-      <div class="glass-card rounded-2xl p-4 sm:p-5 relative overflow-hidden">
-        <div class="flex items-center justify-between">
-          <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Docs (Mês)</span>
-          <div class="p-2 rounded-xl bg-sky-100 text-sky-700 border border-sky-300"><i data-lucide="files" class="w-5 h-5"></i></div>
-        </div>
-        <div class="mt-3"><span id="kpi-total-count" class="text-xl sm:text-2xl font-black text-slate-800 font-mono">0</span></div>
-        <div class="mt-2 text-[10px] text-slate-500 font-medium">No período selecionado</div>
+        <p class="text-[11px] text-amber-700 font-semibold mt-2 flex items-center gap-1">
+          <i data-lucide="mouse-pointer-click" class="w-3 h-3"></i> Clique para filtrar pendências
+        </p>
       </div>
     </section>
 
-    <!-- CHARTS -->
-    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div class="glass-card rounded-2xl p-5 lg:col-span-2 flex flex-col justify-between">
-        <div class="flex items-center justify-between mb-4">
-          <div class="flex items-center space-x-2">
-            <i data-lucide="trending-up" class="w-5 h-5 text-blue-600"></i>
-            <h3 class="text-sm font-bold text-slate-800">Evolução Consolidada no Período</h3>
+    <!-- RESUMO COMPARATIVO POR EMPRESA (GRUPO ER vs SNYPER) -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <!-- GRUPO ER -->
+      <div class="glass-card rounded-2xl p-5 border border-blue-200 space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-black text-sm border border-blue-200">ER</div>
+            <div>
+              <h4 class="text-xs font-black text-slate-800 uppercase">Grupo ER Portaria e Segurança LTDA</h4>
+              <p class="text-[11px] text-slate-500 font-mono">CNPJ: 13.506.821/0001-46</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-[10px] font-bold text-slate-400 uppercase">Saldo Caixa ER</div>
+            <div id="mini-saldo-er" class="text-lg font-black font-mono text-blue-700">R$ 0,00</div>
           </div>
         </div>
-        <div class="relative w-full h-64"><canvas id="chart-evolution"></canvas></div>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div class="bg-emerald-50/70 px-3 py-2 rounded-lg border border-emerald-200">
+            <span class="text-[10px] font-bold text-emerald-800 uppercase block">Recebido Líq.</span>
+            <span id="mini-ent-er" class="font-mono font-bold text-emerald-700">R$ 0,00</span>
+          </div>
+          <div class="bg-rose-50/70 px-3 py-2 rounded-lg border border-rose-200">
+            <span class="text-[10px] font-bold text-rose-800 uppercase block">Saídas Pagas</span>
+            <span id="mini-sai-er" class="font-mono font-bold text-rose-700">R$ 0,00</span>
+          </div>
+        </div>
       </div>
 
-      <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
-        <div class="flex items-center justify-between mb-4">
-          <div class="flex items-center space-x-2">
-            <i data-lucide="pie-chart" class="w-5 h-5 text-rose-600"></i>
-            <h3 class="text-sm font-bold text-slate-800">Distribuição por Categoria</h3>
+      <!-- SNYPER -->
+      <div class="glass-card rounded-2xl p-5 border border-purple-200 space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-black text-sm border border-purple-200">SN</div>
+            <div>
+              <h4 class="text-xs font-black text-slate-800 uppercase">Snyper Vigilância e Segurança</h4>
+              <p class="text-[11px] text-slate-500 font-mono">CNPJ: 19.956.281/0001-89</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-[10px] font-bold text-slate-400 uppercase">Saldo Caixa Snyper</div>
+            <div id="mini-saldo-snyper" class="text-lg font-black font-mono text-purple-700">R$ 0,00</div>
           </div>
         </div>
-        <div class="relative w-full h-64 flex items-center justify-center"><canvas id="chart-categories"></canvas></div>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div class="bg-emerald-50/70 px-3 py-2 rounded-lg border border-emerald-200">
+            <span class="text-[10px] font-bold text-emerald-800 uppercase block">Recebido Líq.</span>
+            <span id="mini-ent-snyper" class="font-mono font-bold text-emerald-700">R$ 0,00</span>
+          </div>
+          <div class="bg-rose-50/70 px-3 py-2 rounded-lg border border-rose-200">
+            <span class="text-[10px] font-bold text-rose-800 uppercase block">Saídas Pagas</span>
+            <span id="mini-sai-snyper" class="font-mono font-bold text-rose-700">R$ 0,00</span>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- TABELA DE AUDITORIA COM FILTROS DE MÊS E ANEXOS DUPLOS -->
+    <!-- TABELA DE CONFERÊNCIA E APROVAÇÃO INDIVIDUAL -->
     <section class="glass-card rounded-2xl p-6 sm:p-8 space-y-6">
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-sky-200 pb-5">
         <div class="flex items-center space-x-3">
-          <div class="p-2 rounded-lg bg-blue-100 text-blue-700 border border-blue-200"><i data-lucide="database" class="w-5 h-5"></i></div>
+          <div class="p-2.5 rounded-xl bg-blue-100 text-blue-700 border border-blue-200"><i data-lucide="list-checks" class="w-5 h-5"></i></div>
           <div>
-            <h2 class="text-lg font-bold text-slate-800">Auditoria & Visualização de Documentos por Período</h2>
-            <p class="text-xs text-slate-500">Filtrado automaticamente por mês para otimizar a visualização</p>
+            <h2 class="text-lg font-bold text-slate-800">Conferência & Aprovação Individual</h2>
+            <p class="text-xs text-slate-500">Verifique os documentos anexados e aprove ou recuse cada lançamento individualmente</p>
           </div>
         </div>
-        <div id="table-summary-pill" class="text-xs font-mono bg-white border border-sky-200 text-blue-700 px-4 py-2 rounded-xl font-bold">Aguardando dados...</div>
+        <div id="filter-summary-pill" class="text-xs font-mono bg-white border border-sky-200 text-blue-700 px-4 py-2 rounded-xl font-bold">Nenhum registro</div>
       </div>
 
-      <!-- FILTROS (INCLUINDO SELETOR DE MÊS / PERÍODO) -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 bg-blue-50/60 p-4 rounded-xl border border-sky-200">
-        <!-- NOVO FILTRO DE MÊS -->
-        <div>
-          <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Filtrar por Mês</label>
-          <input type="month" id="filter-mes" onchange="renderTable()" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none font-bold">
-        </div>
-
+      <!-- FILTROS -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 bg-blue-50/60 p-4 rounded-xl border border-sky-200">
         <div>
           <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Tipo de Fluxo</label>
           <select id="filter-tipo" onchange="renderTable()" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none">
@@ -221,7 +261,7 @@
 
         <div>
           <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Busca Rápida</label>
-          <input type="text" id="filter-search" oninput="renderTable()" placeholder="Nº, Fornecedor..." class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none">
+          <input type="text" id="filter-search" oninput="renderTable()" placeholder="Nº, Nome, CPF/CNPJ..." class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none">
         </div>
 
         <div>
@@ -244,18 +284,18 @@
           <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Status</label>
           <select id="filter-status" onchange="renderTable()" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none">
             <option value="ALL">Todos os Status</option>
-            <option value="Pendente">Pendente</option>
-            <option value="Pago">Pago</option>
-            <option value="Aprovada">Aprovada</option>
+            <option value="Pendente">Pendente (Aguardando)</option>
+            <option value="Pago">Pago / Recebido</option>
             <option value="Recusado">Recusado</option>
+            <option value="Cancelada">Cancelada</option>
           </select>
         </div>
 
         <div>
-          <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Ações</label>
-          <button onclick="resetFilters()" class="w-full bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-lg py-2 text-xs font-bold flex items-center justify-center space-x-1">
-            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-            <span>Limpar</span>
+          <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Ação</label>
+          <button onclick="clearFilters()" class="w-full bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-lg py-2 text-xs font-bold flex items-center justify-center space-x-2">
+            <i data-lucide="filter-x" class="w-3.5 h-3.5"></i>
+            <span>Limpar Filtros</span>
           </button>
         </div>
       </div>
@@ -264,25 +304,150 @@
         <table class="w-full text-left text-xs">
           <thead class="bg-slate-100 text-slate-700 font-bold uppercase border-b border-slate-200">
             <tr>
-              <th class="py-3.5 px-4 w-10 text-center">
-                <input type="checkbox" id="select-all-checkbox" onchange="toggleSelectAll(this)" class="rounded border-slate-300 text-blue-600">
-              </th>
-              <th class="py-3.5 px-4">Empresa / Tipo</th>
-              <th class="py-3.5 px-4">Nº Doc</th>
+              <th class="py-3.5 px-4">Empresa / Fluxo</th>
+              <th class="py-3.5 px-4">Nº Ref / Doc</th>
               <th class="py-3.5 px-4">Favorecido / Fornecedor</th>
               <th class="py-3.5 px-4">Categoria / Banco</th>
-              <th class="py-3.5 px-4">Emissão</th>
-              <th class="py-3.5 px-4">Valor Total</th>
+              <th class="py-3.5 px-4">Datas</th>
+              <th class="py-3.5 px-4">Valores</th>
               <th class="py-3.5 px-4 text-center">Status</th>
-              <th class="py-3.5 px-4 text-right">Anexos / Ações</th>
+              <th class="py-3.5 px-4 text-center">Decisão da Chefia</th>
+              <th class="py-3.5 px-4 text-right">Anexos / Detalhes</th>
             </tr>
           </thead>
-          <tbody id="owner-table-body" class="divide-y divide-slate-200 bg-white font-medium"></tbody>
+          <tbody id="nfe-table-body" class="divide-y divide-slate-200 bg-white font-medium"></tbody>
         </table>
       </div>
     </section>
 
   </main>
+
+  <!-- MODAL DE CONFERÊNCIA / BAIXA LÍQUIDA -->
+  <div id="edit-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="glass-card rounded-2xl p-6 sm:p-8 max-w-2xl w-full border border-sky-300 shadow-2xl relative my-8 bg-white">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-4 mb-6">
+        <div class="flex items-center space-x-3">
+          <div class="p-2 rounded-lg bg-blue-100 text-blue-700 border border-blue-200"><i data-lucide="check-square" class="w-5 h-5"></i></div>
+          <div>
+            <h3 class="text-lg font-bold text-slate-800">Conferência & Baixa da Chefia</h3>
+            <p class="text-xs text-slate-500">Valide os valores, informe o líquido recebido (para entradas) e defina o status</p>
+          </div>
+        </div>
+        <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg bg-slate-100"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <form id="edit-form" onsubmit="saveEdit(event)" class="space-y-4">
+        <input type="hidden" id="edit-id">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Empresa Emissora</label>
+            <select id="edit-empresa" onchange="updateEditCNPJ(this.value)" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 font-bold focus:outline-none">
+              <option value="GRUPO_ER">Grupo ER (13.506.821/0001-46)</option>
+              <option value="SNYPER">Snyper (19.956.281/0001-89)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Tipo de Fluxo</label>
+            <select id="edit-tipo" onchange="toggleEditEntradaFields()" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
+              <option value="SAIDA">Saída / Despesa / Salário</option>
+              <option value="ENTRADA">Entrada / Receita</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Status da Aprovação</label>
+            <select id="edit-status" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 font-bold focus:outline-none">
+              <option value="Pendente">Pendente (Aguardando)</option>
+              <option value="Pago">Aprovado / Liquidado (Pago)</option>
+              <option value="Recusado">Recusado</option>
+              <option value="Cancelada">Cancelada</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nº Doc / Referência</label>
+            <input type="text" id="edit-numero" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">CNPJ / CPF</label>
+            <input type="text" id="edit-cnpj" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 font-mono focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Favorecido / Fornecedor</label>
+            <input type="text" id="edit-fornecedor" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Valor Bruto / Total (R$)</label>
+            <input type="text" id="edit-valor" required oninput="maskCurrencyInput(this)" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 font-mono font-bold focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Data de Emissão</label>
+            <input type="date" id="edit-emissao" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
+          </div>
+
+          <!-- BLOCO EXCLUSIVO DE ENTRADA NO MODAL DE BAIXA -->
+          <div id="edit-container-entrada-liquida" class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3 bg-emerald-50 p-3.5 rounded-xl border border-emerald-300 hidden">
+            <div>
+              <label class="block text-xs font-bold text-emerald-800 uppercase mb-1">Valor Líquido Recebido (R$)</label>
+              <input type="text" id="edit-valor-liquido-recebido" placeholder="R$ 0,00" oninput="maskCurrencyInput(this); autoCheckEditBaixaEntrada()" class="w-full bg-white border border-emerald-400 rounded-xl px-3 py-2 text-xs text-emerald-700 font-mono font-bold focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-emerald-800 uppercase mb-1">Data do Valor Líquido Recebido</label>
+              <input type="date" id="edit-data-liquido-recebido" onchange="autoCheckEditBaixaEntrada()" class="w-full bg-white border border-emerald-400 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Categoria</label>
+            <select id="edit-categoria" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
+              <option value="Salários e Encargos">Salários e Encargos</option>
+              <option value="Serviços Prestados">Serviços Prestados</option>
+              <option value="Alimentação">Alimentação</option>
+              <option value="Rescisão">Rescisão</option>
+              <option value="Transporte/Combustível">Transporte/Combustível</option>
+              <option value="Pró-labore">Pró-labore</option>
+              <option value="Equipamentos de Monitoramento">Equipamentos de Monitoramento</option>
+              <option value="Vigilância Presencial">Vigilância Presencial</option>
+              <option value="Despesas Operacionais / Serviços">Despesas Operacionais / Serviços</option>
+              <option value="Faturamento Contratos de Vigilância">Faturamento Contratos de Vigilância</option>
+              <option value="Boletim de Medição">Boletim de Medição</option>
+              <option value="Outras Receitas">Outras Receitas</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Local de Pagamento / Banco</label>
+            <select id="edit-local-pgto" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
+              <option value="Bradesco">Bradesco</option>
+              <option value="Santander">Santander</option>
+              <option value="Banco Inter">Banco Inter</option>
+              <option value="Banco do Brasil">Banco do Brasil</option>
+              <option value="Nubank">Nubank</option>
+              <option value="Itaú">Itaú</option>
+              <option value="Caixa Econômica">Caixa Econômica</option>
+              <option value="Dinheiro (Caixa Físico)">Dinheiro (Caixa Físico)</option>
+            </select>
+          </div>
+
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Observações / Parecer da Diretoria</label>
+            <textarea id="edit-observacoes" rows="2" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none"></textarea>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end space-x-3 pt-4 border-t border-slate-200">
+          <button type="button" onclick="closeEditModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">Cancelar</button>
+          <button type="submit" id="btn-save-edit" class="btn-neon-primary px-6 py-2 rounded-xl text-xs font-bold text-white">Confirmar & Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- MODAL DE VISUALIZAÇÃO DE ANEXO -->
   <div id="preview-modal" class="fixed inset-0 z-50 hidden bg-slate-900/70 backdrop-blur-md flex items-center justify-center p-4">
@@ -310,15 +475,15 @@
     <span id="toast-message">Notificação</span>
   </div>
 
-  <!-- FIREBASE & CHARTS SCRIPT -->
+  <!-- SCRIPT FIREBASE & EXCEL REAL (.XLSX) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, updateDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     if (!localStorage.getItem('er_usuario_logado')) {
-      alert('Acesso negado! Faça login.');
+      alert('Acesso negado! Faça login para entrar no sistema.');
       window.location.href = 'index.html';
-      throw new Error('Não autorizado.');
+      throw new Error('Acesso não autorizado.');
     }
 
     const firebaseConfig = {
@@ -333,19 +498,10 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    let nfeData = [];
-    let selectedIds = new Set();
-    let chartEvolutionInstance = null;
-    let chartCategoriesInstance = null;
+    let nfeList = [];
 
     window.onload = function() {
       lucide.createIcons();
-      // Define o filtro de mês automaticamente para o mês atual (ex: 2026-06)
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      document.getElementById('filter-mes').value = `${year}-${month}`;
-
       listenFirestore();
     };
 
@@ -358,139 +514,87 @@
 
     function listenFirestore() {
       onSnapshot(collection(db, "transacoes"), (snapshot) => {
-        nfeData = [];
+        nfeList = [];
         snapshot.forEach(docSnap => {
-          nfeData.push({ id: docSnap.id, ...docSnap.data() });
+          nfeList.push({ id: docSnap.id, ...docSnap.data() });
         });
 
-        nfeData.sort((a, b) => (b.criadoEm?.seconds || 0) - (a.criadoEm?.seconds || 0));
+        // Prioriza itens Pendentes no topo para conferência da chefia, seguidos pelos mais recentes
+        nfeList.sort((a, b) => {
+          if (a.status === 'Pendente' && b.status !== 'Pendente') return -1;
+          if (a.status !== 'Pendente' && b.status === 'Pendente') return 1;
+          return (b.criadoEm?.seconds || 0) - (a.criadoEm?.seconds || 0);
+        });
 
-        renderDashboardKPIs();
-        renderCharts();
-        renderTable();
+        refreshAll();
       });
     }
 
-    function formatCurrency(val) {
-      let n = parseFloat(val);
-      if (isNaN(n)) n = 0;
-      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(n);
-    }
+    window.refreshAll = function() {
+      renderDashboard();
+      renderTable();
+    };
 
-    function formatDate(dateStr) {
-      if (!dateStr) return 'N/A';
-      const parts = dateStr.split('-');
-      if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
-      return dateStr;
-    }
+    window.filtrarApenasPendentes = function() {
+      document.getElementById('filter-status').value = 'Pendente';
+      renderTable();
+      document.getElementById('nfe-table-body').scrollIntoView({ behavior: 'smooth' });
+    };
 
-    // Retorna apenas os registros filtrados pelo MÊS selecionado e pela EMPRESA
-    function getFilteredDataForPeriod() {
-      const empresaGlobal = document.getElementById('global-empresa-filter').value;
-      const mesFiltro = document.getElementById('filter-mes').value; // Formato "YYYY-MM"
+    // APROVAÇÃO / DECISÃO INDIVIDUAL DA CHEFIA (SEM BOTÃO DE APROVAR TODAS)
+    window.decisaoIndividualChefia = async function(id, acao) {
+      const item = nfeList.find(x => x.id === id);
+      if (!item) return;
 
-      return nfeData.filter(item => {
-        const matchesEmpresa = (empresaGlobal === 'ALL' || item.empresaEmissora === empresaGlobal);
-        let matchesMes = true;
-        if (mesFiltro && item.emissao) {
-          // item.emissao vem como "YYYY-MM-DD"
-          matchesMes = item.emissao.startsWith(mesFiltro);
+      // Se for ENTRADA e a chefia clicar em Dar Baixa, abre o modal para conferir o Valor Líquido Recebido
+      if (acao === 'APROVAR' && item.tipo === 'ENTRADA') {
+        openEditModal(id);
+        showToast('Informe o Valor Líquido Recebido e a Data para concluir a baixa.', 'info');
+        return;
+      }
+
+      if (acao === 'APROVAR') {
+        if (!confirm(`Confirmar APROVAÇÃO e LIQUIDAÇÃO de ${item.numero} (${item.fornecedor}) no valor de ${formatCurrency(item.valor)}?`)) return;
+        try {
+          await updateDoc(doc(db, "transacoes", id), { status: 'Pago' });
+          showToast(`Lançamento ${item.numero} aprovado e liquidado!`, 'success');
+        } catch (e) {
+          showToast('Erro ao aprovar lançamento.', 'warning');
         }
-        return matchesEmpresa && matchesMes;
-      });
+      } else if (acao === 'RECUSAR') {
+        const motivo = prompt(`Informe o motivo da recusa para ${item.numero} (opcional):`);
+        if (motivo === null) return;
+        const obsAtual = item.observacoes ? `${item.observacoes} | ` : '';
+        const novaObs = motivo.trim() ? `${obsAtual}[RECUSADO CHEFIA]: ${motivo.trim()}` : item.observacoes;
+        try {
+          await updateDoc(doc(db, "transacoes", id), { 
+            status: 'Recusado',
+            observacoes: novaObs || ''
+          });
+          showToast(`Lançamento ${item.numero} marcado como Recusado.`, 'warning');
+        } catch (e) {
+          showToast('Erro ao recusar lançamento.', 'warning');
+        }
+      }
+    };
+
+    window.updateEditCNPJ = function(empresa) {
+      document.getElementById('edit-cnpj').value = (empresa === 'SNYPER') ? '19.956.281/0001-89' : '13.506.821/0001-46';
+    };
+
+    function normalizeBankName(bank) {
+      if (!bank) return 'Bradesco';
+      const upper = String(bank).toUpperCase().trim();
+      if (upper === 'BRADESCO' || upper === 'BRAD - ER' || upper === 'BRAD-ER') return 'Bradesco';
+      if (upper === 'SANTANDER') return 'Santander';
+      if (upper === 'BANCO_INTER') return 'Banco Inter';
+      if (upper === 'BANCO_DO_BRASIL') return 'Banco do Brasil';
+      if (upper === 'NUBANK') return 'Nubank';
+      if (upper === 'ITAU') return 'Itaú';
+      if (upper === 'CAIXA') return 'Caixa Econômica';
+      return bank;
     }
 
-    function renderDashboardKPIs() {
-      const dadosPeriodo = getFilteredDataForPeriod();
-
-      let faturamentoPago = 0;
-      let saidasPagas = 0;
-      let pendingVal = 0, pendingCount = 0;
-
-      dadosPeriodo.forEach(item => {
-        const val = parseFloat(item.valor || 0);
-        const isPago = (item.status === 'Pago' || item.status === 'Aprovada');
-
-        if (isPago) {
-          if (item.tipo === 'ENTRADA') faturamentoPago += val;
-          else saidasPagas += val;
-        } else {
-          pendingCount++;
-          pendingVal += val;
-        }
-      });
-
-      const balanco = faturamentoPago - saidasPagas;
-
-      document.getElementById('kpi-entradas-val').textContent = formatCurrency(faturamentoPago);
-      document.getElementById('kpi-saidas-val').textContent = formatCurrency(saidasPagas);
-      
-      const balElem = document.getElementById('kpi-balanco-val');
-      balElem.textContent = formatCurrency(balanco);
-      balElem.className = balanco >= 0 ? "text-xl sm:text-2xl font-black text-emerald-600 font-mono" : "text-xl sm:text-2xl font-black text-rose-600 font-mono";
-
-      document.getElementById('kpi-pending-count').textContent = pendingCount;
-      document.getElementById('kpi-pending-val').textContent = formatCurrency(pendingVal);
-      document.getElementById('kpi-total-count').textContent = dadosPeriodo.length;
-    }
-
-    function renderCharts() {
-      const dadosPeriodo = getFilteredDataForPeriod();
-      const ctxEvol = document.getElementById('chart-evolution').getContext('2d');
-      if (chartEvolutionInstance) chartEvolutionInstance.destroy();
-
-      let totalEntradas = dadosPeriodo.filter(i => i.tipo === 'ENTRADA' && (i.status === 'Pago' || i.status === 'Aprovada')).reduce((a, b) => a + parseFloat(b.valor || 0), 0);
-      let totalSaidas = dadosPeriodo.filter(i => i.tipo !== 'ENTRADA' && (i.status === 'Pago' || i.status === 'Aprovada')).reduce((a, b) => a + parseFloat(b.valor || 0), 0);
-
-      chartEvolutionInstance = new Chart(ctxEvol, {
-        type: 'bar',
-        data: {
-          labels: ['Fluxo do Mês Selecionado'],
-          datasets: [
-            { label: 'Entradas Pagas (R$)', data: [totalEntradas], backgroundColor: '#059669' },
-            { label: 'Saídas Pagas (R$)', data: [totalSaidas], backgroundColor: '#dc2626' }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { labels: { color: '#334155' } } },
-          scales: {
-            x: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#64748b' } },
-            y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#64748b' } }
-          }
-        }
-      });
-
-      const catMap = {};
-      dadosPeriodo.forEach(item => {
-        catMap[item.categoria] = (catMap[item.categoria] || 0) + parseFloat(item.valor || 0);
-      });
-
-      const ctxCat = document.getElementById('chart-categories').getContext('2d');
-      if (chartCategoriesInstance) chartCategoriesInstance.destroy();
-
-      chartCategoriesInstance = new Chart(ctxCat, {
-        type: 'doughnut',
-        data: {
-          labels: Object.keys(catMap).length ? Object.keys(catMap) : ['Sem dados'],
-          datasets: [{
-            data: Object.values(catMap).length ? Object.values(catMap) : [1],
-            backgroundColor: ['#0284c7', '#2563eb', '#dc2626', '#059669', '#d97706'],
-            borderWidth: 2,
-            borderColor: '#ffffff'
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { position: 'bottom', labels: { color: '#334155', font: { size: 10 } } } },
-          cutout: '70%'
-        }
-      });
-    }
-
-    // VISUALIZAÇÃO DE ANEXO NATIVO
     window.openPreviewModal = function(name, dataUrl) {
       const modal = document.getElementById('preview-modal');
       const title = document.getElementById('preview-title');
@@ -507,7 +611,6 @@
       } else {
         body.innerHTML = `<iframe src="${dataUrl}" class="w-full h-full border-0 rounded-lg"></iframe>`;
       }
-
       modal.classList.remove('hidden');
     };
 
@@ -515,78 +618,484 @@
       document.getElementById('preview-modal').classList.add('hidden');
     };
 
+    window.autoCheckEditBaixaEntrada = function() {
+      const valLiq = parseCurrencyToNumber(document.getElementById('edit-valor-liquido-recebido').value);
+      const dtLiq = document.getElementById('edit-data-liquido-recebido').value;
+      if (valLiq > 0 && dtLiq) document.getElementById('edit-status').value = 'Pago';
+    };
+
+    window.toggleEditEntradaFields = function() {
+      const tipo = document.getElementById('edit-tipo').value;
+      const box = document.getElementById('edit-container-entrada-liquida');
+      if (tipo === 'ENTRADA') box.classList.remove('hidden');
+      else box.classList.add('hidden');
+    };
+
+    window.maskCurrencyInput = function(input) {
+      let value = input.value.replace(/\D/g, "");
+      if (!value) { input.value = ""; return; }
+      let numeric = (parseFloat(value) / 100).toFixed(2);
+      input.value = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(numeric);
+    };
+
+    function parseCurrencyToNumber(valStr) {
+      if (!valStr) return 0;
+      let clean = String(valStr).replace(/[^\d,-]/g, '').replace(',', '.');
+      return parseFloat(clean) || 0;
+    }
+
+    window.openEditModal = function(id) {
+      const item = nfeList.find(x => x.id === id);
+      if (!item) return;
+
+      const setVal = (elId, val) => { const el = document.getElementById(elId); if (el) el.value = val; };
+
+      setVal('edit-id', item.id);
+      setVal('edit-empresa', item.empresaEmissora || 'GRUPO_ER');
+      setVal('edit-tipo', item.tipo || 'SAIDA');
+      setVal('edit-status', item.status || 'Pendente');
+      setVal('edit-numero', item.numero || '');
+      setVal('edit-cnpj', item.cnpj || '13.506.821/0001-46');
+      setVal('edit-fornecedor', item.fornecedor || '');
+      setVal('edit-valor', formatCurrency(item.valor || 0));
+      setVal('edit-emissao', item.emissao || '');
+      setVal('edit-valor-liquido-recebido', item.valorLiquidoRecebido ? formatCurrency(item.valorLiquidoRecebido) : '');
+      setVal('edit-data-liquido-recebido', item.dataLiquidoRecebido || '');
+      setVal('edit-categoria', item.categoria || '');
+      setVal('edit-local-pgto', normalizeBankName(item.localPgto));
+      setVal('edit-observacoes', item.observacoes || '');
+
+      toggleEditEntradaFields();
+      document.getElementById('edit-modal').classList.remove('hidden');
+    };
+
+    window.closeEditModal = function() {
+      document.getElementById('edit-modal').classList.add('hidden');
+    };
+
+    window.saveEdit = async function(event) {
+      event.preventDefault();
+      const id = document.getElementById('edit-id').value;
+      if (!id) return;
+
+      const getVal = (elId) => { const el = document.getElementById(elId); return el ? el.value.trim() : ''; };
+
+      const tipo = getVal('edit-tipo');
+      let status = getVal('edit-status');
+      const valorBruto = parseCurrencyToNumber(getVal('edit-valor'));
+      const valorLiquidoRecebido = tipo === 'ENTRADA' ? parseCurrencyToNumber(getVal('edit-valor-liquido-recebido')) : 0;
+      const dataLiquidoRecebido = tipo === 'ENTRADA' ? (getVal('edit-data-liquido-recebido') || null) : null;
+
+      if (tipo === 'ENTRADA' && valorLiquidoRecebido > 0 && dataLiquidoRecebido && status === 'Pendente') {
+        status = 'Pago';
+      }
+
+      const updatedData = {
+        empresaEmissora: getVal('edit-empresa'),
+        tipo: tipo,
+        status: status,
+        numero: getVal('edit-numero'),
+        cnpj: getVal('edit-cnpj'),
+        fornecedor: getVal('edit-fornecedor'),
+        valor: valorBruto,
+        valorLiquidoRecebido: valorLiquidoRecebido,
+        dataLiquidoRecebido: dataLiquidoRecebido,
+        emissao: getVal('edit-emissao'),
+        categoria: getVal('edit-categoria'),
+        localPgto: normalizeBankName(getVal('edit-local-pgto')),
+        observacoes: getVal('edit-observacoes')
+      };
+
+      try {
+        await updateDoc(doc(db, "transacoes", id), updatedData);
+        showToast('Decisão e dados atualizados com sucesso!', 'success');
+        closeEditModal();
+      } catch (err) {
+        showToast('Erro ao atualizar: ' + err.message, 'warning');
+      }
+    };
+
+    window.deleteNFe = async function(id) {
+      if (!confirm('Deseja realmente excluir esta transação do banco de dados?')) return;
+      try {
+        await deleteDoc(doc(db, "transacoes", id));
+        showToast('Registro excluído com sucesso.', 'warning');
+      } catch (e) {
+        showToast('Erro ao excluir.', 'warning');
+      }
+    };
+
+    // =========================================================================
+    // EXPORTAÇÃO EXCEL NATIVA (.XLSX) VIA SHEETJS COM 5 ABAS SEPARADAS E CORRETAS
+    // =========================================================================
+    window.exportToExcel = function() {
+      if (typeof XLSX === 'undefined') {
+        showToast('Biblioteca Excel carregando, tente novamente em 2 segundos.', 'warning');
+        return;
+      }
+
+      const empresaFiltro = document.getElementById('global-empresa-filter').value;
+      const mesFiltro = document.getElementById('global-month-filter').value;
+
+      const listaBase = nfeList.filter(item => {
+        const matchEmp = (empresaFiltro === 'ALL' || item.empresaEmissora === empresaFiltro);
+        const matchMes = (!mesFiltro || (item.emissao && item.emissao.startsWith(mesFiltro)));
+        return matchEmp && matchMes;
+      });
+
+      if (!listaBase || listaBase.length === 0) {
+        showToast('Não há registros para exportar com os filtros selecionados.', 'warning');
+        return;
+      }
+
+      const wb = XLSX.utils.book_new();
+
+      const getEmpresaLabel = (emp) => emp === 'SNYPER' ? 'SNYPER' : 'GRUPO ER';
+      const getValLiq = (item) => {
+        if (item.tipo !== 'ENTRADA') return 0;
+        const vLiq = parseFloat(item.valorLiquidoRecebido || 0);
+        if (vLiq > 0) return vLiq;
+        return item.status === 'Pago' ? parseFloat(item.valor || 0) : 0;
+      };
+      const getDtBaixa = (item) => {
+        if (item.tipo === 'ENTRADA') {
+          return item.dataLiquidoRecebido ? formatDate(item.dataLiquidoRecebido) : (item.status === 'Pago' ? formatDate(item.emissao) : '-');
+        }
+        return item.status === 'Pago' ? formatDate(item.emissao) : '-';
+      };
+
+      const entradasList = listaBase.filter(i => i.tipo === 'ENTRADA');
+      const saidasList = listaBase.filter(i => i.tipo !== 'ENTRADA');
+      const erList = listaBase.filter(i => i.empresaEmissora !== 'SNYPER');
+      const snyperList = listaBase.filter(i => i.empresaEmissora === 'SNYPER');
+
+      const calcTotals = (arr) => {
+        let brutoEnt = 0, liqEnt = 0, saida = 0, pendente = 0;
+        arr.forEach(i => {
+          const val = parseFloat(i.valor || 0);
+          if (i.tipo === 'ENTRADA') {
+            brutoEnt += val;
+            liqEnt += getValLiq(i);
+            if (i.status === 'Pendente') pendente += val;
+          } else {
+            if (i.status === 'Pago') saida += val;
+            else if (i.status === 'Pendente') pendente += val;
+          }
+        });
+        return { brutoEnt, liqEnt, saida, pendente, saldo: liqEnt - saida };
+      };
+
+      const totER = calcTotals(erList);
+      const totSnyper = calcTotals(snyperList);
+
+      // 1. ABA: RESUMO GERAL
+      const resumoRows = [
+        ["RELATÓRIO EXECUTIVO FINANCEIRO — GRUPO ER & SNYPER", "", "", "", "", "", ""],
+        [`Período: ${mesFiltro || 'Todos os períodos'}`, `Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, "", "", "", "", ""],
+        [],
+        ["Empresa", "CNPJ", "Saídas Pagas (R$)", "Entradas Brutas (R$)", "Líquido Recebido (R$)", "Pendente (R$)", "Saldo Caixa Real (R$)"],
+        ["Grupo ER Portaria e Segurança LTDA", "13.506.821/0001-46", totER.saida, totER.brutoEnt, totER.liqEnt, totER.pendente, totER.saldo],
+        ["Snyper Vigilância e Segurança", "19.956.281/0001-89", totSnyper.saida, totSnyper.brutoEnt, totSnyper.liqEnt, totSnyper.pendente, totSnyper.saldo],
+        ["TOTAL CONSOLIDADO", "-", totER.saida + totSnyper.saida, totER.brutoEnt + totSnyper.brutoEnt, totER.liqEnt + totSnyper.liqEnt, totER.pendente + totSnyper.pendente, totER.saldo + totSnyper.saldo]
+      ];
+      const wsResumo = XLSX.utils.aoa_to_sheet(resumoRows);
+      wsResumo['!cols'] = [{ wch: 38 }, { wch: 22 }, { wch: 18 }, { wch: 20 }, { wch: 22 }, { wch: 18 }, { wch: 22 }];
+      XLSX.utils.book_append_sheet(wb, wsResumo, "Resumo Geral");
+
+      // 2. ABA: ENTRADAS
+      const entradasHeader = ["Empresa", "Nº Doc", "Data Emissão", "Cliente / Tomador", "CNPJ/CPF", "Categoria", "Valor Bruto (R$)", "Valor Líq. Recebido (R$)", "Data Baixa Líquida", "Banco", "Status", "Observações"];
+      let sumEntBruto = 0, sumEntLiq = 0;
+      const entradasData = entradasList.map(i => {
+        const vBruto = parseFloat(i.valor || 0);
+        const vLiq = getValLiq(i);
+        sumEntBruto += vBruto;
+        sumEntLiq += vLiq;
+        return [
+          getEmpresaLabel(i.empresaEmissora),
+          i.numero || '',
+          formatDate(i.emissao),
+          i.fornecedor || '',
+          i.cnpj || '',
+          i.categoria || '',
+          vBruto,
+          vLiq,
+          getDtBaixa(i),
+          normalizeBankName(i.localPgto),
+          i.status || '',
+          i.observacoes || ''
+        ];
+      });
+      entradasData.push(["TOTAL ENTRADAS", "", "", "", "", "", sumEntBruto, sumEntLiq, "", "", "", ""]);
+      const wsEntradas = XLSX.utils.aoa_to_sheet([entradasHeader, ...entradasData]);
+      wsEntradas['!cols'] = [{ wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 30 }, { wch: 20 }, { wch: 28 }, { wch: 18 }, { wch: 22 }, { wch: 18 }, { wch: 16 }, { wch: 14 }, { wch: 35 }];
+      XLSX.utils.book_append_sheet(wb, wsEntradas, "Entradas");
+
+      // 3. ABA: SAÍDAS
+      const saidasHeader = ["Empresa", "Nº Doc", "Data Emissão", "Fornecedor / Favorecido", "CNPJ/CPF", "Categoria", "Valor Saída (R$)", "Data Pagamento", "Forma Pgto", "Banco", "Status", "Observações"];
+      let sumSaidaTotal = 0;
+      const saidasData = saidasList.map(i => {
+        const vSaida = parseFloat(i.valor || 0);
+        sumSaidaTotal += vSaida;
+        return [
+          getEmpresaLabel(i.empresaEmissora),
+          i.numero || '',
+          formatDate(i.emissao),
+          i.fornecedor || '',
+          i.cnpj || '',
+          i.categoria || '',
+          vSaida,
+          getDtBaixa(i),
+          i.formaPgto || '',
+          normalizeBankName(i.localPgto),
+          i.status || '',
+          i.observacoes || ''
+        ];
+      });
+      saidasData.push(["TOTAL SAÍDAS", "", "", "", "", "", sumSaidaTotal, "", "", "", "", ""]);
+      const wsSaidas = XLSX.utils.aoa_to_sheet([saidasHeader, ...saidasData]);
+      wsSaidas['!cols'] = [{ wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 30 }, { wch: 20 }, { wch: 28 }, { wch: 18 }, { wch: 16 }, { wch: 16 }, { wch: 16 }, { wch: 14 }, { wch: 35 }];
+      XLSX.utils.book_append_sheet(wb, wsSaidas, "Saidas");
+
+      // 4 e 5. ABAS INDIVIDUAIS: GRUPO ER & SNYPER
+      const buildEmpresaSheet = (items) => {
+        const header = ["Fluxo", "Nº Doc", "Emissão", "Fornecedor / Cliente", "CNPJ/CPF", "Categoria", "Saída (R$)", "Entrada Bruta (R$)", "Líquido Recebido (R$)", "Data Baixa", "Banco", "Status", "Observações"];
+        let sSaida = 0, sBruto = 0, sLiq = 0;
+        const rows = items.map(i => {
+          const isEnt = i.tipo === 'ENTRADA';
+          const val = parseFloat(i.valor || 0);
+          const vLiq = getValLiq(i);
+          if (isEnt) { sBruto += val; sLiq += vLiq; }
+          else { sSaida += val; }
+          return [
+            i.tipo,
+            i.numero || '',
+            formatDate(i.emissao),
+            i.fornecedor || '',
+            i.cnpj || '',
+            i.categoria || '',
+            !isEnt ? val : 0,
+            isEnt ? val : 0,
+            isEnt ? vLiq : 0,
+            getDtBaixa(i),
+            normalizeBankName(i.localPgto),
+            i.status || '',
+            i.observacoes || ''
+          ];
+        });
+        rows.push(["TOTAL EMPRESA", "", "", "", "", "", sSaida, sBruto, sLiq, "", "", "", ""]);
+        const ws = XLSX.utils.aoa_to_sheet([header, ...rows]);
+        ws['!cols'] = [{ wch: 12 }, { wch: 14 }, { wch: 14 }, { wch: 30 }, { wch: 20 }, { wch: 26 }, { wch: 16 }, { wch: 18 }, { wch: 20 }, { wch: 15 }, { wch: 16 }, { wch: 14 }, { wch: 35 }];
+        return ws;
+      };
+
+      XLSX.utils.book_append_sheet(wb, buildEmpresaSheet(erList), "Grupo ER");
+      XLSX.utils.book_append_sheet(wb, buildEmpresaSheet(snyperList), "Snyper");
+
+      // Formata células numéricas em R$ em todas as abas
+      wb.SheetNames.forEach(sheetName => {
+        const ws = wb.Sheets[sheetName];
+        for (let cellRef in ws) {
+          if (cellRef[0] === '!') continue;
+          if (typeof ws[cellRef].v === 'number') {
+            ws[cellRef].z = 'R$ #,##0.00';
+          }
+        }
+      });
+
+      const fileName = `Relatorio_Chefia_ER_Snyper_${mesFiltro || 'Geral'}_${new Date().toISOString().slice(0,10)}.xlsx`;
+      XLSX.writeFile(wb, fileName);
+
+      showToast('Planilha Excel (.xlsx) gerada com 5 abas separadas!', 'success');
+    };
+
+    window.renderDashboard = function() {
+      const empresaGlobal = document.getElementById('global-empresa-filter').value;
+      const mesGlobal = document.getElementById('global-month-filter').value;
+
+      let faturamentoLiquidoRecebido = 0, faturamentoBrutoTotal = 0, countFatPago = 0;
+      let saidasPagas = 0, countSaidasPagas = 0;
+      let valorPendenteTotal = 0, countPendente = 0;
+
+      let entER = 0, saiER = 0;
+      let entSnyper = 0, saiSnyper = 0;
+
+      nfeList.forEach(item => {
+        if (mesGlobal && (!item.emissao || !item.emissao.startsWith(mesGlobal))) return;
+
+        const valBruto = parseFloat(item.valor || 0);
+        const valLiq = parseFloat(item.valorLiquidoRecebido || 0);
+        const isPago = item.status === 'Pago';
+        const isSnyper = item.empresaEmissora === 'SNYPER';
+
+        // Totais individuais por empresa
+        if (item.tipo === 'ENTRADA' && (isPago || valLiq > 0)) {
+          const efetivo = valLiq > 0 ? valLiq : valBruto;
+          if (isSnyper) entSnyper += efetivo;
+          else entER += efetivo;
+        } else if (item.tipo !== 'ENTRADA' && isPago) {
+          if (isSnyper) saiSnyper += valBruto;
+          else saiER += valBruto;
+        }
+
+        // Filtro global de empresa para os 4 cards principais
+        if (empresaGlobal !== 'ALL' && item.empresaEmissora !== empresaGlobal) return;
+
+        if (item.tipo === 'ENTRADA') {
+          if (isPago || valLiq > 0) {
+            faturamentoBrutoTotal += valBruto;
+            faturamentoLiquidoRecebido += (valLiq > 0 ? valLiq : valBruto);
+            countFatPago++;
+          } else if (item.status === 'Pendente') {
+            valorPendenteTotal += valBruto;
+            countPendente++;
+          }
+        } else {
+          if (isPago) {
+            saidasPagas += valBruto;
+            countSaidasPagas++;
+          } else if (item.status === 'Pendente') {
+            valorPendenteTotal += valBruto;
+            countPendente++;
+          }
+        }
+      });
+
+      const entradasLiquidas = faturamentoLiquidoRecebido - saidasPagas;
+      const saldoER = entER - saiER;
+      const saldoSnyper = entSnyper - saiSnyper;
+
+      document.getElementById('stat-faturamento-pago').textContent = formatCurrency(faturamentoLiquidoRecebido);
+      document.getElementById('stat-faturamento-bruto').textContent = formatCurrency(faturamentoBrutoTotal);
+      document.getElementById('count-faturamento-pago').textContent = countFatPago;
+
+      document.getElementById('stat-saidas-pagas').textContent = formatCurrency(saidasPagas);
+      document.getElementById('count-saidas-pagas').textContent = countSaidasPagas;
+
+      const elElem = document.getElementById('stat-entradas-liquidas');
+      elElem.textContent = formatCurrency(entradasLiquidas);
+      elElem.className = entradasLiquidas >= 0 ? "text-2xl sm:text-3xl font-black text-blue-700 font-mono" : "text-2xl sm:text-3xl font-black text-rose-600 font-mono";
+
+      document.getElementById('stat-total-pendente-valor').textContent = formatCurrency(valorPendenteTotal);
+      document.getElementById('stat-pending-count').textContent = `${countPendente} itens`;
+
+      // Cards Comparativos ER & Snyper
+      document.getElementById('mini-ent-er').textContent = formatCurrency(entER);
+      document.getElementById('mini-sai-er').textContent = formatCurrency(saiER);
+      const elER = document.getElementById('mini-saldo-er');
+      elER.textContent = formatCurrency(saldoER);
+      elER.className = saldoER >= 0 ? "text-lg font-black font-mono text-blue-700" : "text-lg font-black font-mono text-rose-600";
+
+      document.getElementById('mini-ent-snyper').textContent = formatCurrency(entSnyper);
+      document.getElementById('mini-sai-snyper').textContent = formatCurrency(saiSnyper);
+      const elSn = document.getElementById('mini-saldo-snyper');
+      elSn.textContent = formatCurrency(saldoSnyper);
+      elSn.className = saldoSnyper >= 0 ? "text-lg font-black font-mono text-purple-700" : "text-lg font-black font-mono text-rose-600";
+    };
+
     window.renderTable = function() {
-      const dadosPeriodo = getFilteredDataForPeriod();
+      const empresaGlobal = document.getElementById('global-empresa-filter').value;
+      const mesGlobal = document.getElementById('global-month-filter').value;
       const search = document.getElementById('filter-search').value.toLowerCase();
       const categoria = document.getElementById('filter-categoria').value;
       const status = document.getElementById('filter-status').value;
       const tipo = document.getElementById('filter-tipo').value;
 
-      const filtrados = dadosPeriodo.filter(item => {
+      const filtrados = nfeList.filter(item => {
+        const matchesEmpresa = (empresaGlobal === 'ALL' || item.empresaEmissora === empresaGlobal);
+        const matchesMes = (!mesGlobal || (item.emissao && item.emissao.startsWith(mesGlobal)));
         const matchesSearch = (item.numero || '').toLowerCase().includes(search) || 
                               (item.fornecedor || '').toLowerCase().includes(search) || 
                               (item.cnpj || '').includes(search);
         const matchesCat = (categoria === 'ALL' || item.categoria === categoria);
         const matchesStatus = (status === 'ALL' || item.status === status);
         const matchesTipo = (tipo === 'ALL' || item.tipo === tipo);
-        return matchesSearch && matchesCat && matchesStatus && matchesTipo;
+        return matchesEmpresa && matchesMes && matchesSearch && matchesCat && matchesStatus && matchesTipo;
       });
 
-      const tbody = document.getElementById('owner-table-body');
+      const tbody = document.getElementById('nfe-table-body');
       tbody.innerHTML = '';
 
-      document.getElementById('table-summary-pill').textContent = `Exibindo ${filtrados.length} registros no mês`;
+      document.getElementById('filter-summary-pill').textContent = `Exibindo ${filtrados.length} registros`;
 
       if (filtrados.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="py-12 text-center text-slate-400">Nenhum registro encontrado para este mês.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="py-10 text-center text-slate-500">Nenhum registro encontrado para os filtros aplicados.</td></tr>`;
         lucide.createIcons();
-        renderDashboardKPIs();
-        renderCharts();
         return;
       }
 
       filtrados.forEach(item => {
-        const isChecked = selectedIds.has(item.id);
         const tr = document.createElement('tr');
-        tr.className = "hover:bg-blue-50/50 transition-colors";
+        const isPendente = item.status === 'Pendente';
+        tr.className = isPendente ? 'bg-amber-50/40 hover:bg-amber-50/80 transition-colors' : 'hover:bg-blue-50/50 transition-colors';
 
         const isEntrada = (item.tipo === 'ENTRADA');
         const isSnyper = (item.empresaEmissora === 'SNYPER');
+        const bancoExibicao = normalizeBankName(item.localPgto);
 
         const badgeEmpresa = isSnyper
           ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-black bg-purple-100 text-purple-800 border border-purple-300 mr-1">SNYPER</span>`
           : `<span class="px-1.5 py-0.5 rounded text-[9px] font-black bg-blue-100 text-blue-800 border border-blue-300 mr-1">ER</span>`;
 
-        const tipoBadge = isEntrada 
+        const tipoTag = isEntrada 
           ? `<span class="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">ENTRADA</span>`
           : `<span class="px-2 py-0.5 rounded text-[10px] font-black bg-rose-100 text-rose-800 border border-rose-300">SAÍDA</span>`;
 
-        const valorFormatted = isEntrada
-          ? `<span class="text-emerald-700 font-bold font-mono">+${formatCurrency(item.valor)}</span>`
-          : `<span class="text-rose-700 font-bold font-mono">-${formatCurrency(item.valor)}</span>`;
-
-        let statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">${item.status}</span>`;
-        if (item.status === 'Pago' || item.status === 'Aprovada') {
-          statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">${item.status}</span>`;
+        let valorFormatted = '';
+        if (isEntrada) {
+          const valLiq = parseFloat(item.valorLiquidoRecebido || 0);
+          valorFormatted = `<div class="text-slate-600 font-mono text-[11px]">Bruto: +${formatCurrency(item.valor)}</div>`;
+          if (valLiq > 0) {
+            valorFormatted += `<div class="text-emerald-700 font-bold font-mono">Líq.: +${formatCurrency(valLiq)}</div>`;
+          } else {
+            valorFormatted += `<div class="text-amber-600 text-[10px] font-semibold">Aguardando baixa líquida</div>`;
+          }
+        } else {
+          valorFormatted = `<span class="text-rose-700 font-bold font-mono">-${formatCurrency(item.valor)}</span>`;
         }
 
-        // BOTÕES DE ANEXO DUPLO
+        let datasHtml = `<div class="font-mono text-slate-600">Emissão: ${formatDate(item.emissao)}</div>`;
+        if (isEntrada && item.dataLiquidoRecebido) {
+          datasHtml += `<div class="font-mono text-emerald-700 font-bold text-[10px] mt-0.5">Baixa: ${formatDate(item.dataLiquidoRecebido)}</div>`;
+        }
+
+        let statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">Pendente</span>`;
+        if (item.status === 'Pago') {
+          statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">${isEntrada ? 'Recebido' : 'Aprovado / Pago'}</span>`;
+        } else if (item.status === 'Recusado') {
+          statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300">Recusado</span>`;
+        } else if (item.status === 'Cancelada') {
+          statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 text-slate-700">Cancelada</span>`;
+        }
+
+        // Botões individuais de decisão da chefia (sem botão de aprovar todas)
+        let decisaoChefiaHtml = `<span class="text-[10px] text-slate-400 font-semibold">Conferido</span>`;
+        if (isPendente) {
+          decisaoChefiaHtml = `
+            <div class="flex items-center justify-center space-x-1.5">
+              <button onclick="decisaoIndividualChefia('${item.id}', 'APROVAR')" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold flex items-center gap-1 shadow-sm" title="${isEntrada ? 'Informar Valor Líquido e Baixar' : 'Aprovar e Liquidar'}">
+                <i data-lucide="check" class="w-3 h-3"></i>
+                <span>${isEntrada ? 'Dar Baixa' : 'Aprovar'}</span>
+              </button>
+              <button onclick="decisaoIndividualChefia('${item.id}', 'RECUSAR')" class="px-2 py-1 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700 border border-rose-300 text-[10px] font-bold" title="Recusar Lançamento">
+                <i data-lucide="x" class="w-3 h-3"></i>
+              </button>
+            </div>
+          `;
+        }
+
         let docBtns = '';
         if (item.fileData1) {
-          docBtns += `<button onclick="openPreviewModal('${item.fileName1 || 'Anexo 1'}', '${item.fileData1}')" class="p-1 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-700 mr-1" title="Ver Anexo 1"><i data-lucide="file-text" class="w-4 h-4"></i></button>`;
+          docBtns += `<button onclick="openPreviewModal('${item.fileName1 || 'Anexo 1'}', '${item.fileData1}')" class="p-1 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-700 mr-1" title="Ver Anexo 1 (${item.fileName1})"><i data-lucide="file-text" class="w-4 h-4"></i></button>`;
         }
         if (item.fileData2) {
-          docBtns += `<button onclick="openPreviewModal('${item.fileName2 || 'Anexo 2'}', '${item.fileData2}')" class="p-1 rounded-lg bg-cyan-100 hover:bg-cyan-200 text-cyan-700 mr-1" title="Ver Anexo 2"><i data-lucide="file-check" class="w-4 h-4"></i></button>`;
+          docBtns += `<button onclick="openPreviewModal('${item.fileName2 || 'Anexo 2'}', '${item.fileData2}')" class="p-1 rounded-lg bg-cyan-100 hover:bg-cyan-200 text-cyan-700 mr-1" title="Ver Anexo 2 (${item.fileName2})"><i data-lucide="file-check" class="w-4 h-4"></i></button>`;
         }
         if (!item.fileData1 && !item.fileData2) {
-          docBtns = `<span class="text-[10px] text-slate-400 mr-1">Sem Anexo</span>`;
+          docBtns = `<span class="text-[10px] text-slate-400 mr-2">S/ Anexo</span>`;
         }
 
         tr.innerHTML = `
-          <td class="py-3 px-4 text-center">
-            <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleSelectRow('${item.id}', this)" class="rounded border-slate-300 text-blue-600">
-          </td>
-          <td class="py-3 px-4">${badgeEmpresa} ${tipoBadge}</td>
+          <td class="py-3 px-4">${badgeEmpresa} ${tipoTag}</td>
           <td class="py-3 px-4 font-mono font-bold text-slate-800">${item.numero || ''}</td>
           <td class="py-3 px-4">
             <div class="font-bold text-slate-800">${item.fornecedor || ''}</div>
@@ -594,102 +1103,47 @@
           </td>
           <td class="py-3 px-4 text-slate-700">
             <span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-[11px] font-semibold">${item.categoria || ''}</span>
-            <div class="text-[10px] text-slate-500 mt-0.5">Banco: <strong>${item.localPgto || 'BRADESCO'}</strong></div>
+            <div class="text-[10px] text-slate-500 mt-0.5">Banco: <strong>${bancoExibicao}</strong></div>
           </td>
-          <td class="py-3 px-4 font-mono text-slate-600">${formatDate(item.emissao)}</td>
+          <td class="py-3 px-4">${datasHtml}</td>
           <td class="py-3 px-4">${valorFormatted}</td>
           <td class="py-3 px-4 text-center">${statusBadge}</td>
-          <td class="py-3 px-4 text-right space-x-1">
+          <td class="py-3 px-4 text-center">${decisaoChefiaHtml}</td>
+          <td class="py-3 px-4 text-right whitespace-nowrap">
             ${docBtns}
-            <button onclick="toggleApproveStatus('${item.id}', '${item.status}')" class="p-1.5 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-800" title="Aprovar / Mudar Status"><i data-lucide="check-circle-2" class="w-4 h-4"></i></button>
-            <button onclick="deleteNFe('${item.id}')" class="p-1.5 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+            <button onclick="openEditModal('${item.id}')" class="p-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-800 mr-1" title="Conferir / Editar"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+            <button onclick="deleteNFe('${item.id}')" class="p-1 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
           </td>
         `;
         tbody.appendChild(tr);
       });
 
       lucide.createIcons();
-      renderDashboardKPIs();
-      renderCharts();
     };
 
-    window.resetFilters = function() {
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      document.getElementById('filter-mes').value = `${year}-${month}`;
+    window.clearFilters = function() {
       document.getElementById('global-empresa-filter').value = 'ALL';
+      document.getElementById('global-month-filter').value = '';
+      if (document.getElementById('mobile-month-filter')) document.getElementById('mobile-month-filter').value = '';
       document.getElementById('filter-search').value = '';
       document.getElementById('filter-categoria').value = 'ALL';
       document.getElementById('filter-status').value = 'ALL';
       document.getElementById('filter-tipo').value = 'ALL';
-      renderTable();
+      refreshAll();
     };
 
-    window.toggleSelectAll = function(master) {
-      const dadosPeriodo = getFilteredDataForPeriod();
-      if (master.checked) dadosPeriodo.forEach(item => selectedIds.add(item.id));
-      else selectedIds.clear();
-      renderTable();
-    };
+    function formatCurrency(val) {
+      let n = parseFloat(val);
+      if (isNaN(n)) n = 0;
+      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(n);
+    }
 
-    window.toggleSelectRow = function(id, checkbox) {
-      if (checkbox.checked) selectedIds.add(id);
-      else selectedIds.delete(id);
-    };
-
-    window.bulkApprove = async function() {
-      if (selectedIds.size === 0) return showToast('Selecione ao menos um item na tabela.', 'warning');
-      try {
-        for (let id of selectedIds) {
-          const docRef = doc(db, "transacoes", id);
-          await updateDoc(docRef, { status: 'Aprovada' });
-        }
-        showToast('Itens selecionados aprovados com sucesso!', 'success');
-        selectedIds.clear();
-      } catch (err) {
-        showToast('Erro ao aprovar em lote: ' + err.message, 'warning');
-      }
-    };
-
-    window.toggleApproveStatus = async function(id, currentStatus) {
-      const nextStatus = (currentStatus === 'Aprovada' || currentStatus === 'Pago') ? 'Pendente' : 'Aprovada';
-      try {
-        const docRef = doc(db, "transacoes", id);
-        await updateDoc(docRef, { status: nextStatus });
-        showToast(`Status alterado para ${nextStatus}`, 'success');
-      } catch (err) {
-        showToast('Erro ao atualizar status: ' + err.message, 'warning');
-      }
-    };
-
-    window.deleteNFe = async function(id) {
-      if (!confirm('Deseja realmente remover esta transação do Banco de Dados?')) return;
-      try {
-        await deleteDoc(doc(db, "transacoes", id));
-        showToast('Registro excluído do Firebase.', 'warning');
-      } catch (e) {
-        showToast('Erro ao excluir no Firebase.', 'warning');
-      }
-    };
-
-    window.exportToCSV = function() {
-      const dadosPeriodo = getFilteredDataForPeriod();
-      if (!dadosPeriodo || dadosPeriodo.length === 0) {
-        showToast('Não há registros no mês selecionado para exportar.', 'warning');
-        return;
-      }
-      let csv = 'Empresa;Tipo;Numero;Fornecedor;CNPJ;Valor;Emissao;Status\n';
-      dadosPeriodo.forEach(i => { csv += `"${i.empresaEmissora || 'GRUPO_ER'}";"${i.tipo || 'SAIDA'}";"${i.numero}";"${i.fornecedor}";"${i.cnpj}";${i.valor};"${i.emissao}";"${i.status}"\n`; });
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `DRE_Mensal_${Date.now()}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
-      showToast('Relatório exportado com sucesso!', 'success');
-    };
+    function formatDate(dateStr) {
+      if (!dateStr) return 'N/A';
+      const parts = dateStr.split('-');
+      if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      return dateStr;
+    }
 
     function showToast(msg, type = 'info') {
       const toast = document.getElementById('toast');
