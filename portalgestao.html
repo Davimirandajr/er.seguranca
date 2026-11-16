@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal Operacional v1.5 - Gestão Financeira | ER & Snyper</title>
+  <title>Portal Operacional - Gestão Financeira | ER & Snyper</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -66,7 +66,7 @@
           <div class="flex items-center space-x-2">
             <span class="font-black text-base sm:text-xl tracking-wider text-blue-700">GRUPO ER / SNYPER</span>
             <span class="hidden sm:inline-block px-2 py-0.5 text-[10px] font-bold uppercase bg-blue-100 text-blue-700 border border-blue-300 rounded-md">
-              v1.5
+           
             </span>
           </div>
           <p class="text-[10px] sm:text-[11px] font-extrabold text-red-600 tracking-widest uppercase">PORTARIA E VIGILÂNCIA LTDA</p>
@@ -284,21 +284,7 @@
           </div>
 
           <!-- NOVO CAMPO: CONTRATO / POSTO DE SERVIÇO -->
-          <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Contrato / Posto de Serviço</label>
-            <input type="text" id="input-contrato" list="contratos-list" placeholder="Ex: UDI - PORTARIA, ALUMINORTE, MRV..." class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-600">
-            <datalist id="contratos-list">
-              <option value="UDI - PORTARIA">
-              <option value="ALUMINORTE">
-              <option value="PEDREIRAS TRANSPORTES DO MARANHÃO LTDA">
-              <option value="LOC CONSTRUÇÕES E EMPREENDIMENTOS">
-              <option value="MRV / T. Bequimao">
-              <option value="MRV / T. Japones">
-              <option value="MRV / T. DUNAS DO MAR">
-              <option value="MRV / T. SAVIGNY">
-              <option value="ADMINISTRATIVO / SEDE">
-            </datalist>
-          </div>
+          
 
           <!-- NOVO CAMPO: RECORRÊNCIA / TIPO (PROGRAMADO VS AVULSO) -->
           <div>
@@ -507,12 +493,7 @@
           </select>
         </div>
 
-        <div>
-          <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Contrato / Posto</label>
-          <select id="filter-contrato" onchange="renderTable()" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none">
-            <option value="ALL">Todos os Contratos</option>
-          </select>
-        </div>
+        
 
         <div>
           <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Fornecedor / Doc / CNPJ</label>
@@ -627,10 +608,7 @@
             <input type="text" id="edit-fornecedor" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
           </div>
 
-          <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Contrato / Posto de Serviço</label>
-            <input type="text" id="edit-contrato" list="contratos-list" placeholder="Ex: UDI - PORTARIA" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
-          </div>
+          
 
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Natureza / Programação</label>
@@ -838,26 +816,7 @@
         mesSelect.value = currentMesVal;
       }
 
-      // 2. Contratos / Postos disponíveis
-      const contratoSelect = document.getElementById('filter-contrato');
-      const currentContratoVal = contratoSelect.value;
-      const contratosSet = new Set();
-      nfeList.forEach(item => {
-        if (item.contrato && item.contrato.trim()) {
-          contratosSet.add(item.contrato.trim());
-        }
-      });
-      const sortedContratos = Array.from(contratosSet).sort();
-      contratoSelect.innerHTML = '<option value="ALL">Todos os Contratos</option>';
-      sortedContratos.forEach(c => {
-        const opt = document.createElement('option');
-        opt.value = c;
-        opt.textContent = c;
-        contratoSelect.appendChild(opt);
-      });
-      if ([...contratoSelect.options].some(o => o.value === currentContratoVal)) {
-        contratoSelect.value = currentContratoVal;
-      }
+
 
       // 3. Categorias disponíveis
       const catSelect = document.getElementById('filter-categoria');
@@ -1151,7 +1110,7 @@
       setVal('edit-numero', item.numero || '');
       setVal('edit-cnpj', item.cnpj || '13.506.821/0001-46');
       setVal('edit-fornecedor', item.fornecedor || '');
-      setVal('edit-contrato', item.contrato || '');
+      
       setVal('edit-recorrencia', item.recorrencia || 'Programado');
       setVal('edit-valor', formatCurrency(item.valor || 0));
       setVal('edit-emissao', item.emissao || '');
@@ -1220,7 +1179,7 @@
         numero: getVal('edit-numero'),
         cnpj: getVal('edit-cnpj'),
         fornecedor: getVal('edit-fornecedor'),
-        contrato: getVal('edit-contrato'),
+        contrato: '',
         recorrencia: getVal('edit-recorrencia') || 'Programado',
         valor: valorBruto,
         valorLiquidoRecebido: valorLiquidoRecebido,
@@ -1272,7 +1231,7 @@
         numero: num,
         cnpj: document.getElementById('input-cnpj').value.trim(),
         fornecedor: document.getElementById('input-fornecedor').value.trim(),
-        contrato: document.getElementById('input-contrato').value.trim(),
+        contrato: '',
         recorrencia: document.getElementById('input-recorrencia').value || 'Programado',
         valor: valor,
         valorLiquidoRecebido: valorLiquidoRecebido,
@@ -1807,7 +1766,7 @@
     window.renderTable = function() {
       const empresaGlobal = document.getElementById('global-empresa-filter').value;
       const mesGlobal = document.getElementById('global-mes-filter').value;
-      const contratoFilter = document.getElementById('filter-contrato').value;
+      const contratoFilter = 'ALL';
       const search = document.getElementById('filter-search').value.toLowerCase();
       const categoria = document.getElementById('filter-categoria').value;
       const status = document.getElementById('filter-status').value;
@@ -1816,7 +1775,7 @@
       const filtrados = nfeList.filter(item => {
         const matchesEmpresa = (empresaGlobal === 'ALL' || item.empresaEmissora === empresaGlobal);
         const matchesMes = (mesGlobal === 'ALL' || getItemYearMonth(item) === mesGlobal);
-        const matchesContrato = (contratoFilter === 'ALL' || (item.contrato || '').trim() === contratoFilter);
+        
         const matchesSearch = (item.numero || '').toLowerCase().includes(search) || 
                               (item.fornecedor || '').toLowerCase().includes(search) || 
                               (item.contrato || '').toLowerCase().includes(search) ||
@@ -1833,7 +1792,7 @@
         }
 
         const matchesTipo = (tipo === 'ALL' || item.tipo === tipo);
-        return matchesEmpresa && matchesMes && matchesContrato && matchesSearch && matchesCat && matchesStatus && matchesTipo;
+        return matchesEmpresa && matchesMes  && matchesSearch && matchesCat && matchesStatus && matchesTipo;
       });
 
       const tbody = document.getElementById('nfe-table-body');
@@ -1903,9 +1862,7 @@
           statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300">Recusado</span>`;
         }
 
-        const contratoHtml = item.contrato 
-          ? `<div class="inline-block mt-1 px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] font-bold">📍 ${item.contrato}</div>` 
-          : '';
+const contratoHtml = '';
 
         let docBtns = '';
         if (item.fileData1) {
@@ -1924,7 +1881,7 @@
           <td class="py-3 px-4">
             <div class="font-bold text-slate-800">${item.fornecedor || ''}</div>
             <div class="text-[10px] text-slate-500 font-mono">${item.cnpj || ''}</div>
-            ${contratoHtml}
+            
           </td>
           <td class="py-3 px-4 text-slate-700">
             <span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-[11px] font-semibold">${item.categoria || ''}</span>
@@ -1948,7 +1905,7 @@
     window.clearFilters = function() {
       document.getElementById('global-empresa-filter').value = 'ALL';
       document.getElementById('global-mes-filter').value = 'ALL';
-      document.getElementById('filter-contrato').value = 'ALL';
+      
       document.getElementById('filter-search').value = '';
       document.getElementById('filter-categoria').value = 'ALL';
       document.getElementById('filter-status').value = 'ALL';
