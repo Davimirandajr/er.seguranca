@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal Operacional  - Gestão Financeira | ER & Snyper</title>
+  <title>Portal Operacional v1.4 - Gestão Financeira | ER & Snyper</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- SheetJS para exportação .xlsx real com múltiplas abas -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <script>
@@ -50,8 +52,8 @@
 
   <!-- HEADER -->
   <header class="sticky top-0 z-40 glass-card border-b border-sky-200/60 bg-white/80 backdrop-blur-xl">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-2">
+      <div class="flex items-center space-x-3 shrink-0">
         <svg class="w-10 h-10" viewBox="0 0 300 200" fill="none">
           <defs>
             <linearGradient id="headerBlue" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3b82f6" /><stop offset="100%" stop-color="#1d4ed8" /></linearGradient>
@@ -62,18 +64,26 @@
         </svg>
         <div>
           <div class="flex items-center space-x-2">
-            <span class="font-black text-lg sm:text-xl tracking-wider text-blue-700">GRUPO ER / SNYPER</span>
+            <span class="font-black text-base sm:text-xl tracking-wider text-blue-700">GRUPO ER / SNYPER</span>
             <span class="hidden sm:inline-block px-2 py-0.5 text-[10px] font-bold uppercase bg-blue-100 text-blue-700 border border-blue-300 rounded-md">
-             segurança
+              v1.4
             </span>
           </div>
-          <p class="text-[11px] font-extrabold text-red-600 tracking-widest uppercase">PORTARIA E VIGILÂNCIA LTDA</p>
+          <p class="text-[10px] sm:text-[11px] font-extrabold text-red-600 tracking-widest uppercase">PORTARIA E VIGILÂNCIA LTDA</p>
         </div>
       </div>
 
-      <div class="flex items-center space-x-3 sm:space-x-4">
+      <div class="flex items-center space-x-2 sm:space-x-3 flex-wrap justify-end">
+        <!-- SELETOR GLOBAL DE MÊS/PERÍODO -->
+        <div class="flex items-center space-x-1.5 bg-white px-2.5 py-1.5 rounded-xl border border-sky-200 shadow-sm">
+          <i data-lucide="calendar" class="w-4 h-4 text-blue-600"></i>
+          <select id="global-mes-filter" onchange="renderDashboard(); renderTable();" class="bg-transparent text-xs font-bold text-slate-700 focus:outline-none">
+            <option value="ALL">Todos os Meses</option>
+          </select>
+        </div>
+
         <!-- SELETOR GLOBAL DE EMPRESA -->
-        <div class="flex items-center space-x-2 bg-white px-3 py-1.5 rounded-xl border border-sky-200 shadow-sm">
+        <div class="flex items-center space-x-1.5 bg-white px-2.5 py-1.5 rounded-xl border border-sky-200 shadow-sm">
           <i data-lucide="building-2" class="w-4 h-4 text-blue-600"></i>
           <select id="global-empresa-filter" onchange="renderDashboard(); renderTable();" class="bg-transparent text-xs font-bold text-slate-700 focus:outline-none">
             <option value="ALL">Todas as Empresas</option>
@@ -82,12 +92,12 @@
           </select>
         </div>
 
-        <button onclick="exportToExcel()" class="btn-neon-primary px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 shadow-md">
+        <button onclick="exportToExcel()" class="btn-neon-primary px-3.5 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 shadow-md" title="Exportar planilha .xlsx com abas separadas">
           <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-200"></i>
-          <span class="hidden sm:inline">Baixar Excel</span>
+          <span class="hidden md:inline">Baixar Excel (.xlsx)</span>
         </button>
 
-        <button onclick="logout()" class="p-2.5 rounded-xl bg-white hover:bg-rose-50 border border-slate-200 text-slate-600 hover:text-red-600 transition-colors shadow-sm" title="Encerrar Sessão">
+        <button onclick="logout()" class="p-2 rounded-xl bg-white hover:bg-rose-50 border border-slate-200 text-slate-600 hover:text-red-600 transition-colors shadow-sm" title="Encerrar Sessão">
           <i data-lucide="log-out" class="w-4 h-4"></i>
         </button>
       </div>
@@ -103,53 +113,74 @@
           <i data-lucide="arrow-left-right" class="w-8 h-8 text-blue-600"></i>
           Gestão de Fluxo Financeiro & Caixa Real
         </h1>
-        <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">Lançamentos de faturamento (com baixa líquida), despesas operacionais e salários com separação por CNPJ.</p>
+        <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">Controle por CNPJ, Contrato/Posto, Mês, Vencimentos (Atrasados) e Baixa Líquida com retenções.</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="setCurrentMonthFilter()" class="px-3 py-1.5 rounded-xl bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 text-xs font-bold shadow-sm flex items-center gap-1.5">
+          <i data-lucide="calendar-check" class="w-3.5 h-3.5"></i>
+          <span>Mês Atual</span>
+        </button>
+        <button onclick="filterOnlyOverdue()" class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 text-xs font-bold shadow-sm flex items-center gap-1.5">
+          <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>
+          <span>Ver Vencidos</span>
+        </button>
       </div>
     </div>
 
-    <!-- CARDS DEMONSTRATIVOS (KPIS RECALCULADOS POR STATUS PAGO / VALOR LÍQUIDO RECEBIDO) -->
-    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <!-- CARDS DEMONSTRATIVOS (5 KPIS: RECEBIDO, SAÍDAS, SALDO LÍQUIDO, A VENCER E VENCIDOS/ATRASADOS) -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
       <!-- CARD 1: FATURAMENTO EFETIVADO (VALOR LÍQUIDO RECEBIDO) -->
       <div class="glass-card rounded-2xl p-5 relative overflow-hidden">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Faturamento Líquido Recebido</span>
-          <div class="p-2.5 rounded-xl bg-emerald-100 text-emerald-700 border border-emerald-300"><i data-lucide="check-circle-2" class="w-5 h-5"></i></div>
+          <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Líquido Recebido</span>
+          <div class="p-2 rounded-xl bg-emerald-100 text-emerald-700 border border-emerald-300"><i data-lucide="check-circle-2" class="w-4 h-4"></i></div>
         </div>
-        <div class="mt-4"><span id="stat-faturamento-pago" class="text-2xl sm:text-3xl font-black text-emerald-600 font-mono">R$ 0,00</span></div>
-        <p class="text-[11px] text-slate-500 font-medium mt-2"><span id="count-faturamento-pago" class="text-emerald-700 font-bold">0</span> recebidos efetivamente</p>
+        <div class="mt-3"><span id="stat-faturamento-pago" class="text-xl sm:text-2xl font-black text-emerald-600 font-mono">R$ 0,00</span></div>
+        <p class="text-[11px] text-slate-500 font-medium mt-2"><span id="count-faturamento-pago" class="text-emerald-700 font-bold">0</span> baixados | Retenção: <span id="stat-total-diferenca" class="font-mono font-bold text-slate-700">R$ 0,00</span></p>
       </div>
 
       <!-- CARD 2: SAÍDAS EFETIVADAS (PAGAS) -->
       <div class="glass-card rounded-2xl p-5 relative overflow-hidden">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Despesas / Saídas Pagas</span>
-          <div class="p-2.5 rounded-xl bg-rose-100 text-rose-700 border border-rose-300"><i data-lucide="arrow-up-right" class="w-5 h-5"></i></div>
+          <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Despesas Pagas</span>
+          <div class="p-2 rounded-xl bg-rose-100 text-rose-700 border border-rose-300"><i data-lucide="arrow-up-right" class="w-4 h-4"></i></div>
         </div>
-        <div class="mt-4"><span id="stat-saidas-pagas" class="text-2xl sm:text-3xl font-black text-rose-600 font-mono">R$ 0,00</span></div>
+        <div class="mt-3"><span id="stat-saidas-pagas" class="text-xl sm:text-2xl font-black text-rose-600 font-mono">R$ 0,00</span></div>
         <p class="text-[11px] text-slate-500 font-medium mt-2"><span id="count-saidas-pagas" class="text-rose-700 font-bold">0</span> pagamentos liquidados</p>
       </div>
 
-      <!-- CARD 3: TOTAL DE ENTRADAS LÍQUIDAS (FATURAMENTO LÍQUIDO RECEBIDO - SAÍDAS PAGAS) -->
+      <!-- CARD 3: TOTAL DE ENTRADAS LÍQUIDAS (SALDO CAIXA REAL) -->
       <div class="glass-card rounded-2xl p-5 relative overflow-hidden">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Saldo Líquido (Caixa Real)</span>
-          <div class="p-2.5 rounded-xl bg-blue-100 text-blue-700 border border-blue-300"><i data-lucide="wallet" class="w-5 h-5"></i></div>
+          <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Saldo Caixa Real</span>
+          <div class="p-2 rounded-xl bg-blue-100 text-blue-700 border border-blue-300"><i data-lucide="wallet" class="w-4 h-4"></i></div>
         </div>
-        <div class="mt-4"><span id="stat-entradas-liquidas" class="text-2xl sm:text-3xl font-black text-blue-700 font-mono">R$ 0,00</span></div>
+        <div class="mt-3"><span id="stat-entradas-liquidas" class="text-xl sm:text-2xl font-black text-blue-700 font-mono">R$ 0,00</span></div>
         <p id="stat-entradas-liquidas-subtext" class="text-[11px] text-slate-500 font-medium mt-2">Líquido Recebido - Saídas Pagas</p>
       </div>
 
-      <!-- CARD 4: PREVISÃO PENDENTE (NÃO ENTRA NO CÁLCULO LÍQUIDO) -->
+      <!-- CARD 4: PENDENTES (A VENCER / NO PRAZO) -->
       <div class="glass-card rounded-2xl p-5 relative overflow-hidden">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Previsão Pendente (A Receber/Pagar)</span>
-          <div class="p-2.5 rounded-xl bg-amber-100 text-amber-700 border border-amber-300"><i data-lucide="clock" class="w-5 h-5"></i></div>
+          <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Pendente (A Vencer)</span>
+          <div class="p-2 rounded-xl bg-amber-100 text-amber-700 border border-amber-300"><i data-lucide="clock" class="w-4 h-4"></i></div>
         </div>
-        <div class="mt-4 flex items-baseline justify-between">
-          <span id="stat-total-pendente-valor" class="text-2xl font-black text-amber-600 font-mono">R$ 0,00</span>
-          <span id="stat-pending-count" class="text-xs text-amber-700 font-bold">0 itens</span>
+        <div class="mt-3 flex items-baseline justify-between gap-1">
+          <span id="stat-total-pendente-valor" class="text-xl font-black text-amber-600 font-mono">R$ 0,00</span>
         </div>
-        <p class="text-[11px] text-slate-500 font-medium mt-2">Aguardando liquidação no banco</p>
+        <p class="text-[11px] text-slate-500 font-medium mt-2"><span id="stat-pending-count" class="text-amber-700 font-bold">0</span> no prazo / sem vencimento</p>
+      </div>
+
+      <!-- CARD 5: VENCIDOS / ATRASADOS (NOVO!) -->
+      <div onclick="filterOnlyOverdue()" class="glass-card rounded-2xl p-5 relative overflow-hidden cursor-pointer hover:border-red-400 transition-all border border-red-200 bg-red-50/40" title="Clique para filtrar apenas os itens vencidos">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-black text-red-700 uppercase tracking-wider">Vencidos / Atrasados</span>
+          <div class="p-2 rounded-xl bg-red-100 text-red-700 border border-red-300"><i data-lucide="alert-octagon" class="w-4 h-4"></i></div>
+        </div>
+        <div class="mt-3 flex items-baseline justify-between gap-1">
+          <span id="stat-total-vencido-valor" class="text-xl font-black text-red-600 font-mono">R$ 0,00</span>
+        </div>
+        <p class="text-[11px] text-red-700 font-semibold mt-2"><span id="stat-vencido-count" class="font-black">0</span> itens em atraso (clique)</p>
       </div>
     </section>
 
@@ -164,7 +195,7 @@
           <div>
             <span class="text-[10px] uppercase font-bold tracking-widest text-rose-700 bg-rose-100 px-2 py-0.5 rounded border border-rose-200">Saída Operacional</span>
             <h3 class="text-lg font-extrabold text-slate-800 mt-1">Despesa & Nota Fiscal</h3>
-            <p class="text-xs text-slate-500 mt-1">Lançar custos (Nota Fiscal + Comprovante).</p>
+            <p class="text-xs text-slate-500 mt-1">Lançar custos por Contrato, Programado/Avulso e NF.</p>
           </div>
         </div>
       </div>
@@ -178,7 +209,7 @@
           <div>
             <span class="text-[10px] uppercase font-bold tracking-widest text-amber-800 bg-amber-100 px-2 py-0.5 rounded border border-amber-200">Folha / RH</span>
             <h3 class="text-lg font-extrabold text-slate-800 mt-1">Salários & Encargos</h3>
-            <p class="text-xs text-slate-500 mt-1">Holerites, rescisão e comprovantes de pagamento.</p>
+            <p class="text-xs text-slate-500 mt-1">Holerites, rescisão e comprovantes por Posto/Contrato.</p>
           </div>
         </div>
       </div>
@@ -192,7 +223,7 @@
           <div>
             <span class="text-[10px] uppercase font-bold tracking-widest text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-200">Receita Corporativa</span>
             <h3 class="text-lg font-extrabold text-slate-800 mt-1">Registrar Entrada</h3>
-            <p class="text-xs text-slate-500 mt-1">Recebimentos, valor líquido recebido e baixa de data.</p>
+            <p class="text-xs text-slate-500 mt-1">Faturamento por Contrato, valor líquido e diferença.</p>
           </div>
         </div>
       </div>
@@ -205,7 +236,7 @@
           <div id="form-icon-box" class="p-2 rounded-lg bg-blue-100 text-blue-700 border border-blue-200"><i data-lucide="file-plus-2" class="w-5 h-5"></i></div>
           <div>
             <h2 id="form-main-title" class="text-lg font-bold text-slate-800">Cadastrar Nova Transação</h2>
-            <p class="text-xs text-slate-500">Selecione a empresa emissora e preencha os dados</p>
+            <p class="text-xs text-slate-500">Selecione a empresa emissora, contrato/posto e preencha os dados</p>
           </div>
         </div>
         
@@ -248,8 +279,34 @@
           </div>
 
           <div>
-            <label id="label-fornecedor" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Fornecedor / Favorecido <span class="text-red-500">*</span></label>
+            <label id="label-fornecedor" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Fornecedor / Cliente / Favorecido <span class="text-red-500">*</span></label>
             <input type="text" id="input-fornecedor" required placeholder="Ex: Nome da empresa ou colaborador" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-600">
+          </div>
+
+          <!-- NOVO CAMPO: CONTRATO / POSTO DE SERVIÇO -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Contrato / Posto de Serviço</label>
+            <input type="text" id="input-contrato" list="contratos-list" placeholder="Ex: UDI - PORTARIA, ALUMINORTE, MRV..." class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-600">
+            <datalist id="contratos-list">
+              <option value="UDI - PORTARIA">
+              <option value="ALUMINORTE">
+              <option value="PEDREIRAS TRANSPORTES DO MARANHÃO LTDA">
+              <option value="LOC CONSTRUÇÕES E EMPREENDIMENTOS">
+              <option value="MRV / T. Bequimao">
+              <option value="MRV / T. Japones">
+              <option value="MRV / T. DUNAS DO MAR">
+              <option value="MRV / T. SAVIGNY">
+              <option value="ADMINISTRATIVO / SEDE">
+            </datalist>
+          </div>
+
+          <!-- NOVO CAMPO: RECORRÊNCIA / TIPO (PROGRAMADO VS AVULSO) -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Natureza / Programação</label>
+            <select id="input-recorrencia" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-600">
+              <option value="Programado">Programado (Fixo / Mensal)</option>
+              <option value="Avulso">Avulso (Eventual / Extra)</option>
+            </select>
           </div>
 
           <div>
@@ -258,11 +315,11 @@
           </div>
 
           <!-- BLOCO EXCLUSIVO DE ENTRADA: VALOR LÍQUIDO RECEBIDO & DATA DO RECEBIMENTO -->
-          <div id="container-entrada-liquida" class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 bg-emerald-50/90 p-3.5 rounded-xl border border-emerald-300 hidden">
+          <div id="container-entrada-liquida" class="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-4 bg-emerald-50/90 p-3.5 rounded-xl border border-emerald-300 hidden">
             <div>
               <label class="block text-xs font-bold text-emerald-800 uppercase tracking-wider mb-1.5">Valor Líquido Recebido (R$)</label>
               <input type="text" id="input-valor-liquido-recebido" placeholder="R$ 0,00" oninput="maskCurrencyInput(this); autoCheckBaixaEntrada()" class="w-full bg-white border border-emerald-400 rounded-xl px-4 py-2 text-sm text-emerald-700 font-mono font-bold focus:outline-none focus:border-emerald-600">
-              <p class="text-[10px] text-emerald-700 mt-1">Preencha para dar baixa líquida (após impostos/retenções).</p>
+              <p class="text-[10px] text-emerald-700 mt-1">A diferença (Bruto - Líquido) será calculada automaticamente como retenção.</p>
             </div>
             <div>
               <label class="block text-xs font-bold text-emerald-800 uppercase tracking-wider mb-1.5">Data do Valor Líquido Recebido</label>
@@ -292,7 +349,7 @@
             </select>
           </div>
 
-          <!-- LOCAL DE PAGAMENTO / BANCOS (SEM BRAD - ER) -->
+          <!-- LOCAL DE PAGAMENTO / BANCOS -->
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Local de Pagamento / Banco</label>
             <select id="input-local-pgto" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-600">
@@ -308,16 +365,22 @@
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Categoria <span class="text-red-500">*</span></label>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Plano de Contas / Categoria <span class="text-red-500">*</span></label>
             <select id="input-categoria" required class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-600">
               <option value="">Selecione uma categoria...</option>
               <optgroup label="Folha & Pessoal">
                 <option value="Salários e Encargos">Salários e Encargos</option>
                 <option value="Serviços Prestados">Serviços Prestados</option>
                 <option value="Alimentação">Alimentação</option>
+                <option value="F.G.T.S / I.N.S.S">F.G.T.S / I.N.S.S</option>
+                <option value="Férias / 13º Salário">Férias / 13º Salário</option>
                 <option value="Rescisão">Rescisão</option>
                 <option value="Transporte/Combustível">Transporte / Combustível</option>
                 <option value="Pró-labore">Pró-labore</option>
+              </optgroup>
+              <optgroup label="Tributos & Impostos">
+                <option value="Simples Nacional">Simples Nacional</option>
+                <option value="Impostos / Tributos">Impostos / Tributos (PIS/COFINS/ISS)</option>
               </optgroup>
               <optgroup label="Operacional & Saídas">
                 <option value="Equipamentos de Monitoramento">Equipamentos de Monitoramento</option>
@@ -325,6 +388,7 @@
                 <option value="Manutenção de CFTV">Manutenção de CFTV</option>
                 <option value="Licenças de Software">Licenças de Software</option>
                 <option value="Uniformes e EPIs">Uniformes e EPIs</option>
+                <option value="Aluguel / Contas Fixas">Aluguel / Água / Luz / Internet</option>
                 <option value="Despesas Operacionais / Serviços">Despesas Operacionais / Serviços</option>
               </optgroup>
               <optgroup label="Receitas & Entradas">
@@ -339,7 +403,7 @@
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Status do Pagamento <span class="text-red-500">*</span></label>
             <select id="input-status" required class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-600">
-              <option value="Pendente" selected>Pendente (Aguardando)</option>
+              <option value="Pendente" selected>Pendente (Aguardando / Vencimento)</option>
               <option value="Pago">Pago / Liquidado (Baixa Automática)</option>
               <option value="Recusado">Recusado</option>
               <option value="Cancelada">Cancelada</option>
@@ -426,50 +490,49 @@
           <div class="p-2 rounded-lg bg-blue-100 text-blue-700 border border-blue-200"><i data-lucide="search" class="w-5 h-5"></i></div>
           <div>
             <h2 class="text-lg font-bold text-slate-800">Transações Registradas</h2>
-            <p class="text-xs text-slate-500">Histórico completo consolidado com baixa líquida e status em tempo real</p>
+            <p class="text-xs text-slate-500">Filtre por CNPJ, Mês, Contrato/Posto, Fornecedor, Vencidos ou Status de Pagamento</p>
           </div>
         </div>
         <div id="filter-summary-pill" class="text-xs font-mono bg-white border border-sky-200 text-blue-700 px-4 py-2 rounded-xl font-bold">Nenhum registro</div>
       </div>
 
-      <!-- FILTROS -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 bg-blue-50/60 p-4 rounded-xl border border-sky-200">
+      <!-- FILTROS EXPANDIDOS (EQUIVALENTE AOS FILTROS DA PLANILHA) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 bg-blue-50/60 p-4 rounded-xl border border-sky-200">
         <div>
           <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Tipo de Fluxo</label>
           <select id="filter-tipo" onchange="renderTable()" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none">
-            <option value="ALL">Todas</option>
-            <option value="ENTRADA">Entradas</option>
-            <option value="SAIDA">Saídas</option>
+            <option value="ALL">Todas (Entradas/Saídas)</option>
+            <option value="ENTRADA">Entradas (Receitas)</option>
+            <option value="SAIDA">Saídas (Despesas/Folha)</option>
           </select>
         </div>
 
         <div>
-          <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Busca Rápida</label>
-          <input type="text" id="filter-search" oninput="renderTable()" placeholder="Nº, Nome, CPF/CNPJ..." class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none">
+          <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Contrato / Posto</label>
+          <select id="filter-contrato" onchange="renderTable()" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none">
+            <option value="ALL">Todos os Contratos</option>
+          </select>
         </div>
 
         <div>
-          <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Categoria</label>
+          <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Fornecedor / Doc / CNPJ</label>
+          <input type="text" id="filter-search" oninput="renderTable()" placeholder="Buscar nome, NF, CNPJ..." class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Plano de Contas</label>
           <select id="filter-categoria" onchange="renderTable()" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none">
             <option value="ALL">Todas as Categorias</option>
-            <option value="Salários e Encargos">Salários e Encargos</option>
-            <option value="Serviços Prestados">Serviços Prestados</option>
-            <option value="Alimentação">Alimentação</option>
-            <option value="Rescisão">Rescisão</option>
-            <option value="Transporte/Combustível">Transporte/Combustível</option>
-            <option value="Pró-labore">Pró-labore</option>
-            <option value="Equipamentos de Monitoramento">Equipamentos de Monitoramento</option>
-            <option value="Vigilância Presencial">Vigilância Presencial</option>
-            <option value="Faturamento Contratos de Vigilância">Faturamento Contratos</option>
           </select>
         </div>
 
         <div>
-          <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Status</label>
+          <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Situação / Vencimento</label>
           <select id="filter-status" onchange="renderTable()" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none">
             <option value="ALL">Todos os Status</option>
-            <option value="Pendente">Pendente</option>
-            <option value="Pago">Pago</option>
+            <option value="VENCIDO">⚠️ Vencido / Atrasado!</option>
+            <option value="Pendente">Pendente (No Prazo)</option>
+            <option value="Pago">Pago / Recebido</option>
             <option value="Recusado">Recusado</option>
             <option value="Cancelada">Cancelada</option>
           </select>
@@ -490,10 +553,10 @@
             <tr>
               <th class="py-3.5 px-4">Tipo / Empresa</th>
               <th class="py-3.5 px-4">Nº Ref / Doc</th>
-              <th class="py-3.5 px-4">Favorecido / Fornecedor</th>
+              <th class="py-3.5 px-4">Favorecido / Contrato</th>
               <th class="py-3.5 px-4">Categoria / Banco</th>
-              <th class="py-3.5 px-4">Datas (Emissão / Baixa)</th>
-              <th class="py-3.5 px-4">Valores (Bruto / Líq. Recebido)</th>
+              <th class="py-3.5 px-4">Datas (Emissão / Venc. / Baixa)</th>
+              <th class="py-3.5 px-4">Valores (Bruto / Líq. / Dif.)</th>
               <th class="py-3.5 px-4 text-center">Status / Baixa</th>
               <th class="py-3.5 px-4 text-right">Anexos / Ações</th>
             </tr>
@@ -513,7 +576,7 @@
           <div class="p-2 rounded-lg bg-blue-100 text-blue-700 border border-blue-200"><i data-lucide="edit-3" class="w-5 h-5"></i></div>
           <div>
             <h3 class="text-lg font-bold text-slate-800">Editar Transação / Dar Baixa</h3>
-            <p class="text-xs text-slate-500">Atualize dados, informe o valor líquido recebido e a data de baixa</p>
+            <p class="text-xs text-slate-500">Atualize contrato, vencimento, valor líquido recebido e data de baixa</p>
           </div>
         </div>
         <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg bg-slate-100"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -565,6 +628,19 @@
           </div>
 
           <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Contrato / Posto de Serviço</label>
+            <input type="text" id="edit-contrato" list="contratos-list" placeholder="Ex: UDI - PORTARIA" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Natureza / Programação</label>
+            <select id="edit-recorrencia" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
+              <option value="Programado">Programado (Fixo)</option>
+              <option value="Avulso">Avulso (Eventual)</option>
+            </select>
+          </div>
+
+          <div>
             <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Valor Bruto / Total (R$)</label>
             <input type="text" id="edit-valor" required oninput="maskCurrencyInput(this)" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 font-mono font-bold focus:outline-none">
           </div>
@@ -572,6 +648,11 @@
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Data de Emissão</label>
             <input type="date" id="edit-emissao" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Data de Vencimento</label>
+            <input type="date" id="edit-vencimento" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
           </div>
 
           <!-- BLOCO EXCLUSIVO DE ENTRADA NO MODAL DE EDIÇÃO / BAIXA -->
@@ -588,20 +669,7 @@
 
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Categoria</label>
-            <select id="edit-categoria" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
-              <option value="Salários e Encargos">Salários e Encargos</option>
-              <option value="Serviços Prestados">Serviços Prestados</option>
-              <option value="Alimentação">Alimentação</option>
-              <option value="Rescisão">Rescisão</option>
-              <option value="Transporte/Combustível">Transporte/Combustível</option>
-              <option value="Pró-labore">Pró-labore</option>
-              <option value="Equipamentos de Monitoramento">Equipamentos de Monitoramento</option>
-              <option value="Vigilância Presencial">Vigilância Presencial</option>
-              <option value="Despesas Operacionais / Serviços">Despesas Operacionais / Serviços</option>
-              <option value="Faturamento Contratos de Vigilância">Faturamento Contratos de Vigilância</option>
-              <option value="Boletim de Medição">Boletim de Medição</option>
-              <option value="Outras Receitas">Outras Receitas</option>
-            </select>
+            <input type="text" id="edit-categoria" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none">
           </div>
 
           <div>
@@ -675,7 +743,7 @@
     <span id="toast-message">Notificação</span>
   </div>
 
-  <!-- SCRIPT FIREBASE COMPLETO (ATUALIZADO V1.3) -->
+  <!-- SCRIPT FIREBASE COMPLETO (ATUALIZADO V1.4 - PARIDADE COM PLANILHA EXCEL) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -720,6 +788,114 @@
       }
     };
 
+    // Verifica se um lançamento Pendente está com Data de Vencimento anterior a hoje
+    function isOverdue(item) {
+      if (item.status !== 'Pendente') return false;
+      if (!item.vencimento) return false;
+      const hojeStr = new Date().toISOString().slice(0, 10);
+      return item.vencimento < hojeStr;
+    }
+
+    // Obtém o mês/ano de referência do item (prioriza vencimento, depois emissão)
+    function getItemYearMonth(item) {
+      const refDate = item.vencimento || item.emissao || '';
+      if (refDate && refDate.length >= 7) {
+        return refDate.slice(0, 7); // YYYY-MM
+      }
+      return '';
+    }
+
+    function formatYearMonthLabel(ym) {
+      if (!ym || ym.length < 7) return ym;
+      const [y, m] = ym.split('-');
+      const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+      const idx = parseInt(m, 10) - 1;
+      return `${meses[idx] || m} / ${y}`;
+    }
+
+    function populateDynamicFilters() {
+      // 1. Meses disponíveis
+      const mesSelect = document.getElementById('global-mes-filter');
+      const currentMesVal = mesSelect.value;
+      const mesesSet = new Set();
+      const currentYM = new Date().toISOString().slice(0, 7);
+      mesesSet.add(currentYM);
+
+      nfeList.forEach(item => {
+        const ym = getItemYearMonth(item);
+        if (ym) mesesSet.add(ym);
+      });
+
+      const sortedMeses = Array.from(mesesSet).sort().reverse();
+      mesSelect.innerHTML = '<option value="ALL">Todos os Meses</option>';
+      sortedMeses.forEach(ym => {
+        const opt = document.createElement('option');
+        opt.value = ym;
+        opt.textContent = formatYearMonthLabel(ym) + (ym === currentYM ? ' (Atual)' : '');
+        mesSelect.appendChild(opt);
+      });
+      if ([...mesSelect.options].some(o => o.value === currentMesVal)) {
+        mesSelect.value = currentMesVal;
+      }
+
+      // 2. Contratos / Postos disponíveis
+      const contratoSelect = document.getElementById('filter-contrato');
+      const currentContratoVal = contratoSelect.value;
+      const contratosSet = new Set();
+      nfeList.forEach(item => {
+        if (item.contrato && item.contrato.trim()) {
+          contratosSet.add(item.contrato.trim());
+        }
+      });
+      const sortedContratos = Array.from(contratosSet).sort();
+      contratoSelect.innerHTML = '<option value="ALL">Todos os Contratos</option>';
+      sortedContratos.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = c;
+        contratoSelect.appendChild(opt);
+      });
+      if ([...contratoSelect.options].some(o => o.value === currentContratoVal)) {
+        contratoSelect.value = currentContratoVal;
+      }
+
+      // 3. Categorias disponíveis
+      const catSelect = document.getElementById('filter-categoria');
+      const currentCatVal = catSelect.value;
+      const catSet = new Set();
+      nfeList.forEach(item => {
+        if (item.categoria && item.categoria.trim()) {
+          catSet.add(item.categoria.trim());
+        }
+      });
+      const sortedCats = Array.from(catSet).sort();
+      catSelect.innerHTML = '<option value="ALL">Todas as Categorias</option>';
+      sortedCats.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = c;
+        catSelect.appendChild(opt);
+      });
+      if ([...catSelect.options].some(o => o.value === currentCatVal)) {
+        catSelect.value = currentCatVal;
+      }
+    }
+
+    window.setCurrentMonthFilter = function() {
+      const currentYM = new Date().toISOString().slice(0, 7);
+      const mesSelect = document.getElementById('global-mes-filter');
+      mesSelect.value = currentYM;
+      renderDashboard();
+      renderTable();
+      showToast(`Filtrando por ${formatYearMonthLabel(currentYM)}`, 'info');
+    };
+
+    window.filterOnlyOverdue = function() {
+      document.getElementById('filter-status').value = 'VENCIDO';
+      renderTable();
+      document.getElementById('nfe-table-body').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+
     function listenFirestore() {
       onSnapshot(collection(db, "transacoes"), (snapshot) => {
         nfeList = [];
@@ -729,6 +905,7 @@
 
         nfeList.sort((a, b) => (b.criadoEm?.seconds || 0) - (a.criadoEm?.seconds || 0));
 
+        populateDynamicFilters();
         renderDashboard();
         renderTable();
       });
@@ -974,12 +1151,14 @@
       setVal('edit-numero', item.numero || '');
       setVal('edit-cnpj', item.cnpj || '13.506.821/0001-46');
       setVal('edit-fornecedor', item.fornecedor || '');
+      setVal('edit-contrato', item.contrato || '');
+      setVal('edit-recorrencia', item.recorrencia || 'Programado');
       setVal('edit-valor', formatCurrency(item.valor || 0));
       setVal('edit-emissao', item.emissao || '');
+      setVal('edit-vencimento', item.vencimento || '');
       setVal('edit-valor-liquido-recebido', item.valorLiquidoRecebido ? formatCurrency(item.valorLiquidoRecebido) : '');
       setVal('edit-data-liquido-recebido', item.dataLiquidoRecebido || '');
       setVal('edit-categoria', item.categoria || '');
-      setVal('edit-forma-pgto', item.formaPgto || 'Transferência');
       setVal('edit-local-pgto', normalizeBankName(item.localPgto));
       setVal('edit-observacoes', item.observacoes || '');
 
@@ -1030,7 +1209,6 @@
       const valorLiquidoRecebido = tipo === 'ENTRADA' ? parseCurrencyToNumber(getVal('edit-valor-liquido-recebido')) : 0;
       const dataLiquidoRecebido = tipo === 'ENTRADA' ? (getVal('edit-data-liquido-recebido') || null) : null;
 
-      // Baixa automática ao informar valor líquido e data na entrada
       if (tipo === 'ENTRADA' && valorLiquidoRecebido > 0 && dataLiquidoRecebido && status === 'Pendente') {
         status = 'Pago';
       }
@@ -1042,12 +1220,14 @@
         numero: getVal('edit-numero'),
         cnpj: getVal('edit-cnpj'),
         fornecedor: getVal('edit-fornecedor'),
+        contrato: getVal('edit-contrato'),
+        recorrencia: getVal('edit-recorrencia') || 'Programado',
         valor: valorBruto,
         valorLiquidoRecebido: valorLiquidoRecebido,
         dataLiquidoRecebido: dataLiquidoRecebido,
         emissao: getVal('edit-emissao'),
+        vencimento: getVal('edit-vencimento') || null,
         categoria: getVal('edit-categoria'),
-        formaPgto: getVal('edit-forma-pgto'),
         localPgto: normalizeBankName(getVal('edit-local-pgto')),
         observacoes: getVal('edit-observacoes'),
         fileName1: finalFile1.name,
@@ -1092,6 +1272,8 @@
         numero: num,
         cnpj: document.getElementById('input-cnpj').value.trim(),
         fornecedor: document.getElementById('input-fornecedor').value.trim(),
+        contrato: document.getElementById('input-contrato').value.trim(),
+        recorrencia: document.getElementById('input-recorrencia').value || 'Programado',
         valor: valor,
         valorLiquidoRecebido: valorLiquidoRecebido,
         dataLiquidoRecebido: dataLiquidoRecebido,
@@ -1135,11 +1317,15 @@
       }
     };
 
-    // EXPORTAÇÃO EXCEL COM ABAS SEPARADAS: ENTRADAS, SAÍDAS, GRUPO ER, SNYPER E RESUMO GERAL
+    // EXPORTAÇÃO REAL EM .XLSX COM ABAS SEPARADAS (SheetJS)
     window.exportToExcel = function() {
       const empresaFiltro = document.getElementById('global-empresa-filter').value;
+      const mesFiltro = document.getElementById('global-mes-filter').value;
+
       const listaBase = nfeList.filter(item => {
-        return (empresaFiltro === 'ALL' || item.empresaEmissora === empresaFiltro);
+        const okEmp = (empresaFiltro === 'ALL' || item.empresaEmissora === empresaFiltro);
+        const okMes = (mesFiltro === 'ALL' || getItemYearMonth(item) === mesFiltro);
+        return okEmp && okMes;
       });
 
       if (!listaBase || listaBase.length === 0) {
@@ -1147,273 +1333,206 @@
         return;
       }
 
-      const fmtBRL = (v) => 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-      function buildRowsHtml(items, modo) {
-        let html = '';
-        let sumBruto = 0;
-        let sumLiquido = 0;
-        let sumSaida = 0;
-
-        items.forEach(item => {
-          const isEntrada = item.tipo === 'ENTRADA';
-          const isPago = item.status === 'Pago';
-          const valBruto = parseFloat(item.valor || 0);
-          const valLiq = isEntrada ? (parseFloat(item.valorLiquidoRecebido || 0) || (isPago ? valBruto : 0)) : 0;
-          const dtBaixa = isEntrada ? (item.dataLiquidoRecebido || (isPago ? item.emissao : '')) : (isPago ? item.emissao : '');
-          const bancoLimpo = normalizeBankName(item.localPgto);
-
-          if (isEntrada) {
-            sumBruto += valBruto;
-            if (isPago || valLiq > 0) sumLiquido += valLiq;
-          } else {
-            sumSaida += valBruto;
-          }
-
-          if (modo === 'ENTRADAS') {
-            html += `
-              <tr>
-                <td style="text-align:center;border:1px solid #cbd5e1;">${item.empresaEmissora === 'SNYPER' ? 'SNYPER' : 'GRUPO ER'}</td>
-                <td style="text-align:center;border:1px solid #cbd5e1;">${item.numero || ''}</td>
-                <td style="text-align:center;border:1px solid #cbd5e1;">${formatDate(item.emissao)}</td>
-                <td style="border:1px solid #cbd5e1;">${item.fornecedor || ''}</td>
-                <td style="border:1px solid #cbd5e1;">${item.categoria || ''}</td>
-                <td style="text-align:right;border:1px solid #cbd5e1;">${fmtBRL(valBruto)}</td>
-                <td style="text-align:right;border:1px solid #cbd5e1;font-weight:bold;color:#059669;">${valLiq > 0 ? fmtBRL(valLiq) : '-'}</td>
-                <td style="text-align:center;border:1px solid #cbd5e1;">${dtBaixa ? formatDate(dtBaixa) : '-'}</td>
-                <td style="text-align:center;border:1px solid #cbd5e1;">${bancoLimpo}</td>
-                <td style="border:1px solid #cbd5e1;">${item.observacoes || ''}</td>
-                <td style="text-align:center;border:1px solid #cbd5e1;font-weight:bold;">${item.status}</td>
-              </tr>`;
-          } else if (modo === 'SAIDAS') {
-            html += `
-              <tr>
-                <td style="text-align:center;border:1px solid #cbd5e1;">${item.empresaEmissora === 'SNYPER' ? 'SNYPER' : 'GRUPO ER'}</td>
-                <td style="text-align:center;border:1px solid #cbd5e1;">${item.numero || ''}</td>
-                <td style="text-align:center;border:1px solid #cbd5e1;">${formatDate(item.emissao)}</td>
-                <td style="border:1px solid #cbd5e1;">${item.fornecedor || ''}</td>
-                <td style="border:1px solid #cbd5e1;">${item.categoria || ''}</td>
-                <td style="text-align:right;border:1px solid #cbd5e1;font-weight:bold;color:#dc2626;">${fmtBRL(valBruto)}</td>
-                <td style="text-align:center;border:1px solid #cbd5e1;">${dtBaixa ? formatDate(dtBaixa) : '-'}</td>
-                <td style="text-align:center;border:1px solid #cbd5e1;">${bancoLimpo}</td>
-                <td style="border:1px solid #cbd5e1;">${item.observacoes || ''}</td>
-                <td style="text-align:center;border:1px solid #cbd5e1;font-weight:bold;">${item.status}</td>
-              </tr>`;
-          } else {
-            // Modo Empresa (ER ou Snyper)
-            html += `
-              <tr>
-                <td style="text-align:center;border:1px solid #cbd5e1;font-weight:bold;color:${isEntrada ? '#059669' : '#dc2626'};">${item.tipo}</td>
-                <td style="text-align:center;border:1px solid #cbd5e1;">${item.numero || ''}</td>
-                <td style="text-align:center;border:1px solid #cbd5e1;">${formatDate(item.emissao)}</td>
-                <td style="border:1px solid #cbd5e1;">${item.fornecedor || ''}</td>
-                <td style="border:1px solid #cbd5e1;">${item.categoria || ''}</td>
-                <td style="text-align:right;border:1px solid #cbd5e1;">${!isEntrada ? fmtBRL(valBruto) : '-'}</td>
-                <td style="text-align:right;border:1px solid #cbd5e1;">${isEntrada ? fmtBRL(valBruto) : '-'}</td>
-                <td style="text-align:right;border:1px solid #cbd5e1;font-weight:bold;color:#059669;">${isEntrada && valLiq > 0 ? fmtBRL(valLiq) : '-'}</td>
-                <td style="text-align:center;border:1px solid #cbd5e1;">${dtBaixa ? formatDate(dtBaixa) : '-'}</td>
-                <td style="text-align:center;border:1px solid #cbd5e1;">${bancoLimpo}</td>
-                <td style="border:1px solid #cbd5e1;">${item.observacoes || ''}</td>
-                <td style="text-align:center;border:1px solid #cbd5e1;font-weight:bold;">${item.status}</td>
-              </tr>`;
-          }
-        });
-
-        if (modo === 'ENTRADAS') {
-          html += `
-            <tr style="background:#d9e2ec;font-weight:bold;">
-              <td colspan="5" style="border:1px solid #1b365d;">TOTAL ENTRADAS</td>
-              <td style="text-align:right;border:1px solid #1b365d;">${fmtBRL(sumBruto)}</td>
-              <td style="text-align:right;border:1px solid #1b365d;color:#059669;">${fmtBRL(sumLiquido)}</td>
-              <td colspan="4" style="border:1px solid #1b365d;"></td>
-            </tr>`;
-        } else if (modo === 'SAIDAS') {
-          html += `
-            <tr style="background:#d9e2ec;font-weight:bold;">
-              <td colspan="5" style="border:1px solid #1b365d;">TOTAL SAÍDAS</td>
-              <td style="text-align:right;border:1px solid #1b365d;color:#dc2626;">${fmtBRL(sumSaida)}</td>
-              <td colspan="4" style="border:1px solid #1b365d;"></td>
-            </tr>`;
-        } else {
-          html += `
-            <tr style="background:#d9e2ec;font-weight:bold;">
-              <td colspan="5" style="border:1px solid #1b365d;">TOTAL DA EMPRESA</td>
-              <td style="text-align:right;border:1px solid #1b365d;color:#dc2626;">${fmtBRL(sumSaida)}</td>
-              <td style="text-align:right;border:1px solid #1b365d;">${fmtBRL(sumBruto)}</td>
-              <td style="text-align:right;border:1px solid #1b365d;color:#059669;">${fmtBRL(sumLiquido)}</td>
-              <td colspan="4" style="border:1px solid #1b365d;"></td>
-            </tr>`;
-        }
-
-        return { html, sumBruto, sumLiquido, sumSaida };
+      if (typeof XLSX === 'undefined') {
+        showToast('Biblioteca Excel carregando, tente novamente em 2 segundos.', 'warning');
+        return;
       }
 
-      const entradasList = listaBase.filter(i => i.tipo === 'ENTRADA');
-      const saidasList = listaBase.filter(i => i.tipo !== 'ENTRADA');
-      const erList = listaBase.filter(i => i.empresaEmissora !== 'SNYPER');
-      const snyperList = listaBase.filter(i => i.empresaEmissora === 'SNYPER');
+      const wb = XLSX.utils.book_new();
 
-      const resEntradas = buildRowsHtml(entradasList, 'ENTRADAS');
-      const resSaidas = buildRowsHtml(saidasList, 'SAIDAS');
-      const resER = buildRowsHtml(erList, 'EMPRESA');
-      const resSnyper = buildRowsHtml(snyperList, 'EMPRESA');
+      const getStatusLabel = (item) => {
+        if (isOverdue(item)) return 'Atrasado! (Vencido)';
+        if (item.status === 'Pago') return item.tipo === 'ENTRADA' ? 'Recebido / Pago!' : 'Pago!';
+        return item.status || 'Pendente';
+      };
 
-      const totalGeralSaidas = resER.sumSaida + resSnyper.sumSaida;
-      const totalGeralEntradasBruto = resER.sumBruto + resSnyper.sumBruto;
-      const totalGeralLiquidoRecebido = resER.sumLiquido + resSnyper.sumLiquido;
-      const saldoCaixaGeral = totalGeralLiquidoRecebido - totalGeralSaidas;
+      const mapEntradaRow = (item) => {
+        const valBruto = Number(item.valor || 0);
+        const valLiq = Number(item.valorLiquidoRecebido || 0) || (item.status === 'Pago' ? valBruto : 0);
+        const diferenca = valLiq > 0 ? (valBruto - valLiq) : 0;
+        return {
+          'Empresa': item.empresaEmissora === 'SNYPER' ? 'SNYPER' : 'GRUPO ER',
+          'Nº Nota / Ref': item.numero || '',
+          'Emissão': formatDate(item.emissao),
+          'Vencimento': item.vencimento ? formatDate(item.vencimento) : '-',
+          'Contrato / Posto': item.contrato || '-',
+          'Cliente / Favorecido': item.fornecedor || '',
+          'CNPJ': item.cnpj || '',
+          'Plano de Contas': item.categoria || '',
+          'Valor Bruto (R$)': valBruto,
+          'Líquido Recebido (R$)': valLiq,
+          'Diferença / Retenção (R$)': diferenca,
+          'Data Baixa': item.dataLiquidoRecebido ? formatDate(item.dataLiquidoRecebido) : (item.status === 'Pago' ? formatDate(item.emissao) : '-'),
+          'Banco': normalizeBankName(item.localPgto),
+          'Status': getStatusLabel(item),
+          'Observações': item.observacoes || ''
+        };
+      };
 
-      const workbookHtml = `
-        <html xmlns:o="urn:schemas-microsoft-com:office:office"
-              xmlns:x="urn:schemas-microsoft-com:office:excel"
-              xmlns="http://www.w3.org/TR/REC-html40">
-        <head>
-          <meta charset="utf-8">
-          <!--[if gte mso 9]>
-          <xml>
-            <x:ExcelWorkbook>
-              <x:ExcelWorksheets>
-                <x:ExcelWorksheet><x:Name>Resumo Geral</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>
-                <x:ExcelWorksheet><x:Name>Entradas</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>
-                <x:ExcelWorksheet><x:Name>Saidas</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>
-                <x:ExcelWorksheet><x:Name>Grupo ER</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>
-                <x:ExcelWorksheet><x:Name>Snyper</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>
-              </x:ExcelWorksheets>
-            </x:ExcelWorkbook>
-          </xml>
-          <![endif]-->
-          <style>
-            body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; }
-            th { background-color: #1b365d; color: #ffffff; font-weight: bold; border: 1px solid #1b365d; padding: 6px; }
-            td { padding: 5px; }
-          </style>
-        </head>
-        <body>
-          <!-- SEÇÃO 1: RESUMO GERAL -->
-          <table>
-            <tr><th colspan="6" style="font-size:14pt;">RESUMO CONSOLIDADO POR EMPRESA E FLUXO (v1.3)</th></tr>
-            <tr>
-              <th>Empresa</th>
-              <th>CNPJ</th>
-              <th>Total Saídas</th>
-              <th>Entradas (Bruto)</th>
-              <th>Valor Líquido Recebido</th>
-              <th>Saldo Líquido Caixa</th>
-            </tr>
-            <tr>
-              <td style="border:1px solid #cbd5e1;font-weight:bold;">Grupo ER Portaria e Segurança LTDA</td>
-              <td style="border:1px solid #cbd5e1;">13.506.821/0001-46</td>
-              <td style="text-align:right;border:1px solid #cbd5e1;">${fmtBRL(resER.sumSaida)}</td>
-              <td style="text-align:right;border:1px solid #cbd5e1;">${fmtBRL(resER.sumBruto)}</td>
-              <td style="text-align:right;border:1px solid #cbd5e1;color:#059669;font-weight:bold;">${fmtBRL(resER.sumLiquido)}</td>
-              <td style="text-align:right;border:1px solid #cbd5e1;font-weight:bold;">${fmtBRL(resER.sumLiquido - resER.sumSaida)}</td>
-            </tr>
-            <tr>
-              <td style="border:1px solid #cbd5e1;font-weight:bold;">Snyper</td>
-              <td style="border:1px solid #cbd5e1;">19.956.281/0001-89</td>
-              <td style="text-align:right;border:1px solid #cbd5e1;">${fmtBRL(resSnyper.sumSaida)}</td>
-              <td style="text-align:right;border:1px solid #cbd5e1;">${fmtBRL(resSnyper.sumBruto)}</td>
-              <td style="text-align:right;border:1px solid #cbd5e1;color:#059669;font-weight:bold;">${fmtBRL(resSnyper.sumLiquido)}</td>
-              <td style="text-align:right;border:1px solid #cbd5e1;font-weight:bold;">${fmtBRL(resSnyper.sumLiquido - resSnyper.sumSaida)}</td>
-            </tr>
-            <tr style="background:#1b365d;color:#ffffff;font-weight:bold;">
-              <td colspan="2" style="border:1px solid #1b365d;">TOTAL GERAL (GRUPO ER + SNYPER)</td>
-              <td style="text-align:right;border:1px solid #1b365d;">${fmtBRL(totalGeralSaidas)}</td>
-              <td style="text-align:right;border:1px solid #1b365d;">${fmtBRL(totalGeralEntradasBruto)}</td>
-              <td style="text-align:right;border:1px solid #1b365d;">${fmtBRL(totalGeralLiquidoRecebido)}</td>
-              <td style="text-align:right;border:1px solid #1b365d;">${fmtBRL(saldoCaixaGeral)}</td>
-            </tr>
-          </table>
-          <br><br>
+      const mapSaidaRow = (item) => {
+        const valBruto = Number(item.valor || 0);
+        return {
+          'Empresa': item.empresaEmissora === 'SNYPER' ? 'SNYPER' : 'GRUPO ER',
+          'Nº Doc / Ref': item.numero || '',
+          'Emissão': formatDate(item.emissao),
+          'Vencimento': item.vencimento ? formatDate(item.vencimento) : '-',
+          'Tipo': item.recorrencia || 'Programado',
+          'Contrato / Posto': item.contrato || '-',
+          'Fornecedor / Favorecido': item.fornecedor || '',
+          'CNPJ / CPF': item.cnpj || '',
+          'Plano de Contas': item.categoria || '',
+          'Valor A Pagar / Pago (R$)': valBruto,
+          'Forma Pgto': item.formaPgto || '',
+          'Banco': normalizeBankName(item.localPgto),
+          'Status': getStatusLabel(item),
+          'Observações': item.observacoes || ''
+        };
+      };
 
-          <!-- SEÇÃO 2: ENTRADAS SEPARADAS -->
-          <table>
-            <tr><th colspan="11" style="font-size:13pt;background:#065f46;">PLANILHA DE ENTRADAS (COM VALOR LÍQUIDO RECEBIDO E DATA DE BAIXA)</th></tr>
-            <tr>
-              <th>Empresa</th><th>Nº Doc</th><th>Data Emissão</th><th>Cliente</th><th>Categoria</th>
-              <th>Valor Bruto</th><th>Valor Líquido Recebido</th><th>Data Líq. Recebido</th><th>Banco</th><th>Observações</th><th>Status</th>
-            </tr>
-            ${resEntradas.html}
-          </table>
-          <br><br>
+      const mapGeralRow = (item) => {
+        const isEnt = item.tipo === 'ENTRADA';
+        const valBruto = Number(item.valor || 0);
+        const valLiq = isEnt ? (Number(item.valorLiquidoRecebido || 0) || (item.status === 'Pago' ? valBruto : 0)) : 0;
+        const dif = isEnt && valLiq > 0 ? (valBruto - valLiq) : 0;
+        return {
+          'Fluxo': item.tipo,
+          'Programação': item.recorrencia || 'Programado',
+          'Nº Doc': item.numero || '',
+          'Emissão': formatDate(item.emissao),
+          'Vencimento': item.vencimento ? formatDate(item.vencimento) : '-',
+          'Contrato / Posto': item.contrato || '-',
+          'Fornecedor / Cliente': item.fornecedor || '',
+          'Plano de Contas': item.categoria || '',
+          'Saída (R$)': !isEnt ? valBruto : 0,
+          'Entrada Bruta (R$)': isEnt ? valBruto : 0,
+          'Líquido Recebido (R$)': valLiq,
+          'Diferença / Retenção (R$)': dif,
+          'Banco': normalizeBankName(item.localPgto),
+          'Status': getStatusLabel(item),
+          'Observações': item.observacoes || ''
+        };
+      };
 
-          <!-- SEÇÃO 3: SAÍDAS SEPARADAS -->
-          <table>
-            <tr><th colspan="10" style="font-size:13pt;background:#9f1239;">PLANILHA DE SAÍDAS (DESPESAS E FOLHA)</th></tr>
-            <tr>
-              <th>Empresa</th><th>Nº Doc</th><th>Data Emissão</th><th>Fornecedor / Favorecido</th><th>Categoria</th>
-              <th>Valor Saída</th><th>Data Pgto / Baixa</th><th>Banco</th><th>Observações</th><th>Status</th>
-            </tr>
-            ${resSaidas.html}
-          </table>
-          <br><br>
+      const entradas = listaBase.filter(i => i.tipo === 'ENTRADA');
+      const saidas = listaBase.filter(i => i.tipo !== 'ENTRADA');
+      const erItems = listaBase.filter(i => i.empresaEmissora !== 'SNYPER');
+      const snyperItems = listaBase.filter(i => i.empresaEmissora === 'SNYPER');
+      const vencidosItems = listaBase.filter(i => isOverdue(i));
 
-          <!-- SEÇÃO 4: GRUPO ER -->
-          <table>
-            <tr><th colspan="12" style="font-size:13pt;">GRUPO ER PORTARIA E SEGURANÇA LTDA — CNPJ: 13.506.821/0001-46</th></tr>
-            <tr>
-              <th>Fluxo</th><th>Nº Doc</th><th>Emissão</th><th>Fornecedor / Cliente</th><th>Categoria</th>
-              <th>Saída</th><th>Entrada Bruta</th><th>Vlr Líq. Recebido</th><th>Data Baixa</th><th>Banco</th><th>Observações</th><th>Status</th>
-            </tr>
-            ${resER.html}
-          </table>
-          <br><br>
+      const calcTotals = (arr) => {
+        let sSaida = 0, sBruto = 0, sLiq = 0, sDif = 0, sVenc = 0;
+        arr.forEach(i => {
+          const v = Number(i.valor || 0);
+          if (isOverdue(i)) sVenc += v;
+          if (i.tipo === 'ENTRADA') {
+            sBruto += v;
+            const l = Number(i.valorLiquidoRecebido || 0) || (i.status === 'Pago' ? v : 0);
+            sLiq += l;
+            if (l > 0) sDif += (v - l);
+          } else {
+            if (i.status === 'Pago') sSaida += v;
+          }
+        });
+        return { sSaida, sBruto, sLiq, sDif, sVenc, saldo: sLiq - sSaida };
+      };
 
-          <!-- SEÇÃO 5: SNYPER -->
-          <table>
-            <tr><th colspan="12" style="font-size:13pt;">SNYPER — CNPJ: 19.956.281/0001-89</th></tr>
-            <tr>
-              <th>Fluxo</th><th>Nº Doc</th><th>Emissão</th><th>Fornecedor / Cliente</th><th>Categoria</th>
-              <th>Saída</th><th>Entrada Bruta</th><th>Vlr Líq. Recebido</th><th>Data Baixa</th><th>Banco</th><th>Observações</th><th>Status</th>
-            </tr>
-            ${resSnyper.html}
-          </table>
-        </body>
-        </html>
-      `;
+      const tER = calcTotals(erItems);
+      const tSnyper = calcTotals(snyperItems);
+      const tAll = calcTotals(listaBase);
 
-      const blob = new Blob([workbookHtml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Controle_Financeiro_v1.3_${Date.now()}.xls`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      const resumoData = [
+        {
+          'Empresa': 'Grupo ER Portaria e Vigilância LTDA',
+          'CNPJ': '13.506.821/0001-46',
+          'Saídas Pagas (R$)': tER.sSaida,
+          'Entradas Brutas (R$)': tER.sBruto,
+          'Líquido Recebido (R$)': tER.sLiq,
+          'Retenções / Diferença (R$)': tER.sDif,
+          'Vencidos / Atrasados (R$)': tER.sVenc,
+          'Saldo Caixa Real (R$)': tER.saldo
+        },
+        {
+          'Empresa': 'Snyper',
+          'CNPJ': '19.956.281/0001-89',
+          'Saídas Pagas (R$)': tSnyper.sSaida,
+          'Entradas Brutas (R$)': tSnyper.sBruto,
+          'Líquido Recebido (R$)': tSnyper.sLiq,
+          'Retenções / Diferença (R$)': tSnyper.sDif,
+          'Vencidos / Atrasados (R$)': tSnyper.sVenc,
+          'Saldo Caixa Real (R$)': tSnyper.saldo
+        },
+        {
+          'Empresa': 'TOTAL CONSOLIDADO',
+          'CNPJ': 'TODAS',
+          'Saídas Pagas (R$)': tAll.sSaida,
+          'Entradas Brutas (R$)': tAll.sBruto,
+          'Líquido Recebido (R$)': tAll.sLiq,
+          'Retenções / Diferença (R$)': tAll.sDif,
+          'Vencidos / Atrasados (R$)': tAll.sVenc,
+          'Saldo Caixa Real (R$)': tAll.saldo
+        }
+      ];
 
-      showToast('Planilha Excel v1.3 gerada com Entradas, Saídas e Empresas separadas!', 'success');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(resumoData), 'Resumo Geral');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(entradas.length ? entradas.map(mapEntradaRow) : [{ Info: 'Sem entradas no filtro' }]), 'Entradas');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(saidas.length ? saidas.map(mapSaidaRow) : [{ Info: 'Sem saídas no filtro' }]), 'Saidas');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(erItems.length ? erItems.map(mapGeralRow) : [{ Info: 'Sem registros Grupo ER' }]), 'Grupo ER');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(snyperItems.length ? snyperItems.map(mapGeralRow) : [{ Info: 'Sem registros Snyper' }]), 'Snyper');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(vencidosItems.length ? vencidosItems.map(mapGeralRow) : [{ Info: 'Nenhum item vencido!' }]), 'Vencidos_Atrasados');
+
+      const periodoTag = mesFiltro === 'ALL' ? 'Geral' : mesFiltro;
+      XLSX.writeFile(wb, `Controle_Financeiro_ER_Snyper_${periodoTag}.xlsx`);
+
+      showToast('Planilha .xlsx gerada com 6 abas separadas!', 'success');
     };
 
     window.renderDashboard = function() {
       const empresaGlobal = document.getElementById('global-empresa-filter').value;
+      const mesGlobal = document.getElementById('global-mes-filter').value;
 
-      let faturamentoLiquidoRecebido = 0, countFatPago = 0;
+      let faturamentoLiquidoRecebido = 0, countFatPago = 0, totalDiferencaRetencao = 0;
       let saidasPagas = 0, countSaidasPagas = 0;
-      let valorPendenteTotal = 0, countPendente = 0;
+      let valorPendenteNoPrazo = 0, countPendenteNoPrazo = 0;
+      let valorVencidoTotal = 0, countVencido = 0;
 
       nfeList.forEach(item => {
         if (empresaGlobal !== 'ALL' && item.empresaEmissora !== empresaGlobal) return;
+        if (mesGlobal !== 'ALL' && getItemYearMonth(item) !== mesGlobal) return;
 
         const valBruto = parseFloat(item.valor || 0);
         const valLiq = parseFloat(item.valorLiquidoRecebido || 0);
         const isPago = item.status === 'Pago';
+        const vencido = isOverdue(item);
 
         if (item.tipo === 'ENTRADA') {
           if (isPago || valLiq > 0) {
-            faturamentoLiquidoRecebido += (valLiq > 0 ? valLiq : valBruto);
+            const efetivo = valLiq > 0 ? valLiq : valBruto;
+            faturamentoLiquidoRecebido += efetivo;
+            if (valLiq > 0 && valBruto > valLiq) {
+              totalDiferencaRetencao += (valBruto - valLiq);
+            }
             countFatPago++;
           } else if (item.status === 'Pendente') {
-            valorPendenteTotal += valBruto;
-            countPendente++;
+            if (vencido) {
+              valorVencidoTotal += valBruto;
+              countVencido++;
+            } else {
+              valorPendenteNoPrazo += valBruto;
+              countPendenteNoPrazo++;
+            }
           }
         } else {
           if (isPago) {
             saidasPagas += valBruto;
             countSaidasPagas++;
           } else if (item.status === 'Pendente') {
-            valorPendenteTotal += valBruto;
-            countPendente++;
+            if (vencido) {
+              valorVencidoTotal += valBruto;
+              countVencido++;
+            } else {
+              valorPendenteNoPrazo += valBruto;
+              countPendenteNoPrazo++;
+            }
           }
         }
       });
@@ -1422,20 +1541,26 @@
 
       document.getElementById('stat-faturamento-pago').textContent = formatCurrency(faturamentoLiquidoRecebido);
       document.getElementById('count-faturamento-pago').textContent = countFatPago;
+      document.getElementById('stat-total-diferenca').textContent = formatCurrency(totalDiferencaRetencao);
 
       document.getElementById('stat-saidas-pagas').textContent = formatCurrency(saidasPagas);
       document.getElementById('count-saidas-pagas').textContent = countSaidasPagas;
 
       const elElem = document.getElementById('stat-entradas-liquidas');
       elElem.textContent = formatCurrency(entradasLiquidas);
-      elElem.className = entradasLiquidas >= 0 ? "text-2xl sm:text-3xl font-black text-blue-700 font-mono" : "text-2xl sm:text-3xl font-black text-rose-600 font-mono";
+      elElem.className = entradasLiquidas >= 0 ? "text-xl sm:text-2xl font-black text-blue-700 font-mono" : "text-xl sm:text-2xl font-black text-rose-600 font-mono";
 
-      document.getElementById('stat-total-pendente-valor').textContent = formatCurrency(valorPendenteTotal);
-      document.getElementById('stat-pending-count').textContent = `${countPendente} pendentes`;
+      document.getElementById('stat-total-pendente-valor').textContent = formatCurrency(valorPendenteNoPrazo);
+      document.getElementById('stat-pending-count').textContent = countPendenteNoPrazo;
+
+      document.getElementById('stat-total-vencido-valor').textContent = formatCurrency(valorVencidoTotal);
+      document.getElementById('stat-vencido-count').textContent = countVencido;
     };
 
     window.renderTable = function() {
       const empresaGlobal = document.getElementById('global-empresa-filter').value;
+      const mesGlobal = document.getElementById('global-mes-filter').value;
+      const contratoFilter = document.getElementById('filter-contrato').value;
       const search = document.getElementById('filter-search').value.toLowerCase();
       const categoria = document.getElementById('filter-categoria').value;
       const status = document.getElementById('filter-status').value;
@@ -1443,13 +1568,25 @@
 
       const filtrados = nfeList.filter(item => {
         const matchesEmpresa = (empresaGlobal === 'ALL' || item.empresaEmissora === empresaGlobal);
+        const matchesMes = (mesGlobal === 'ALL' || getItemYearMonth(item) === mesGlobal);
+        const matchesContrato = (contratoFilter === 'ALL' || (item.contrato || '').trim() === contratoFilter);
         const matchesSearch = (item.numero || '').toLowerCase().includes(search) || 
                               (item.fornecedor || '').toLowerCase().includes(search) || 
+                              (item.contrato || '').toLowerCase().includes(search) ||
                               (item.cnpj || '').includes(search);
         const matchesCat = (categoria === 'ALL' || item.categoria === categoria);
-        const matchesStatus = (status === 'ALL' || item.status === status);
+        
+        let matchesStatus = true;
+        if (status === 'VENCIDO') {
+          matchesStatus = isOverdue(item);
+        } else if (status === 'Pendente') {
+          matchesStatus = (item.status === 'Pendente' && !isOverdue(item));
+        } else if (status !== 'ALL') {
+          matchesStatus = (item.status === status);
+        }
+
         const matchesTipo = (tipo === 'ALL' || item.tipo === tipo);
-        return matchesEmpresa && matchesSearch && matchesCat && matchesStatus && matchesTipo;
+        return matchesEmpresa && matchesMes && matchesContrato && matchesSearch && matchesCat && matchesStatus && matchesTipo;
       });
 
       const tbody = document.getElementById('nfe-table-body');
@@ -1458,14 +1595,15 @@
       document.getElementById('filter-summary-pill').textContent = `Exibindo ${filtrados.length} registros`;
 
       if (filtrados.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="py-10 text-center text-slate-500">Nenhum registro encontrado.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="py-10 text-center text-slate-500">Nenhum registro encontrado para os filtros aplicados.</td></tr>`;
         lucide.createIcons();
         return;
       }
 
       filtrados.forEach(item => {
+        const vencido = isOverdue(item);
         const tr = document.createElement('tr');
-        tr.className = 'hover:bg-blue-50/50 transition-colors';
+        tr.className = vencido ? 'bg-red-50/70 hover:bg-red-100/70 transition-colors' : 'hover:bg-blue-50/50 transition-colors';
 
         const isEntrada = (item.tipo === 'ENTRADA');
         const isSnyper = (item.empresaEmissora === 'SNYPER');
@@ -1479,12 +1617,21 @@
           ? `<span class="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">ENTRADA</span>`
           : `<span class="px-2 py-0.5 rounded text-[10px] font-black bg-rose-100 text-rose-800 border border-rose-300">SAÍDA</span>`;
 
+        const recTag = item.recorrencia 
+          ? `<div class="text-[9px] text-slate-500 font-semibold mt-1 uppercase">${item.recorrencia}</div>` 
+          : '';
+
         let valorFormatted = '';
         if (isEntrada) {
+          const valBruto = parseFloat(item.valor || 0);
           const valLiq = parseFloat(item.valorLiquidoRecebido || 0);
-          valorFormatted = `<div class="text-slate-600 font-mono text-[11px]">Bruto: +${formatCurrency(item.valor)}</div>`;
+          valorFormatted = `<div class="text-slate-600 font-mono text-[11px]">Bruto: +${formatCurrency(valBruto)}</div>`;
           if (valLiq > 0) {
-            valorFormatted += `<div class="text-emerald-700 font-bold font-mono">Líq. Recebido: +${formatCurrency(valLiq)}</div>`;
+            const dif = valBruto - valLiq;
+            valorFormatted += `<div class="text-emerald-700 font-bold font-mono">Líq.: +${formatCurrency(valLiq)}</div>`;
+            if (dif > 0.009) {
+              valorFormatted += `<div class="text-amber-700 font-mono text-[10px]">Dif./Ret.: -${formatCurrency(dif)}</div>`;
+            }
           } else {
             valorFormatted += `<div class="text-amber-600 text-[10px] font-semibold">Aguardando baixa líquida</div>`;
           }
@@ -1492,17 +1639,26 @@
           valorFormatted = `<span class="text-rose-700 font-bold font-mono">-${formatCurrency(item.valor)}</span>`;
         }
 
-        let datasHtml = `<div class="font-mono text-slate-600">Emissão: ${formatDate(item.emissao)}</div>`;
+        let datasHtml = `<div class="font-mono text-slate-600 text-[11px]">Emissão: ${formatDate(item.emissao)}</div>`;
+        if (item.vencimento) {
+          datasHtml += `<div class="font-mono ${vencido ? 'text-red-700 font-black' : 'text-slate-700 font-semibold'} text-[11px] mt-0.5">Venc.: ${formatDate(item.vencimento)}</div>`;
+        }
         if (isEntrada && item.dataLiquidoRecebido) {
           datasHtml += `<div class="font-mono text-emerald-700 font-bold text-[10px] mt-0.5">Baixa Líq.: ${formatDate(item.dataLiquidoRecebido)}</div>`;
         }
 
         let statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">Pendente</span>`;
-        if (item.status === 'Pago') {
-          statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">${isEntrada ? 'Recebido / Baixado' : 'Pago / Liquidado'}</span>`;
+        if (vencido) {
+          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-red-600 text-white shadow-sm animate-pulse">ATRASADO!</span>`;
+        } else if (item.status === 'Pago') {
+          statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">${isEntrada ? 'Recebido / Pago!' : 'Pago!'}</span>`;
         } else if (item.status === 'Recusado') {
           statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300">Recusado</span>`;
         }
+
+        const contratoHtml = item.contrato 
+          ? `<div class="inline-block mt-1 px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] font-bold">📍 ${item.contrato}</div>` 
+          : '';
 
         let docBtns = '';
         if (item.fileData1) {
@@ -1516,11 +1672,12 @@
         }
 
         tr.innerHTML = `
-          <td class="py-3 px-4">${badgeEmpresa} ${tipoTag}</td>
+          <td class="py-3 px-4">${badgeEmpresa} ${tipoTag} ${recTag}</td>
           <td class="py-3 px-4 font-mono font-bold text-slate-800">${item.numero || ''}</td>
           <td class="py-3 px-4">
             <div class="font-bold text-slate-800">${item.fornecedor || ''}</div>
             <div class="text-[10px] text-slate-500 font-mono">${item.cnpj || ''}</div>
+            ${contratoHtml}
           </td>
           <td class="py-3 px-4 text-slate-700">
             <span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-[11px] font-semibold">${item.categoria || ''}</span>
@@ -1529,7 +1686,7 @@
           <td class="py-3 px-4">${datasHtml}</td>
           <td class="py-3 px-4">${valorFormatted}</td>
           <td class="py-3 px-4 text-center">${statusBadge}</td>
-          <td class="py-3 px-4 text-right">
+          <td class="py-3 px-4 text-right whitespace-nowrap">
             ${docBtns}
             <button onclick="openEditModal('${item.id}')" class="p-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-800 mr-1" title="Editar / Dar Baixa"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
             <button onclick="deleteNFe('${item.id}')" class="p-1 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
@@ -1543,6 +1700,8 @@
 
     window.clearFilters = function() {
       document.getElementById('global-empresa-filter').value = 'ALL';
+      document.getElementById('global-mes-filter').value = 'ALL';
+      document.getElementById('filter-contrato').value = 'ALL';
       document.getElementById('filter-search').value = '';
       document.getElementById('filter-categoria').value = 'ALL';
       document.getElementById('filter-status').value = 'ALL';
